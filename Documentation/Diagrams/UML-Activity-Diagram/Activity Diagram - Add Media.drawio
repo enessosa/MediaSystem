@@ -1,0 +1,88 @@
+<mxfile host="Electron" agent="Claudian">
+  <diagram id="add-media" name="Add Media to List">
+    <mxGraphModel dx="1205" dy="944" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="a" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;strokeWidth=2;arcSize=20;" value="User selects search result" vertex="1">
+          <mxGeometry height="50" width="200" x="380" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="b" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;strokeWidth=2;arcSize=20;" value="Determine external ID + source" vertex="1">
+          <mxGeometry height="50" width="200" x="380" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="c" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;strokeWidth=2;" value="MediaItem with this external ID&lt;div&gt;&amp;nbsp;already in DB?&lt;/div&gt;" vertex="1">
+          <mxGeometry height="100" width="240" x="360" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="d" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;strokeWidth=2;arcSize=20;" value="Create new MediaItem" vertex="1">
+          <mxGeometry height="50" width="180" x="120" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="e" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;strokeWidth=2;arcSize=20;" value="Reference existing MediaItem" vertex="1">
+          <mxGeometry height="50" width="200" x="640" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="f" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;strokeWidth=2;" value="User entry for this MediaItem&lt;div&gt;&amp;nbsp;already exists?&lt;/div&gt;" vertex="1">
+          <mxGeometry height="100" width="240" x="360" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="g" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;strokeWidth=2;arcSize=20;" value="Error message: already in your own list" vertex="1">
+          <mxGeometry height="60" width="200" x="120" y="740" as="geometry" />
+        </mxCell>
+        <mxCell id="h" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;strokeWidth=2;arcSize=20;" value="Create user entry: Status=PLANNED" vertex="1">
+          <mxGeometry height="60" width="220" x="620" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="i" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;strokeWidth=2;arcSize=20;" value="Show confirmation, refresh list" vertex="1">
+          <mxGeometry height="60" width="220" x="620" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="qnjFJNZUote888HRHRpR-1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="a">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="445" y="90" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="a" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;" target="b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="b" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;" target="c">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="c" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;" target="d" value="no">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="c" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;" target="e" value="yes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="d" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;" target="f">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="e" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;" target="f">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="f" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;" target="g" value="yes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="f" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;" target="h" value="no">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="h" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;" target="i">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="g" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="qnjFJNZUote888HRHRpR-2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="220" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="i" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="730" y="900" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="qnjFJNZUote888HRHRpR-1" parent="1" style="ellipse;fillColor=light-dark(#000000,#000000);html=1;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="465" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="qnjFJNZUote888HRHRpR-2" parent="1" style="ellipse;html=1;shape=endState;fillColor=strokeColor;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="205" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="qnjFJNZUote888HRHRpR-3" parent="1" style="ellipse;html=1;shape=endState;fillColor=strokeColor;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="715" y="900" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

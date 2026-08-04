@@ -1,0 +1,101 @@
+<mxfile host="Electron" agent="Claudian">
+  <diagram id="search-media" name="Search for Media">
+    <mxGraphModel dx="1071" dy="839" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="a" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#6C8EBF,#FFFFFF);" value="User enters search term" vertex="1">
+          <mxGeometry height="50" width="180" x="440" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="b" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);" value="Send request to provider" vertex="1">
+          <mxGeometry height="50" width="180" x="440" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="c" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);" value="Response status?" vertex="1">
+          <mxGeometry height="90" width="160" x="450" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="d" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);" value="Error message: Rate limit reached, try again later" vertex="1">
+          <mxGeometry height="60" width="200" x="60" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="e" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);" value="Error message: Service unavailable" vertex="1">
+          <mxGeometry height="60" width="180" x="300" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="f" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);" value="Results available?" vertex="1">
+          <mxGeometry height="90" width="180" x="650" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="g" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);" value="Notice: No results found" vertex="1">
+          <mxGeometry height="60" width="180" x="650" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="h" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);" value="Map raw data to MediaItem" vertex="1">
+          <mxGeometry height="60" width="200" x="900" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="i" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);" value="Display result list in frontend" vertex="1">
+          <mxGeometry height="60" width="200" x="900" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="a">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="90" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="a" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="b" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="c">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="c" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="d" value="Rate limit reached">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="c" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="e" value="API unreachable">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="c" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="f" value="OK">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="f" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="g" value="no">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="f" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="h" value="yes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="h" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="i">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="d" style="edgeStyle=orthogonalEdgeStyle;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="160" y="550.0000000000002" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="e" style="edgeStyle=orthogonalEdgeStyle;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="550.0000000000002" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="g" style="edgeStyle=orthogonalEdgeStyle;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="740" y="680.0000000000002" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="i" style="edgeStyle=orthogonalEdgeStyle;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1000" y="760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3KgUnXgg24Qy39NujfEW-1" parent="1" style="ellipse;fillColor=light-dark(#000000,#000000);html=1;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="515" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3KgUnXgg24Qy39NujfEW-2" parent="1" style="ellipse;html=1;shape=endState;fillColor=strokeColor;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="145" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="3KgUnXgg24Qy39NujfEW-3" parent="1" style="ellipse;html=1;shape=endState;fillColor=strokeColor;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="375" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="3KgUnXgg24Qy39NujfEW-4" parent="1" style="ellipse;html=1;shape=endState;fillColor=strokeColor;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="725" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="3KgUnXgg24Qy39NujfEW-5" parent="1" style="ellipse;html=1;shape=endState;fillColor=strokeColor;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="985" y="760" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
