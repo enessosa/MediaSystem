@@ -1,0 +1,96 @@
+<mxfile host="Electron" agent="Claudian">
+  <diagram id="package-diagramm" name="Package-Struktur">
+    <mxGraphModel dx="1205" dy="944" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="frontend" parent="1" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="React-Frontend" vertex="1">
+          <mxGeometry height="60" width="220" x="460" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="api" parent="1" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=60;tabHeight=20;tabPosition=left;whiteSpace=wrap;html=1;verticalAlign=top;align=center;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=16;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;api" vertex="1">
+          <mxGeometry height="120" width="260" x="440" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="api-note" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontColor=#000000;fontSize=12;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;MediaController&lt;br&gt;UserController&lt;br&gt;AuthController" vertex="1">
+          <mxGeometry height="70" width="260" x="440" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="service" parent="1" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=60;tabHeight=20;tabPosition=left;whiteSpace=wrap;html=1;verticalAlign=top;align=center;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=16;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;service" vertex="1">
+          <mxGeometry height="120" width="260" x="440" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="service-note" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontColor=#000000;fontSize=12;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;MediaService&lt;br&gt;UserService&lt;br&gt;AuthService" vertex="1">
+          <mxGeometry height="70" width="260" x="440" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="provider" parent="1" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=60;tabHeight=20;tabPosition=left;whiteSpace=wrap;html=1;verticalAlign=top;align=center;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=16;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237));&quot;&gt;provider&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="260" x="120" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="provider-note" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontColor=#000000;fontSize=12;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;Provider «interface»&lt;br&gt;AniListProvider&lt;br&gt;TmdbProvider&lt;br&gt;OpenLibraryProvider" vertex="1">
+          <mxGeometry height="90" width="260" x="120" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="db" parent="1" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=60;tabHeight=20;tabPosition=left;whiteSpace=wrap;html=1;verticalAlign=top;align=center;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=16;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;db" vertex="1">
+          <mxGeometry height="140" width="260" x="760" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="db-note" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontColor=#000000;fontSize=12;" value="UserRepository&#xa;MediaItemRepository&#xa;UserEntryRepository" vertex="1">
+          <mxGeometry height="90" width="260" x="760" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="model" parent="1" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=60;tabHeight=20;tabPosition=left;whiteSpace=wrap;html=1;verticalAlign=top;align=center;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=16;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;model" vertex="1">
+          <mxGeometry height="260" width="260" x="440" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="model-note" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontColor=#000000;fontSize=12;" value="MediaItem, UserEntry, Source&lt;br&gt;MediaType, Status, SourceType" vertex="1">
+          <mxGeometry height="90" width="260" x="440" y="860" as="geometry" />
+        </mxCell>
+        <mxCell id="externalapis" parent="1" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="external APIs&lt;br&gt;(AniList / TMDB / OpenLibrary)" vertex="1">
+          <mxGeometry height="70" width="220" x="20" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="database" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=none;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Database" vertex="1">
+          <mxGeometry height="80" width="120" x="1080" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="e-frontend-api" edge="1" parent="1" source="frontend" style="endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;elbow=vertical;entryX=0.5;entryY=0.144;entryDx=0;entryDy=0;entryPerimeter=0;" target="api" value="HTTP/REST">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-api-service" edge="1" parent="1" source="api" style="endArrow=open;dashed=1;html=1;strokeColor=#000000;fontColor=#000000;entryX=0.505;entryY=0.154;entryDx=0;entryDy=0;entryPerimeter=0;" target="service" value="«use»">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-service-provider" edge="1" parent="1" source="service" style="endArrow=open;dashed=1;html=1;strokeColor=#000000;fontColor=#000000;entryX=0.832;entryY=0.114;entryDx=0;entryDy=0;entryPerimeter=0;" target="provider" value="«use»">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="347" y="580" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-service-db" edge="1" parent="1" source="service" style="endArrow=open;dashed=1;html=1;strokeColor=#000000;fontColor=#000000;" target="db" value="«use»">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-api-model" edge="1" parent="1" source="api" style="endArrow=open;dashed=1;html=1;strokeColor=#000000;fontColor=#000000;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.15;entryY=0;entryDx=0;entryDy=0;rounded=0;curved=1;" target="model" value="«use»">
+          <mxGeometry relative="1" x="0.0003" y="77" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="240" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-service-model" edge="1" parent="1" source="service" style="endArrow=open;dashed=1;html=1;strokeColor=#000000;fontColor=#000000;entryX=0.505;entryY=0.141;entryDx=0;entryDy=0;entryPerimeter=0;" target="model" value="«use»">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-provider-model" edge="1" parent="1" source="provider" style="endArrow=open;dashed=1;html=1;strokeColor=#000000;fontColor=#000000;" target="model" value="«use»">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-db-model" edge="1" parent="1" source="db" style="endArrow=open;dashed=1;html=1;strokeColor=#000000;fontColor=#000000;entryX=0.918;entryY=0.069;entryDx=0;entryDy=0;entryPerimeter=0;" target="model" value="«use»">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-provider-external" edge="1" parent="1" source="provider" style="endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;" target="externalapis" value="HTTP-Calls">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-db-database" edge="1" parent="1" source="db" style="endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;" target="database" value="JPA / JDBC">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="L18dnutWUWs_kIAX_sim-2" parent="1" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=60;tabHeight=20;tabPosition=left;whiteSpace=wrap;html=1;verticalAlign=top;align=center;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=16;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237));&quot;&gt;roles&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="90" width="160" x="490" y="950" as="geometry" />
+        </mxCell>
+        <mxCell id="L18dnutWUWs_kIAX_sim-3" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontColor=#000000;fontSize=12;" value="User, Admin" vertex="1">
+          <mxGeometry height="90" width="260" x="440" y="980" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
