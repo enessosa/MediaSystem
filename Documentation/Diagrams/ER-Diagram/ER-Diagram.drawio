@@ -1,0 +1,58 @@
+<mxfile host="Electron" agent="Claudian">
+  <diagram id="er-diagram" name="ER-Diagramm">
+    <mxGraphModel dx="1134" dy="748" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="au_t" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" value="app_user" vertex="1">
+          <mxGeometry height="30" width="260" x="60" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="au_a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" value="PK  id : BIGINT&#xa;U   username : VARCHAR(50)&#xa;U   email : VARCHAR(255)&#xa;      password_hash : VARCHAR(255)&#xa;      role : VARCHAR(20)&#xa;      codeword : VARCHAR(100) NULL&#xa;      created_at : TIMESTAMPTZ" vertex="1">
+          <mxGeometry height="134" width="260" x="60" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="mi_t" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" value="media_item" vertex="1">
+          <mxGeometry height="30" width="280" x="480" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="mi_a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" value="PK  id : BIGINT&#xa;      title : VARCHAR(500)&#xa;      description : TEXT NULL&#xa;      release_year : INTEGER NULL&#xa;      creator : VARCHAR(255) NULL&#xa;      cover_url : VARCHAR(1000) NULL&#xa;      media_type : VARCHAR(20)" vertex="1">
+          <mxGeometry height="134" width="280" x="480" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ms_t" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" value="media_source" vertex="1">
+          <mxGeometry height="30" width="280" x="900" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ms_a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" value="PK  id : BIGINT&#xa;FK  media_item_id : BIGINT&#xa;U*  source_type : VARCHAR(20)&#xa;U*  external_id : VARCHAR(100)" vertex="1">
+          <mxGeometry height="80" width="280" x="900" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ue_t" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" value="user_entry" vertex="1">
+          <mxGeometry height="30" width="280" x="480" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="ue_a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" value="PK  id : BIGINT&#xa;FK  user_id : BIGINT (U*)&#xa;FK  media_item_id : BIGINT (U*)&#xa;      status : VARCHAR(20)&#xa;      rating : INTEGER NULL&#xa;      note : TEXT NULL&#xa;      added_at : TIMESTAMPTZ" vertex="1">
+          <mxGeometry height="134" width="280" x="480" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="mr_t" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" value="media_item_relation" vertex="1">
+          <mxGeometry height="30" width="280" x="900" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="mr_a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" value="PK,FK  source_media_id : BIGINT&#xa;PK,FK  target_media_id : BIGINT&#xa;PK       relation_type : VARCHAR(30)" vertex="1">
+          <mxGeometry height="62" width="280" x="900" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="e_au_ue" edge="1" parent="1" source="au_a" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#000000;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" target="ue_a">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mi_ue" edge="1" parent="1" source="mi_a" style="rounded=0;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#000000;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ue_t">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="230" as="sourcePoint" />
+            <mxPoint x="750" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_mi_ms" edge="1" parent="1" source="mi_a" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#000000;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="ms_a">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mi_mr_s" edge="1" parent="1" source="mi_a" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#000000;fontColor=#000000;exitX=1;exitY=0.8;entryX=0;entryY=0.4;" target="mr_t" value="source">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mi_mr_t" edge="1" parent="1" source="mi_a" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#000000;fontColor=#000000;exitX=1;exitY=0.95;entryX=0;entryY=0.6;" target="mr_a" value="target">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
