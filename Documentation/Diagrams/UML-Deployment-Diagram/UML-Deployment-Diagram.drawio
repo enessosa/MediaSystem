@@ -1,0 +1,98 @@
+<mxfile host="Electron" agent="Claudian">
+  <diagram id="deployment-diagram" name="Deployment Diagram">
+    <mxGraphModel dx="2834" dy="1648" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n_client" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#6C8EBF,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«device»&#xa;User Device" vertex="1">
+          <mxGeometry height="235" width="290" x="-60" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="n_browser" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#6C8EBF,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«execution environment»&#xa;Web Browser" vertex="1">
+          <mxGeometry height="150" width="250" x="-35" y="235" as="geometry" />
+        </mxCell>
+        <mxCell id="a_spa" parent="1" style="shape=note;whiteSpace=wrap;html=1;verticalAlign=top;size=14;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#9673A6,#CCCCCC);fontColor=light-dark(#000000,#FFFFFF);" value="«artifact»&#xa;React SPA (running app)" vertex="1">
+          <mxGeometry height="70" width="200" x="-10" y="295" as="geometry" />
+        </mxCell>
+        <mxCell id="n_ci" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#666666,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«execution environment»&#xa;GitHub Actions (CI/CD)&#xa;build &amp; push Docker images" vertex="1">
+          <mxGeometry height="70" width="360" x="580" y="-40" as="geometry" />
+        </mxCell>
+        <mxCell id="n_server" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;align=left;spacingLeft=20;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#666666,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«device»&#xa;Self-hosted Server (Linux)" vertex="1">
+          <mxGeometry height="510" width="760" x="380" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="n_docker" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;align=left;spacingLeft=16;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#666666,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«execution environment»&#xa;Docker Engine · docker-compose" vertex="1">
+          <mxGeometry height="430" width="720" x="400" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="n_proxy" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#6C8EBF,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«container»&lt;br&gt;Reverse Proxy (nginx)&lt;br&gt;HTTPS / TLS termination" vertex="1">
+          <mxGeometry height="120" width="300" x="430" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="n_frontend" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#6C8EBF,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«container»&#xa;Frontend (nginx)" vertex="1">
+          <mxGeometry height="120" width="300" x="790" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="a_build" parent="1" style="shape=note;whiteSpace=wrap;html=1;verticalAlign=top;size=12;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#9673A6,#CCCCCC);fontColor=light-dark(#000000,#FFFFFF);" value="«artifact»&#xa;React build (static HTML/JS/CSS)" vertex="1">
+          <mxGeometry height="55" width="260" x="810" y="305" as="geometry" />
+        </mxCell>
+        <mxCell id="n_backend" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«container»&lt;br&gt;Backend (Spring Boot)" vertex="1">
+          <mxGeometry height="150" width="300" x="430" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="a_jar" parent="1" style="shape=note;whiteSpace=wrap;html=1;verticalAlign=top;size=12;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#9673A6,#CCCCCC);fontColor=light-dark(#000000,#FFFFFF);" value="«artifact»&#xa;mediasystem-backend.jar (REST API + Providers)" vertex="1">
+          <mxGeometry height="65" width="260" x="460" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="n_db" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«container»&lt;br&gt;Database (PostgreSQL)&lt;br&gt;Flyway migration" vertex="1">
+          <mxGeometry height="150" width="300" x="790" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="a_volume" parent="1" style="shape=note;whiteSpace=wrap;html=1;verticalAlign=top;size=12;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#9673A6,#CCCCCC);fontColor=light-dark(#000000,#FFFFFF);" value="«artifact»&#xa;Persistent volume (DB data)" vertex="1">
+          <mxGeometry height="60" width="260" x="820" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="n_providers" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;align=left;spacingLeft=16;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#666666,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«device»&#xa;External Providers (Internet)" vertex="1">
+          <mxGeometry height="420" width="370" x="1310" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="n_anilist" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«execution environment»&#xa;AniList API (GraphQL)" vertex="1">
+          <mxGeometry height="90" width="320" x="1340" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="n_tmdb" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«execution environment»&#xa;TMDB API (REST)" vertex="1">
+          <mxGeometry height="90" width="320" x="1340" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="n_openlib" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;verticalAlign=top;fillColor=light-dark(#000000,#000000);strokeColor=light-dark(#B85450,#FFFFFF);fontColor=light-dark(#000000,#FFFFFF);" value="«execution environment»&#xa;OpenLibrary API (REST)" vertex="1">
+          <mxGeometry height="90" width="320" x="1340" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="n_browser" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;rounded=0;fontColor=light-dark(#000000,#FFFFFF);" target="n_proxy" value="«HTTPS» TLS / 443">
+          <mxGeometry relative="1" x="-0.0017" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="n_proxy" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;rounded=0;fontColor=light-dark(#000000,#FFFFFF);" target="n_frontend" value="">
+          <mxGeometry relative="1" x="0.0196" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="n_proxy" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;rounded=0;fontColor=light-dark(#000000,#FFFFFF);exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="n_backend" value="HTTP (/api · REST/JSON)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="n_backend" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;rounded=0;fontColor=light-dark(#000000,#FFFFFF);" target="n_db" value="">
+          <mxGeometry relative="1" x="0.0196" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="n_backend" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;rounded=0;fontColor=light-dark(#000000,#FFFFFF);exitX=0;exitY=0;exitDx=160;exitDy=150;entryX=-0.001;entryY=0.847;entryDx=0;entryDy=0;entryPerimeter=0;exitPerimeter=0;" target="n_providers" value="«HTTPS» REST / GraphQL">
+          <mxGeometry relative="1" x="0.0012" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="590" y="586" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="n_ci" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;rounded=0;dashed=1;fontColor=light-dark(#000000,#FFFFFF);" target="n_docker" value="&lt;span style=&quot;background-color: light-dark(rgb(255, 255, 255), transparent);&quot;&gt;«deploy» images (registry / SSH)&lt;/span&gt;">
+          <mxGeometry relative="1" x="-0.0007" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1L12J93lMOWW7Xh2gRnd-1" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;font-size: 11px; white-space: nowrap; background-color: light-dark(rgb(18, 18, 18), transparent);&quot;&gt;HTTP (static assets)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="720" y="315" as="geometry" />
+        </mxCell>
+        <mxCell id="1L12J93lMOWW7Xh2gRnd-3" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;font-size: 11px; white-space: nowrap; background-color: light-dark(rgb(18, 18, 18), transparent);&quot;&gt;JDBC TCP&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="730" y="460" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

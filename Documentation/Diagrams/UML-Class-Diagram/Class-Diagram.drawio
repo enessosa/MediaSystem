@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Claudian">
   <diagram id="class-diagram" name="Klassendiagramm">
-    <mxGraphModel dx="771" dy="509" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="900" math="0" shadow="0">
+    <mxGraphModel dx="1607" dy="1060" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="900" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -82,8 +82,8 @@
         <mxCell id="srt_t" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" value="&amp;laquo;enumeration&amp;raquo;&#xa;SourceType" vertex="1">
           <mxGeometry height="40" width="180" x="1400" y="166" as="geometry" />
         </mxCell>
-        <mxCell id="srt_a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;spacingTop=4;" value="ANILIST&#xa;TMDB&#xa;OPENLIBRARY" vertex="1">
-          <mxGeometry height="64" width="180" x="1400" y="206" as="geometry" />
+        <mxCell id="srt_a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;spacingTop=4;" value="ANILIST&lt;br&gt;TMDB&lt;br&gt;OPENLIBRARY&lt;div&gt;MANUAL&lt;/div&gt;" vertex="1">
+          <mxGeometry height="74" width="180" x="1400" y="206" as="geometry" />
         </mxCell>
         <mxCell id="e_admin_user" edge="1" parent="1" source="ad_t" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;endSize=16;strokeColor=#000000;exitX=0.5;exitY=0;exitDx=0;exitDy=0;">
           <mxGeometry relative="1" as="geometry">

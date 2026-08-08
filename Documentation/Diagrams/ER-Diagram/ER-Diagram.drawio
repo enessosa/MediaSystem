@@ -19,8 +19,8 @@
         <mxCell id="ms_t" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" value="media_source" vertex="1">
           <mxGeometry height="30" width="280" x="900" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="ms_a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" value="PK  id : BIGINT&#xa;FK  media_item_id : BIGINT&#xa;U*  source_type : VARCHAR(20)&#xa;U*  external_id : VARCHAR(100)" vertex="1">
-          <mxGeometry height="80" width="280" x="900" y="90" as="geometry" />
+        <mxCell id="ms_a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" value="PK  id : BIGINT&lt;br&gt;FK  media_item_id : BIGINT&lt;br&gt;U*  source_type : VARCHAR(20)  [ANILIST/TMDB/OPENLIBRARY/MANUAL]&lt;br&gt;U*  external_id : VARCHAR(100) NULL  (when MANUAL = NULL)" vertex="1">
+          <mxGeometry height="110" width="280" x="900" y="90" as="geometry" />
         </mxCell>
         <mxCell id="ue_t" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" value="user_entry" vertex="1">
           <mxGeometry height="30" width="280" x="480" y="380" as="geometry" />
@@ -34,7 +34,7 @@
         <mxCell id="mr_a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" value="PK,FK  source_media_id : BIGINT&#xa;PK,FK  target_media_id : BIGINT&#xa;PK       relation_type : VARCHAR(30)" vertex="1">
           <mxGeometry height="62" width="280" x="900" y="390" as="geometry" />
         </mxCell>
-        <mxCell id="e_au_ue" edge="1" parent="1" source="au_a" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#000000;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" target="ue_a">
+        <mxCell id="e_au_ue" edge="1" parent="1" source="au_a" style="rounded=0;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#000000;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" target="ue_a">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e_mi_ue" edge="1" parent="1" source="mi_a" style="rounded=0;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#000000;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ue_t">
