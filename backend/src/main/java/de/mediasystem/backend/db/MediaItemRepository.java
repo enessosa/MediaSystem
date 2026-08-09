@@ -1,4 +1,7 @@
 package de.mediasystem.backend.db;
 
-public class MediaItemRepository {
+import de.mediasystem.backend.model.MediaItem;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MediaItemRepository extends JpaRepository<MediaItem, Long> {
 }
