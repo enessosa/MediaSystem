@@ -1,8 +1,5 @@
--- V1__init: Initiales Schema für MediaSystem (PostgreSQL).
--- Abgeleitet aus dem DB-Entwurf im Vault. Enums als VARCHAR + CHECK (JPA @Enumerated(STRING)),
--- IDs als IDENTITY, Zeitstempel als TIMESTAMPTZ.
+-- created this sql code with AI, while the previously from myself created ER-Diagram served as a template
 
--- Nutzer (Single-Table Inheritance: role = Diskriminator USER/ADMIN)
 CREATE TABLE app_user (
     id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     username      VARCHAR(50)  NOT NULL UNIQUE,
@@ -12,14 +9,12 @@ CREATE TABLE app_user (
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
--- Globale Konfiguration (u.a. das Signup-Codewort ab dem 11. Nutzer)
 CREATE TABLE app_setting (
     setting_key   VARCHAR(100) PRIMARY KEY,
     setting_value TEXT,
     updated_at    TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
--- Medium (nutzerübergreifend, zentral)
 CREATE TABLE media_item (
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     title        VARCHAR(500) NOT NULL,
@@ -30,8 +25,6 @@ CREATE TABLE media_item (
     media_type   VARCHAR(20)  NOT NULL CHECK (media_type IN ('ANIME', 'MANGA', 'BOOK', 'SERIES'))
 );
 
--- Herkunfts-Quelle(n) eines Mediums; Dedup-Ebene 1 über UNIQUE(source_type, external_id).
--- MANUAL-Items haben external_id = NULL (mehrere sind erlaubt, da NULLs im UNIQUE als verschieden gelten).
 CREATE TABLE media_source (
     id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     media_item_id BIGINT       NOT NULL REFERENCES media_item (id) ON DELETE CASCADE,
@@ -43,7 +36,6 @@ CREATE TABLE media_source (
 
 CREATE INDEX idx_media_source_media_item ON media_source (media_item_id);
 
--- Persönliche Liste: Verknüpfung User <-> MediaItem; Dedup-Ebene 2 über UNIQUE(user_id, media_item_id).
 CREATE TABLE user_entry (
     id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id       BIGINT       NOT NULL REFERENCES app_user (id) ON DELETE CASCADE,
@@ -58,7 +50,6 @@ CREATE TABLE user_entry (
 CREATE INDEX idx_user_entry_user       ON user_entry (user_id);
 CREATE INDEX idx_user_entry_media_item ON user_entry (media_item_id);
 
--- Selbstreferenzielle M:N-Beziehung zwischen Medien (Franchise-Graph, v.a. AniList).
 CREATE TABLE media_item_relation (
     source_media_id BIGINT      NOT NULL REFERENCES media_item (id) ON DELETE CASCADE,
     target_media_id BIGINT      NOT NULL REFERENCES media_item (id) ON DELETE CASCADE,
