@@ -29,6 +29,21 @@ jobs:
       run:
         working-directory: backend
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: mediasystem
+          POSTGRES_USER: mediasystem
+          POSTGRES_PASSWORD: mediasystem
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U mediasystem"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,6 +56,10 @@ jobs:
           cache: maven
 
       - name: Build & test
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/mediasystem
+          DB_USERNAME: mediasystem
+          DB_PASSWORD: mediasystem
         run: ./mvnw -B --no-transfer-progress verify
 
       - name: Upload test reports
