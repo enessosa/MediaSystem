@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
@@ -14,9 +16,9 @@ public class SecurityConfig {
 
     /**
      * hier kommen die Security Regeln rein.
-     * @param http
-     * @return
-     * @throws Exception
+     * @param http wird von Spring boot erstellt und der methode ohne aufruf übergeben.
+     * @return gibt eine liste an Filtern zurück, die angewandt werden soll
+     * @throws Exception wegen der API ist es nötig ohne weitere Konkretisierung eine generelle Exception zu werfen.
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -25,5 +27,15 @@ public class SecurityConfig {
             auth.anyRequest().authenticated();
         });
         return http.build();
+    }
+
+    /**
+     * diese Methode stellt den zentralen Password-Hasher als bean bereit. wird dann zu mHashen beim registrieren  und
+     * login benutzt.
+     * @return das hasher objekt
+     */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
