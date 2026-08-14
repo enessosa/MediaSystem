@@ -106,6 +106,18 @@ class AuthServiceTest {
     }
 
     @Test
+    void register_atCap_withNoCodewordConfigured_throwsAndDoesNotSave() {
+        when(userRepository.count()).thenReturn(10L);
+        when(appSettingRepository.findById(CODEWORD_SETTING_KEY)).thenReturn(Optional.empty());
+
+        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", "geheim");
+
+        assertThatExceptionOfType(InvalidCodewordException.class)
+                .isThrownBy(() -> authService.register(request));
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
     void register_usernameAlreadyTaken_throwsAndDoesNotSave() {
         when(userRepository.count()).thenReturn(0L);
         when(userRepository.existsByUsername("newuser")).thenReturn(true);
