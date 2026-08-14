@@ -5,7 +5,9 @@ import de.mediasystem.backend.db.AppSettingRepository;
 import de.mediasystem.backend.db.UserRepository;
 import de.mediasystem.backend.model.AppSetting;
 import de.mediasystem.backend.model.roles.User;
+import de.mediasystem.backend.service.exception.EmailAlreadyExistsException;
 import de.mediasystem.backend.service.exception.InvalidCodewordException;
+import de.mediasystem.backend.service.exception.UsernameAlreadyExistsException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -99,6 +101,31 @@ class AuthServiceTest {
         RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
 
         assertThatExceptionOfType(InvalidCodewordException.class)
+                .isThrownBy(() -> authService.register(request));
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void register_usernameAlreadyTaken_throwsAndDoesNotSave() {
+        when(userRepository.count()).thenReturn(0L);
+        when(userRepository.existsByUsername("newuser")).thenReturn(true);
+
+        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
+
+        assertThatExceptionOfType(UsernameAlreadyExistsException.class)
+                .isThrownBy(() -> authService.register(request));
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void register_emailAlreadyTaken_throwsAndDoesNotSave() {
+        when(userRepository.count()).thenReturn(0L);
+        when(userRepository.existsByUsername("newuser")).thenReturn(false);
+        when(userRepository.existsByEmail("new@test.de")).thenReturn(true);
+
+        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
+
+        assertThatExceptionOfType(EmailAlreadyExistsException.class)
                 .isThrownBy(() -> authService.register(request));
         verify(userRepository, never()).save(any());
     }
