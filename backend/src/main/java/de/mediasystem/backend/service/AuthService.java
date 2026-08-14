@@ -40,9 +40,9 @@ public class AuthService {
             }
         }
         if (userRepository.existsByEmail(request.email())) {
-            throw new EmailAlreadyExistsException();
+            throw new EmailAlreadyExistsException("E-Mail is already Registered");
         } else if (userRepository.existsByUsername(request.username())) {
-            throw new UsernameAlreadyExistsException();
+            throw new UsernameAlreadyExistsException("Username is already registered");
         }
 
         User user = new User();
