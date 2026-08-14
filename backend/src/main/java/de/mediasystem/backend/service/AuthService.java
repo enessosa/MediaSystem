@@ -5,6 +5,7 @@ import de.mediasystem.backend.db.AppSettingRepository;
 import de.mediasystem.backend.db.UserRepository;
 import de.mediasystem.backend.model.AppSetting;
 import de.mediasystem.backend.model.roles.User;
+import de.mediasystem.backend.service.exception.CodewordNotConfiguredException;
 import de.mediasystem.backend.service.exception.EmailAlreadyExistsException;
 import de.mediasystem.backend.service.exception.InvalidCodewordException;
 import de.mediasystem.backend.service.exception.UsernameAlreadyExistsException;
@@ -33,7 +34,7 @@ public class AuthService {
         if (userRepository.count() >= 10) {
             AppSetting appSetting = appSettingRepository.findById("signup_codeword")
                     // Intellij meinte ich soll das mit :: machen anstatt lambda.
-                    .orElseThrow(InvalidCodewordException::new);
+                    .orElseThrow(CodewordNotConfiguredException::new);
             if (!Objects.equals(request.codeword(),
                     appSetting.getValue())) {
                 throw new InvalidCodewordException();

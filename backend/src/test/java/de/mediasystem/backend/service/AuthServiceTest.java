@@ -5,6 +5,7 @@ import de.mediasystem.backend.db.AppSettingRepository;
 import de.mediasystem.backend.db.UserRepository;
 import de.mediasystem.backend.model.AppSetting;
 import de.mediasystem.backend.model.roles.User;
+import de.mediasystem.backend.service.exception.CodewordNotConfiguredException;
 import de.mediasystem.backend.service.exception.EmailAlreadyExistsException;
 import de.mediasystem.backend.service.exception.InvalidCodewordException;
 import de.mediasystem.backend.service.exception.UsernameAlreadyExistsException;
@@ -112,7 +113,7 @@ class AuthServiceTest {
 
         RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", "geheim");
 
-        assertThatExceptionOfType(InvalidCodewordException.class)
+        assertThatExceptionOfType(CodewordNotConfiguredException.class)
                 .isThrownBy(() -> authService.register(request));
         verify(userRepository, never()).save(any());
     }
