@@ -26,6 +26,9 @@ public class SecurityConfig {
             auth.requestMatchers("/auth/**", "/error").permitAll();
             auth.anyRequest().authenticated();
         });
+        http.csrf(customizer -> {
+            customizer.ignoringRequestMatchers("/auth/**");
+        });
         return http.build();
     }
 
