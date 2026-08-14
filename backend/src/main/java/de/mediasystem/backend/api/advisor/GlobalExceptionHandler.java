@@ -1,0 +1,35 @@
+package de.mediasystem.backend.api.advisor;
+
+import de.mediasystem.backend.service.exception.CodewordNotConfiguredException;
+import de.mediasystem.backend.service.exception.EmailAlreadyExistsException;
+import de.mediasystem.backend.service.exception.UsernameAlreadyExistsException;
+import lombok.NonNull;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import de.mediasystem.backend.service.exception.InvalidCodewordException;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(InvalidCodewordException.class)
+    public ResponseEntity<@NonNull String> handleInvalidCodeword(InvalidCodewordException e) {
+        return ResponseEntity.status(400).body(e.getMessage());
+    }
+
+    @ExceptionHandler(CodewordNotConfiguredException.class)
+    public ResponseEntity<@NonNull String> handleCodewordNotConfigured(CodewordNotConfiguredException e) {
+        return ResponseEntity.status(500).body(e.getMessage());
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<@NonNull String> handleEmailAlreadyExists(EmailAlreadyExistsException e) {
+        return ResponseEntity.status(409).body(e.getMessage());
+    }
+
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<@NonNull String> handleUsernameAlreadyExists(UsernameAlreadyExistsException e) {
+        return ResponseEntity.status(409).body(e.getMessage());
+    }
+
+}
