@@ -5,7 +5,10 @@ import de.mediasystem.backend.db.AppSettingRepository;
 import de.mediasystem.backend.db.UserRepository;
 import de.mediasystem.backend.model.AppSetting;
 import de.mediasystem.backend.model.roles.User;
+import de.mediasystem.backend.service.exception.EmailAlreadyExistsException;
 import de.mediasystem.backend.service.exception.InvalidCodewordException;
+import de.mediasystem.backend.service.exception.UsernameAlreadyExistsException;
+import jakarta.validation.constraints.Email;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +39,12 @@ public class AuthService {
                 throw new InvalidCodewordException();
             }
         }
+        if (userRepository.existsByEmail(request.email())) {
+            throw new EmailAlreadyExistsException();
+        } else if (userRepository.existsByUsername(request.username())) {
+            throw new UsernameAlreadyExistsException();
+        }
+
         User user = new User();
         user.setUsername(request.username());
         user.setEmail(request.email());

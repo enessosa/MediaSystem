@@ -120,7 +120,6 @@ class AuthServiceTest {
     @Test
     void register_emailAlreadyTaken_throwsAndDoesNotSave() {
         when(userRepository.count()).thenReturn(0L);
-        when(userRepository.existsByUsername("newuser")).thenReturn(false);
         when(userRepository.existsByEmail("new@test.de")).thenReturn(true);
 
         RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
