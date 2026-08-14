@@ -21,7 +21,7 @@ This is primarily a **learning project**. The goal isn't just to ship a feature-
 
 ## Project Status
 
-Early stage, actively in development. Architecture decisions are tracked as ADRs in [`Documentation/ADRs`](Documentation/ADRs), and ongoing progress is logged in [`PROGRESS.md`](PROGRESS.md).
+Early stage, actively in development. Architecture decisions are tracked as ADRs in [`Documentation/ADRs`](Documentation/ADRs).
 
 ## Planning & Design
 
