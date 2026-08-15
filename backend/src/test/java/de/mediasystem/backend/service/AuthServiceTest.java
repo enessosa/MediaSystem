@@ -1,5 +1,6 @@
 package de.mediasystem.backend.service;
 
+import de.mediasystem.backend.api.dto.LoginRequest;
 import de.mediasystem.backend.api.dto.RegisterRequest;
 import de.mediasystem.backend.db.AppSettingRepository;
 import de.mediasystem.backend.db.UserRepository;
@@ -15,6 +16,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -22,6 +26,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +44,9 @@ class AuthServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private AuthenticationManager authenticationManager;
 
     @InjectMocks
     private AuthService authService;
@@ -156,5 +164,21 @@ class AuthServiceTest {
         assertThat(savedUser.getValue().getPasswordHash())
                 .isEqualTo("hashed-password")
                 .isNotEqualTo("rawPassword");
+    }
+
+    @Test
+    void login_delegatesToAuthenticationManager_andReturnsItsResult() {
+        Authentication expectedAuthentication = mock(Authentication.class);
+        ArgumentCaptor<UsernamePasswordAuthenticationToken> tokenCaptor =
+                ArgumentCaptor.forClass(UsernamePasswordAuthenticationToken.class);
+        when(authenticationManager.authenticate(tokenCaptor.capture())).thenReturn(expectedAuthentication);
+
+        LoginRequest request = new LoginRequest("testuser", "rawPassword");
+
+        Authentication result = authService.login(request);
+
+        assertThat(result).isEqualTo(expectedAuthentication);
+        assertThat(tokenCaptor.getValue().getPrincipal()).isEqualTo("testuser");
+        assertThat(tokenCaptor.getValue().getCredentials()).isEqualTo("rawPassword");
     }
 }

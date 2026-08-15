@@ -43,6 +43,21 @@ class AppUserDetailsServiceTest {
     }
 
     @Test
+    void loadUserByUsername_mapsExistingUserToUserDetails_whenFoundByEmail() {
+        User user = new User();
+        user.setUsername("testuser");
+        user.setPasswordHash("hashed-password");
+
+        when(userRepository.findByUsername("test@user.de")).thenReturn(Optional.empty());
+        when(userRepository.findByEmail("test@user.de")).thenReturn(Optional.of(user));
+
+        UserDetails result = appUserDetailsService.loadUserByUsername("test@user.de");
+
+        assertThat(result.getUsername()).isEqualTo("testuser");
+        assertThat(result.getPassword()).isEqualTo("hashed-password");
+    }
+
+    @Test
     void loadUserByUsername_throwsWhenUserNotFound() {
         when(userRepository.findByUsername("ghost")).thenReturn(Optional.empty());
 
