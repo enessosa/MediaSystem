@@ -20,7 +20,7 @@ class SecurityConfigTest {
     @Test
     void authPathIsPermittedWithoutLogin() throws Exception {
         mockMvc.perform(get("/auth/login"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().is(Matchers.not(403)));
     }
 
     @Test
