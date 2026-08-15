@@ -35,6 +35,7 @@ public class AppUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
+                .or(() -> userRepository.findByEmail(username))
                 .orElseThrow(() -> new UsernameNotFoundException(username));
         // hier ganzer pfad um klar zu machen dass es nicht das gleiceh ist  wie roles.User
         return org.springframework.security.core.userdetails.User.builder()
@@ -43,4 +44,5 @@ public class AppUserDetailsService implements UserDetailsService {
                 .roles("USER")
                 .build();
     }
+
 }
