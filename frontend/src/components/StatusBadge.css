@@ -1,0 +1,30 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.status-badge--watching {
+  color: #0f7b3f;
+  background: rgba(15, 123, 63, 0.12);
+}
+
+.status-badge--completed {
+  color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.status-badge--planned {
+  color: #9a7b1f;
+  background: rgba(154, 123, 31, 0.14);
+}
+
+.status-badge--dropped {
+  color: #e5484d;
+  background: rgba(229, 72, 77, 0.12);
+}

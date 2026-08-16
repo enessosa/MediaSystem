@@ -1,4 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import Icon from '../components/Icon'
 import './AppLayout.css'
 
 const navItems = [
@@ -10,11 +12,12 @@ const navItems = [
 
 function AppLayout() {
   const navigate = useNavigate()
+  const { logout } = useAuth()
 
   // logout = Header-Aktion, keine eigene Scene
   function handleLogout() {
-    // TODO: Token/Session löschen, dann zur Login-Scene
-    navigate('/login')
+    logout()
+    navigate('/login', { replace: true })
   }
 
   return (
@@ -40,6 +43,10 @@ function AppLayout() {
         </nav>
 
         <div className="app-header__actions">
+          <NavLink to="/create" className="btn btn--primary app-header__create">
+            <Icon name="plus" size={16} />
+            Anlegen
+          </NavLink>
           <NavLink to="/profile" className="app-nav__link">
             Profil
           </NavLink>
@@ -47,7 +54,7 @@ function AppLayout() {
             Einstellungen
           </NavLink>
           <button type="button" className="btn" onClick={handleLogout}>
-            Logout
+            <Icon name="logout" size={16} />
           </button>
         </div>
       </header>

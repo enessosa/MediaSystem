@@ -48,6 +48,13 @@
   background: var(--accent-bg);
 }
 
+.app-header__create {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
 .app-main {
   flex: 1;
   width: 100%;

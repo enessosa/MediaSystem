@@ -1,13 +1,18 @@
 import { Link } from 'react-router-dom'
+import EmptyState from '../components/EmptyState'
 
 function NotFoundPage() {
   return (
-    <div style={{ textAlign: 'center', padding: '80px 24px' }}>
-      <h1>404</h1>
-      <p style={{ margin: '12px 0 24px' }}>Diese Seite gibt es nicht.</p>
-      <Link to="/" className="btn btn--primary">
-        Zum Dashboard
-      </Link>
+    <div style={{ padding: '80px 24px' }}>
+      <EmptyState
+        icon="search"
+        title="404 – Diese Seite gibt es nicht"
+        action={
+          <Link to="/" className="btn btn--primary" style={{ marginTop: 8 }}>
+            Zum Dashboard
+          </Link>
+        }
+      />
     </div>
   )
 }

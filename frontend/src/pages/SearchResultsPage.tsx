@@ -1,59 +1,91 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { CATALOG } from '../data/catalog'
+import { useLibrary } from '../context/LibraryContext'
+import type { CatalogItem } from '../types/media'
+import MediaCard from '../components/MediaCard'
+import AddToListModal from '../components/AddToListModal'
+import EmptyState from '../components/EmptyState'
 
 function SearchResultsPage() {
-  // Add-to-List-Modal = State über dieser Scene, kein eigener Screen
-  const [modalOpen, setModalOpen] = useState(false)
+  const [searchParams] = useSearchParams()
+  const query = searchParams.get('q')?.trim() ?? ''
+  const { getEntryByItemId } = useLibrary()
+
+  // Simuliert Treffer aus den Provider-APIs, bis der echte Such-Endpoint steht (AniListProvider ist backend-seitig schon fertig).
+  const results = useMemo(
+    () =>
+      query
+        ? CATALOG.filter((item) => item.title.toLowerCase().includes(query.toLowerCase()))
+        : CATALOG,
+    [query],
+  )
+
+  const [selectedItem, setSelectedItem] = useState<CatalogItem | null>(null)
 
   return (
     <div>
       <h1>Suchergebnisse</h1>
-      {/* States dieser Scene: Rate Limit / API down / keine Treffer */}
-      <p style={{ marginTop: 8 }}>Treffer aus den Provider-APIs.</p>
+      <p style={{ marginTop: 8 }}>
+        {query ? (
+          <>
+            Treffer für <strong>„{query}“</strong>
+          </>
+        ) : (
+          'Treffer aus den Provider-APIs.'
+        )}
+      </p>
 
-      <div
-        style={{
-          marginTop: 24,
-          display: 'grid',
-          gap: 16,
-          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-        }}
-      >
-        <div className="card">
-          <h3>Beispiel-Treffer</h3>
-          <button
-            type="button"
-            className="btn btn--primary"
-            style={{ marginTop: 12 }}
-            onClick={() => setModalOpen(true)}
-          >
-            Zur Liste hinzufügen
-          </button>
+      {results.length === 0 ? (
+        <div style={{ marginTop: 24 }}>
+          <EmptyState
+            icon="search"
+            title="Keine Treffer"
+            description="Versuch einen anderen Suchbegriff."
+            action={
+              <Link to="/search" className="btn" style={{ marginTop: 8 }}>
+                Neue Suche
+              </Link>
+            }
+          />
         </div>
-      </div>
-
-      {modalOpen && (
-        <div className="modal-overlay" onClick={() => setModalOpen(false)}>
-          <div
-            className="card modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2>Zur Liste hinzufügen</h2>
-            <p style={{ margin: '12px 0' }}>Status wählen, dann speichern.</p>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button
-                type="button"
-                className="btn"
-                onClick={() => setModalOpen(false)}
-              >
-                Abbrechen
-              </button>
-              <button type="button" className="btn btn--primary">
-                Hinzufügen
-              </button>
-            </div>
-          </div>
+      ) : (
+        <div
+          style={{
+            marginTop: 24,
+            display: 'grid',
+            gap: 16,
+            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+          }}
+        >
+          {results.map((item) => {
+            const existingEntry = getEntryByItemId(item.id)
+            return (
+              <MediaCard
+                key={item.id}
+                item={item}
+                status={existingEntry?.status}
+                action={
+                  existingEntry ? (
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Schon in deiner Liste</span>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn--primary"
+                      style={{ width: '100%' }}
+                      onClick={() => setSelectedItem(item)}
+                    >
+                      Zur Liste hinzufügen
+                    </button>
+                  )
+                }
+              />
+            )
+          })}
         </div>
       )}
+
+      {selectedItem && <AddToListModal item={selectedItem} onClose={() => setSelectedItem(null)} />}
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import AuthLayout from './layouts/AuthLayout'
 import AppLayout from './layouts/AppLayout'
+import RequireAuth from './components/RequireAuth'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
@@ -23,17 +24,19 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
       </Route>
 
-      {/* Eingeloggte Scenes: gemeinsamer Header + Navigation */}
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/watchlists" element={<WatchlistsPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/search/results" element={<SearchResultsPage />} />
-        <Route path="/discovery" element={<DiscoveryPage />} />
-        <Route path="/media/:id" element={<MediaDetailPage />} />
-        <Route path="/create" element={<CreateItemPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/settings" element={<SettingsPage />} />
+      {/* Eingeloggte Scenes: gemeinsamer Header + Navigation, nur mit Session erreichbar */}
+      <Route element={<RequireAuth />}>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/watchlists" element={<WatchlistsPage />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/search/results" element={<SearchResultsPage />} />
+          <Route path="/discovery" element={<DiscoveryPage />} />
+          <Route path="/media/:id" element={<MediaDetailPage />} />
+          <Route path="/create" element={<CreateItemPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+        </Route>
       </Route>
 
       {/* Fallback: unbekannte URL */}

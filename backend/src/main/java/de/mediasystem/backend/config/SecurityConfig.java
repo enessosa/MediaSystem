@@ -12,6 +12,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @EnableWebSecurity
 @Configuration
@@ -33,7 +38,25 @@ public class SecurityConfig {
         http.csrf(customizer -> {
             customizer.ignoringRequestMatchers("/auth/**");
         });
+        http.cors(customizer -> customizer.configurationSource(corsConfigurationSource()));
         return http.build();
+    }
+
+    /**
+     * Erlaubt Cross-Origin-Anfragen vom Frontend (Vite-Dev-Server, anderer Origin/Port als das Backend).
+     * allowCredentials ist nötig, damit das Session-Cookie (ADR-005) bei den Anfragen mitgeschickt wird.
+     * @return die CORS-Regeln für alle Endpunkte
+     */
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     /**
