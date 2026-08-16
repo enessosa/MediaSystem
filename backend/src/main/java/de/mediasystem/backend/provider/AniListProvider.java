@@ -14,6 +14,43 @@ public class AniListProvider implements Provider {
 
     private final RestClient restClient;
 
+    private static final String QUERY = """
+            query ($search: String) {
+                Page(page: 1, perPage: 10) {
+                    media(search: $search) {
+                        id
+                        type
+                        title {
+                            romaji
+                            english
+                        }
+                        description
+                        startDate {
+                            year
+                        }
+                        coverImage {
+                            large
+                        }
+                        staff(sort: RELEVANCE, perPage: 5) {
+                            edges {
+                                role
+                                node {
+                                    name {
+                                        full
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            """;
+
+    public record AniListSearchRequest(String query, Variables variables) {
+
+        public record Variables(String search) { }
+    }
+
     public AniListProvider(RestClient restclient) {
         this.restClient = restclient;
     }
