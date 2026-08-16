@@ -15,14 +15,16 @@ import de.mediasystem.backend.provider.AniListSearchResponse.StaffNode;
 import de.mediasystem.backend.provider.AniListSearchResponse.StartDate;
 import de.mediasystem.backend.provider.AniListSearchResponse.Title;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.client.RestClient;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 class AniListProviderTest {
 
-    private final AniListProvider aniListProvider = new AniListProvider();
+    private final AniListProvider aniListProvider = new AniListProvider(mock(RestClient.class));
 
     @Test
     void mapToMediaItems_mapsSingleMangaWithCreator() {

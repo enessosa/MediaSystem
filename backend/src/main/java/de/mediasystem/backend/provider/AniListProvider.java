@@ -4,12 +4,19 @@ import de.mediasystem.backend.model.MediaItem;
 import de.mediasystem.backend.model.MediaType;
 import de.mediasystem.backend.model.Source;
 import de.mediasystem.backend.model.SourceType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import java.util.*;
 
-
+@Service
 public class AniListProvider implements Provider {
 
+    private final RestClient restClient;
+
+    public AniListProvider(RestClient restclient) {
+        this.restClient = restclient;
+    }
 
     @Override
     public List<MediaItem> searchMedia(String search) {
