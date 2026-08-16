@@ -1,7 +1,12 @@
 package de.mediasystem.backend.provider;
 
 import de.mediasystem.backend.model.MediaItem;
-import java.util.List;
+import de.mediasystem.backend.model.MediaType;
+import de.mediasystem.backend.model.Source;
+import de.mediasystem.backend.model.SourceType;
+
+import java.util.*;
+
 
 public class AniListProvider implements Provider {
 
@@ -14,5 +19,51 @@ public class AniListProvider implements Provider {
     @Override
     public MediaItem fetchById(String id) {
         return null;
+    }
+
+    /**
+     * mapps the Result of the GraphQL query to the Items.
+     * @param response is the response to the query.
+     * @return a list of the items
+     */
+    public List<MediaItem> mapToMediaItems(AniListSearchResponse response) {
+        List<MediaItem> result = new ArrayList<>();
+        for (AniListSearchResponse.Media media : response.data().Page().media()) {
+            MediaItem item = new MediaItem();
+            // map title
+            String title = media.title().romaji() != null ? media.title().romaji() : media.title().english();
+            item.setTitle(title);
+            // map description
+            String description = media.description();
+            item.setDescription(description);
+            // map releaseYear
+            Integer year =  media.startDate().year();
+            item.setReleaseYear(year);
+            // map type
+            MediaType type = MediaType.valueOf(media.type());
+            item.setMediaType(type);
+            // map creator
+            String creator;
+            if (media.staff() != null && !media.staff().edges().isEmpty()) {
+                creator = media.staff().edges().getFirst().node().name().full();
+            } else {
+                creator = null;
+            }
+            item.setCreator(creator);
+            // map CoverUrl
+            String coverUrl = media.coverImage().large();
+            item.setCoverUrl(coverUrl);
+            // map source
+            Source source = new Source();
+            source.setExternalId(media.id().toString());
+            source.setMediaItem(item);
+            source.setSourceType(SourceType.ANILIST);
+            // get source Set
+            Set<Source> sources =  item.getSources();
+            sources.add(source);
+            // add to list
+            result.add(item);
+        }
+        return result;
     }
 }
