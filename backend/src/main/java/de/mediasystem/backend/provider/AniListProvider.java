@@ -46,10 +46,7 @@ public class AniListProvider implements Provider {
             }
             """;
 
-    public record AniListSearchRequest(String query, Variables variables) {
 
-        public record Variables(String search) { }
-    }
 
     public AniListProvider(RestClient restclient) {
         this.restClient = restclient;
@@ -57,7 +54,12 @@ public class AniListProvider implements Provider {
 
     @Override
     public List<MediaItem> searchMedia(String search) {
-        return List.of();
+        AniListSearchRequest request = new AniListSearchRequest(QUERY, new AniListSearchRequest.Variables(search));
+        AniListSearchResponse response = restClient.post()
+                .body(request)
+                .retrieve()
+                .body(AniListSearchResponse.class);
+        return mapToMediaItems(response);
     }
 
     @Override
