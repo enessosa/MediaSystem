@@ -12,6 +12,8 @@ export interface CatalogItem {
   mediaType: MediaType
   creator: string | null
   coverColor: string
+  /** Echtes Cover-Bild (kommt aus der Provider-API); wenn gesetzt, hat es Vorrang vor coverColor. */
+  coverUrl?: string
 }
 
 export interface LibraryEntry {

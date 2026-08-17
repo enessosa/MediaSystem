@@ -1,25 +1,63 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { CATALOG } from '../data/catalog'
+import { searchMedia, type MediaSearchResult } from '../api/media'
+import { ApiError } from '../api/client'
 import { useLibrary } from '../context/LibraryContext'
 import type { CatalogItem } from '../types/media'
 import MediaCard from '../components/MediaCard'
 import AddToListModal from '../components/AddToListModal'
 import EmptyState from '../components/EmptyState'
 
+function toCatalogItem(result: MediaSearchResult): CatalogItem {
+  return {
+    id: `${result.sourceType.toLowerCase()}-${result.externalId}`,
+    title: result.title,
+    description: result.description,
+    releaseYear: result.releaseYear,
+    mediaType: result.mediaType,
+    creator: result.creator,
+    coverColor: '#3f5e6b',
+    coverUrl: result.coverUrl,
+  }
+}
+
 function SearchResultsPage() {
   const [searchParams] = useSearchParams()
   const query = searchParams.get('q')?.trim() ?? ''
   const { getEntryByItemId } = useLibrary()
 
-  // Simuliert Treffer aus den Provider-APIs, bis der echte Such-Endpoint steht (AniListProvider ist backend-seitig schon fertig).
-  const results = useMemo(
-    () =>
-      query
-        ? CATALOG.filter((item) => item.title.toLowerCase().includes(query.toLowerCase()))
-        : CATALOG,
-    [query],
-  )
+  const [results, setResults] = useState<CatalogItem[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!query) {
+      setResults([])
+      setError(null)
+      return
+    }
+
+    let cancelled = false
+    setIsLoading(true)
+    setError(null)
+
+    searchMedia(query)
+      .then((data) => {
+        if (!cancelled) setResults(data.map(toCatalogItem))
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof ApiError ? err.message : 'Suche fehlgeschlagen. Versuch es erneut.')
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [query])
 
   const [selectedItem, setSelectedItem] = useState<CatalogItem | null>(null)
 
@@ -32,11 +70,28 @@ function SearchResultsPage() {
             Treffer für <strong>„{query}“</strong>
           </>
         ) : (
-          'Treffer aus den Provider-APIs.'
+          'Gib oben einen Suchbegriff ein.'
         )}
       </p>
 
-      {results.length === 0 ? (
+      {isLoading && <p style={{ marginTop: 24 }}>Suche läuft…</p>}
+
+      {error && (
+        <div style={{ marginTop: 24 }}>
+          <EmptyState
+            icon="search"
+            title="Suche fehlgeschlagen"
+            description={error}
+            action={
+              <Link to="/search" className="btn" style={{ marginTop: 8 }}>
+                Neue Suche
+              </Link>
+            }
+          />
+        </div>
+      )}
+
+      {!isLoading && !error && query && results.length === 0 && (
         <div style={{ marginTop: 24 }}>
           <EmptyState
             icon="search"
@@ -49,7 +104,9 @@ function SearchResultsPage() {
             }
           />
         </div>
-      ) : (
+      )}
+
+      {!isLoading && !error && results.length > 0 && (
         <div
           style={{
             marginTop: 24,

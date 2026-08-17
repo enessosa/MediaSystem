@@ -22,8 +22,16 @@ interface MediaCardProps {
 function MediaCard({ item, status, rating, action }: MediaCardProps) {
   return (
     <div className="media-card">
-      <Link to={`/media/${item.id}`} className="media-card__cover" style={{ background: item.coverColor }}>
-        <Icon name={TYPE_ICON[item.mediaType]} size={28} className="media-card__cover-icon" />
+      <Link
+        to={`/media/${item.id}`}
+        className="media-card__cover"
+        style={item.coverUrl ? undefined : { background: item.coverColor }}
+      >
+        {item.coverUrl ? (
+          <img src={item.coverUrl} alt="" className="media-card__cover-img" />
+        ) : (
+          <Icon name={TYPE_ICON[item.mediaType]} size={28} className="media-card__cover-icon" />
+        )}
         {status && <StatusBadge status={status} />}
       </Link>
 
