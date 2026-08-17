@@ -17,7 +17,7 @@ public class AniListProvider implements Provider {
     private static final String QUERY = """
             query ($search: String) {
                 Page(page: 1, perPage: 10) {
-                    media(search: $search) {
+                    media(search: $search, isAdult: false) {
                         id
                         type
                         title {
