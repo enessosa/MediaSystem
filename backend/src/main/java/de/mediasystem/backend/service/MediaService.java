@@ -19,9 +19,14 @@ public class MediaService {
         this.provider = provider;
     }
 
+    /**
+     * this method converts search results into a record class to prepare the data that is send to the frontend.
+     * @param query is the query for the search
+     * @return the converted Record class wrapped  in a list.
+     */
     public List<MediaSearchResult> searchMedia(String query) {
         List<MediaItem> results = provider.searchMedia(query);
-        List<MediaSearchResult> converted = new ArrayList<MediaSearchResult>();
+        List<MediaSearchResult> converted = new ArrayList<>();
         for (MediaItem item : results) {
             Source source = item.getSources().iterator().next();
             MediaSearchResult searchResult = new MediaSearchResult(
