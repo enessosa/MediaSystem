@@ -1,20 +1,28 @@
 package de.mediasystem.backend.service;
 
 import de.mediasystem.backend.api.dto.MediaSearchResult;
+import de.mediasystem.backend.db.MediaItemRepository;
+import de.mediasystem.backend.db.SourceRepository;
+import de.mediasystem.backend.db.UserEntryRepository;
 import de.mediasystem.backend.model.MediaItem;
 import de.mediasystem.backend.model.MediaType;
 import de.mediasystem.backend.model.Source;
 import de.mediasystem.backend.model.SourceType;
+import de.mediasystem.backend.model.Status;
+import de.mediasystem.backend.model.UserEntry;
 import de.mediasystem.backend.provider.Provider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,6 +30,15 @@ class MediaServiceTest {
 
     @Mock
     private Provider provider;
+
+    @Mock
+    private MediaItemRepository mediaItemRepository;
+
+    @Mock
+    private SourceRepository sourceRepository;
+
+    @Mock
+    private UserEntryRepository userEntryRepository;
 
     @InjectMocks
     private MediaService mediaService;
@@ -65,5 +82,41 @@ class MediaServiceTest {
         List<MediaSearchResult> result = mediaService.searchMedia("nothing");
 
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void addToUserList_newExternalMedia_createsMediaItemAndUserEntry() {
+        MediaSearchResult data = new MediaSearchResult(
+                "Naruto",
+                "Ein Manga über einen Ninja.",
+                1999,
+                MediaType.MANGA,
+                "Masashi Kishimoto",
+                "https://example.org/cover.jpg",
+                SourceType.ANILIST,
+                "1"
+        );
+        Long userId = 1L;
+
+        when(sourceRepository.findBySourceTypeAndExternalId(SourceType.ANILIST, "1"))
+                .thenReturn(Optional.empty());
+        when(mediaItemRepository.save(any(MediaItem.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(userEntryRepository.existsByUserIdAndMediaItemId(any(), any()))
+                .thenReturn(false);
+        ArgumentCaptor<UserEntry> savedEntry = ArgumentCaptor.forClass(UserEntry.class);
+        when(userEntryRepository.save(savedEntry.capture()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        mediaService.addToUserList(data, userId);
+
+        UserEntry result = savedEntry.getValue();
+        assertThat(result.getStatus()).isEqualTo(Status.PLANNED);
+        assertThat(result.getMediaItem().getTitle()).isEqualTo("Naruto");
+        assertThat(result.getMediaItem().getDescription()).isEqualTo("Ein Manga über einen Ninja.");
+        assertThat(result.getMediaItem().getReleaseYear()).isEqualTo(1999);
+        assertThat(result.getMediaItem().getMediaType()).isEqualTo(MediaType.MANGA);
+        assertThat(result.getMediaItem().getCreator()).isEqualTo("Masashi Kishimoto");
+        assertThat(result.getMediaItem().getCoverUrl()).isEqualTo("https://example.org/cover.jpg");
     }
 }
