@@ -2,6 +2,7 @@ package de.mediasystem.backend.api;
 
 import de.mediasystem.backend.api.dto.MediaSearchResult;
 import de.mediasystem.backend.service.MediaService;
+import lombok.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +20,7 @@ public class MediaController {
     }
 
     @GetMapping("/media/search")
-    public ResponseEntity<List<MediaSearchResult>> searchResult(@RequestParam String q) {
+    public ResponseEntity<@NonNull List<MediaSearchResult>> searchResult(@RequestParam String q) {
         return ResponseEntity.ok(mediaService.searchMedia(q));
     }
 }
