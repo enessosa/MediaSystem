@@ -4,12 +4,14 @@ import de.mediasystem.backend.api.dto.MediaSearchResult;
 import de.mediasystem.backend.db.MediaItemRepository;
 import de.mediasystem.backend.db.SourceRepository;
 import de.mediasystem.backend.db.UserEntryRepository;
+import de.mediasystem.backend.db.UserRepository;
 import de.mediasystem.backend.model.MediaItem;
 import de.mediasystem.backend.model.MediaType;
 import de.mediasystem.backend.model.Source;
 import de.mediasystem.backend.model.SourceType;
 import de.mediasystem.backend.model.Status;
 import de.mediasystem.backend.model.UserEntry;
+import de.mediasystem.backend.model.roles.User;
 import de.mediasystem.backend.provider.Provider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +41,9 @@ class MediaServiceTest {
 
     @Mock
     private UserEntryRepository userEntryRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private MediaService mediaService;
@@ -97,6 +102,8 @@ class MediaServiceTest {
                 "1"
         );
         Long userId = 1L;
+        User testUser = new User();
+        testUser.setUsername("testuser");
 
         when(sourceRepository.findBySourceTypeAndExternalId(SourceType.ANILIST, "1"))
                 .thenReturn(Optional.empty());
@@ -104,6 +111,8 @@ class MediaServiceTest {
                 .thenAnswer(invocation -> invocation.getArgument(0));
         when(userEntryRepository.existsByUserIdAndMediaItemId(any(), any()))
                 .thenReturn(false);
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.of(testUser));
         ArgumentCaptor<UserEntry> savedEntry = ArgumentCaptor.forClass(UserEntry.class);
         when(userEntryRepository.save(savedEntry.capture()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
