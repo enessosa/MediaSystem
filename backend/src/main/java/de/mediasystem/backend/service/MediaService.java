@@ -1,6 +1,9 @@
 package de.mediasystem.backend.service;
 
 import de.mediasystem.backend.api.dto.MediaSearchResult;
+import de.mediasystem.backend.db.MediaItemRepository;
+import de.mediasystem.backend.db.SourceRepository;
+import de.mediasystem.backend.db.UserEntryRepository;
 import de.mediasystem.backend.model.MediaItem;
 import de.mediasystem.backend.model.Source;
 import de.mediasystem.backend.provider.Provider;
@@ -13,10 +16,19 @@ import java.util.List;
 public class MediaService {
 
     private final Provider provider;
+    private final MediaItemRepository mediaItemRepository;
+    private final SourceRepository sourceRepository;
+    private final UserEntryRepository userEntryRepository;
 
 
-    public MediaService(Provider provider) {
+    public MediaService(Provider provider,
+                        MediaItemRepository mediaItemRepository,
+                        SourceRepository sourceRepository,
+                        UserEntryRepository userEntryRepository) {
         this.provider = provider;
+        this.mediaItemRepository = mediaItemRepository;
+        this.sourceRepository = sourceRepository;
+        this.userEntryRepository = userEntryRepository;
     }
 
     /**
