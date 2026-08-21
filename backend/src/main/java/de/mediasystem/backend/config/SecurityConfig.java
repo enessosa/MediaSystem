@@ -10,8 +10,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -36,10 +40,23 @@ public class SecurityConfig {
             auth.anyRequest().authenticated();
         });
         http.csrf(customizer -> {
+            customizer.csrfTokenRepository(csrfTokenRepository());
+            customizer.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
             customizer.ignoringRequestMatchers("/auth/**");
         });
+        http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
         http.cors(customizer -> customizer.configurationSource(corsConfigurationSource()));
         return http.build();
+    }
+
+    /**
+     * Cookie-basiertes CSRF fuer die SPA: der Token liegt in einem fuer JavaScript lesbaren
+     * Cookie (XSRF-TOKEN, kein HttpOnly), das Frontend liest ihn aus und schickt ihn bei
+     * state-veraendernden Requests als Header (X-XSRF-TOKEN) mit.
+     * @return das CSRF-Token-Repository
+     */
+    private CsrfTokenRepository csrfTokenRepository() {
+        return CookieCsrfTokenRepository.withHttpOnlyFalse();
     }
 
     /**

@@ -14,6 +14,7 @@ import de.mediasystem.backend.model.roles.User;
 import de.mediasystem.backend.provider.Provider;
 import de.mediasystem.backend.service.exception.AlreadyInListException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +73,7 @@ public class MediaService {
      * @param userId userid
      * @return userEntry
      */
+    @Transactional
     public UserEntryResponse addToUserList(MediaSearchResult result, Long userId) {
         Optional<Source> optionalSource =
                 sourceRepository.findBySourceTypeAndExternalId(result.sourceType(), result.externalId());
