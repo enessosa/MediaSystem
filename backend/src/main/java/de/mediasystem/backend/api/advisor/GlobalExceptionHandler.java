@@ -1,14 +1,11 @@
 package de.mediasystem.backend.api.advisor;
 
-import de.mediasystem.backend.service.exception.CodewordNotConfiguredException;
-import de.mediasystem.backend.service.exception.EmailAlreadyExistsException;
-import de.mediasystem.backend.service.exception.UsernameAlreadyExistsException;
+import de.mediasystem.backend.service.exception.*;
 import lombok.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import de.mediasystem.backend.service.exception.InvalidCodewordException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -36,5 +33,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<@NonNull String> handleBadCredentials(BadCredentialsException e) {
         return ResponseEntity.status(401).body(e.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyInListException.class)
+    public ResponseEntity<@NonNull String> handleAlreadyInList(AlreadyInListException e) {
+        return ResponseEntity.status(409).body(e.getMessage());
     }
 }
