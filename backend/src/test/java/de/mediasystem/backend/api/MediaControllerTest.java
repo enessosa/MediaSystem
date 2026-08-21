@@ -7,6 +7,7 @@ import de.mediasystem.backend.model.SourceType;
 import de.mediasystem.backend.model.Status;
 import de.mediasystem.backend.service.MediaService;
 import de.mediasystem.backend.service.UserService;
+import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,7 +44,7 @@ class MediaControllerTest {
                 "Masashi Kishimoto", "https://example.org/cover.jpg", SourceType.ANILIST, "1");
         when(mediaService.searchMedia("Naruto")).thenReturn(List.of(searchResult));
 
-        ResponseEntity<List<MediaSearchResult>> response = mediaController.searchResult("Naruto");
+        ResponseEntity<@NonNull List<MediaSearchResult>> response = mediaController.searchResult("Naruto");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).containsExactly(searchResult);
@@ -65,7 +66,7 @@ class MediaControllerTest {
         when(userService.getUserIdByUsername("testuser")).thenReturn(1L);
         when(mediaService.addToUserList(searchResult, 1L)).thenReturn(entryResponse);
 
-        ResponseEntity<UserEntryResponse> response = mediaController.addToUserList(searchResult, authentication);
+        ResponseEntity<@NonNull UserEntryResponse> response = mediaController.addToUserList(searchResult, authentication);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(entryResponse);

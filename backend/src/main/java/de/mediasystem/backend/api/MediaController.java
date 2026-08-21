@@ -28,8 +28,15 @@ public class MediaController {
     }
 
 
+    /**
+     * Post method for the entry response.
+     * @param result the search result
+     * @param authentication user infos without leaking hash
+     * @return the response Entity
+     */
     @PostMapping("/media/entries")
-    public ResponseEntity<@NonNull UserEntryResponse> addToUserList(@RequestBody MediaSearchResult result, Authentication authentication) {
+    public ResponseEntity<@NonNull UserEntryResponse> addToUserList(@RequestBody MediaSearchResult result,
+                                                                    Authentication authentication) {
         String username = authentication.getName();
         Long userId = userService.getUserIdByUsername(username);
         UserEntryResponse userEntryResponse = mediaService.addToUserList(result, userId);

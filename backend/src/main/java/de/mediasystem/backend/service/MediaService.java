@@ -119,7 +119,7 @@ public class MediaService {
 
     private UserEntryResponse mapUserEntrytoResponse(UserEntry userEntry) {
         MediaItem item = userEntry.getMediaItem();
-        UserEntryResponse response = new UserEntryResponse(
+        return new UserEntryResponse(
                 userEntry.getId(),
                 userEntry.getStatus(),
                 userEntry.getRating(),
@@ -133,6 +133,5 @@ public class MediaService {
                 item.getCreator(),
                 item.getCoverUrl()
         );
-        return response;
     }
 }
