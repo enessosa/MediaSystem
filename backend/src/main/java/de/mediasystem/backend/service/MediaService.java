@@ -1,6 +1,7 @@
 package de.mediasystem.backend.service;
 
 import de.mediasystem.backend.api.dto.MediaSearchResult;
+import de.mediasystem.backend.api.dto.UserEntryResponse;
 import de.mediasystem.backend.db.MediaItemRepository;
 import de.mediasystem.backend.db.SourceRepository;
 import de.mediasystem.backend.db.UserEntryRepository;
@@ -69,8 +70,9 @@ public class MediaService {
      * fügt ein MediaItem zu der liste eines Users hinzu.
      * @param result suchergebnis
      * @param userId userid
+     * @return userEntry
      */
-    public void addToUserList(MediaSearchResult result, Long userId) {
+    public UserEntryResponse addToUserList(MediaSearchResult result, Long userId) {
         Optional<Source> optionalSource =
                 sourceRepository.findBySourceTypeAndExternalId(result.sourceType(), result.externalId());
 
@@ -93,6 +95,8 @@ public class MediaService {
         userEntry.setMediaItem(item);
         userEntry.setStatus(Status.PLANNED);
         userEntryRepository.save(userEntry);
+
+        return mapUserEntrytoResponse(userEntry);
     }
 
     private MediaItem mapToNewMediaItem(MediaSearchResult result) {
@@ -111,5 +115,24 @@ public class MediaService {
         item.getSources().add(source);
 
         return item;
+    }
+
+    private UserEntryResponse mapUserEntrytoResponse(UserEntry userEntry) {
+        MediaItem item = userEntry.getMediaItem();
+        UserEntryResponse response = new UserEntryResponse(
+                userEntry.getId(),
+                userEntry.getStatus(),
+                userEntry.getRating(),
+                userEntry.getNote(),
+                userEntry.getAddedAt(),
+                item.getId(),
+                item.getTitle(),
+                item.getDescription(),
+                item.getReleaseYear(),
+                item.getMediaType(),
+                item.getCreator(),
+                item.getCoverUrl()
+        );
+        return response;
     }
 }
