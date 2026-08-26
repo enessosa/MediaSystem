@@ -136,4 +136,19 @@ public class MediaService {
                 item.getCoverUrl()
         );
     }
+
+    /**
+     * Holt von dem Repo die User Entries als liste und mappt sie dann stück für stück als UserEntryRepsonse.
+     * @param userId ist die user id
+     * @return die response liste.
+     */
+    @Transactional
+    public List<UserEntryResponse> getUserEntries(Long userId) {
+        List<UserEntry> userEntries = userEntryRepository.findByUserId(userId);
+        List<UserEntryResponse> userEntryResponses = new ArrayList<>();
+        for (UserEntry userEntry : userEntries) {
+            userEntryResponses.add(mapUserEntrytoResponse(userEntry));
+        }
+        return userEntryResponses;
+    }
 }
