@@ -72,4 +72,36 @@ class MediaControllerTest {
         assertThat(response.getBody()).isEqualTo(entryResponse);
         verify(mediaService).addToUserList(searchResult, 1L);
     }
+
+    @Test
+    void getUserEntries_validRequest_returnsOkWithServiceResults() {
+        UserEntryResponse entryResponse = new UserEntryResponse(
+                1L, Status.PLANNED, null, null, Instant.now(),
+                2L, "Naruto", "Ein Manga über einen Ninja.", 1999, MediaType.MANGA,
+                "Masashi Kishimoto", "https://example.org/cover.jpg");
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("testuser");
+        when(userService.getUserIdByUsername("testuser")).thenReturn(1L);
+        when(mediaService.getUserEntries(1L)).thenReturn(List.of(entryResponse));
+
+        ResponseEntity<@NonNull List<UserEntryResponse>> response = mediaController.getUserEntries(authentication);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).containsExactly(entryResponse);
+        verify(mediaService).getUserEntries(1L);
+    }
+
+    @Test
+    void getUserEntries_noEntries_returnsOkWithEmptyList() {
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("testuser");
+        when(userService.getUserIdByUsername("testuser")).thenReturn(1L);
+        when(mediaService.getUserEntries(1L)).thenReturn(List.of());
+
+        ResponseEntity<@NonNull List<UserEntryResponse>> response = mediaController.getUserEntries(authentication);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEmpty();
+    }
 }

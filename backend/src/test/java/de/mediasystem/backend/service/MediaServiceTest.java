@@ -1,6 +1,7 @@
 package de.mediasystem.backend.service;
 
 import de.mediasystem.backend.api.dto.MediaSearchResult;
+import de.mediasystem.backend.api.dto.UserEntryResponse;
 import de.mediasystem.backend.db.MediaItemRepository;
 import de.mediasystem.backend.db.SourceRepository;
 import de.mediasystem.backend.db.UserEntryRepository;
@@ -127,5 +128,52 @@ class MediaServiceTest {
         assertThat(result.getMediaItem().getMediaType()).isEqualTo(MediaType.MANGA);
         assertThat(result.getMediaItem().getCreator()).isEqualTo("Masashi Kishimoto");
         assertThat(result.getMediaItem().getCoverUrl()).isEqualTo("https://example.org/cover.jpg");
+    }
+
+    @Test
+    void getUserEntries_returnsMappedResponsesForUser() {
+        Long userId = 1L;
+
+        MediaItem item = new MediaItem();
+        item.setId(42L);
+        item.setTitle("Naruto");
+        item.setDescription("Ein Manga über einen Ninja.");
+        item.setReleaseYear(1999);
+        item.setMediaType(MediaType.MANGA);
+        item.setCreator("Masashi Kishimoto");
+        item.setCoverUrl("https://example.org/cover.jpg");
+
+        UserEntry entry = new UserEntry();
+        entry.setId(7L);
+        entry.setMediaItem(item);
+        entry.setStatus(Status.PLANNED);
+        entry.setRating(null);
+        entry.setNote(null);
+
+        when(userEntryRepository.findByUserId(userId)).thenReturn(List.of(entry));
+
+        List<UserEntryResponse> result = mediaService.getUserEntries(userId);
+
+        assertThat(result).hasSize(1);
+        UserEntryResponse response = result.get(0);
+        assertThat(response.id()).isEqualTo(7L);
+        assertThat(response.status()).isEqualTo(Status.PLANNED);
+        assertThat(response.mediaItemid()).isEqualTo(42L);
+        assertThat(response.title()).isEqualTo("Naruto");
+        assertThat(response.description()).isEqualTo("Ein Manga über einen Ninja.");
+        assertThat(response.releaseYear()).isEqualTo(1999);
+        assertThat(response.mediaType()).isEqualTo(MediaType.MANGA);
+        assertThat(response.creator()).isEqualTo("Masashi Kishimoto");
+        assertThat(response.coverUrl()).isEqualTo("https://example.org/cover.jpg");
+    }
+
+    @Test
+    void getUserEntries_noEntriesForUser_returnsEmptyList() {
+        Long userId = 1L;
+        when(userEntryRepository.findByUserId(userId)).thenReturn(List.of());
+
+        List<UserEntryResponse> result = mediaService.getUserEntries(userId);
+
+        assertThat(result).isEmpty();
     }
 }
