@@ -10,6 +10,10 @@ import org.springframework.web.client.RestClient;
 @Configuration
 public class ProviderConfig {
 
+    /**
+     * Rest Client for AniList.
+     * @return the client
+     */
     @Bean
     public RestClient aniListRestClient() {
         return RestClient.builder()
@@ -17,6 +21,11 @@ public class ProviderConfig {
                 .build();
     }
 
+    /**
+     * Rest Client for tmdb.
+     * @param tmdbApiKey the api key from the env variables
+     * @return the client
+     */
     @Bean
     public RestClient tmdbRestClient(@Value("${tmdb.api-key}") String tmdbApiKey) {
         return RestClient.builder()
