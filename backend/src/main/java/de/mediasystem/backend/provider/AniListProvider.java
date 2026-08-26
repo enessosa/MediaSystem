@@ -4,6 +4,7 @@ import de.mediasystem.backend.model.MediaItem;
 import de.mediasystem.backend.model.MediaType;
 import de.mediasystem.backend.model.Source;
 import de.mediasystem.backend.model.SourceType;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -48,7 +49,7 @@ public class AniListProvider implements Provider {
 
 
 
-    public AniListProvider(RestClient restclient) {
+    public AniListProvider(@Qualifier("aniListRestClient") RestClient restclient) {
         this.restClient = restclient;
     }
 

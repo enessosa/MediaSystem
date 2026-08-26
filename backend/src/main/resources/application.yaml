@@ -22,4 +22,4 @@ spring:
     locations: classpath:db/migration
 
 tmdb:
-  api-key: ${TMDB_API_KEY}
+  api-key: ${TMDB_API_KEY:}
