@@ -70,7 +70,7 @@ class MediaServiceTest {
         List<MediaSearchResult> result = mediaService.searchMedia("Naruto");
 
         assertThat(result).hasSize(1);
-        MediaSearchResult searchResult = result.get(0);
+        MediaSearchResult searchResult = result.getFirst();
         assertThat(searchResult.title()).isEqualTo("Naruto");
         assertThat(searchResult.description()).isEqualTo("Ein Manga über einen Ninja.");
         assertThat(searchResult.releaseYear()).isEqualTo(1999);
@@ -155,7 +155,7 @@ class MediaServiceTest {
         List<UserEntryResponse> result = mediaService.getUserEntries(userId);
 
         assertThat(result).hasSize(1);
-        UserEntryResponse response = result.get(0);
+        UserEntryResponse response = result.getFirst();
         assertThat(response.id()).isEqualTo(7L);
         assertThat(response.status()).isEqualTo(Status.PLANNED);
         assertThat(response.mediaItemid()).isEqualTo(42L);
