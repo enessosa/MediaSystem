@@ -43,4 +43,19 @@ public class MediaController {
 
         return ResponseEntity.status(201).body(userEntryResponse);
     }
+
+    /**
+     * ist die REST methode die verhindern soll, dass die liste lokal beim client browser gespeicehrt werden muss.
+     * @param authentication auth
+     * @return liste der responses.
+     */
+    @GetMapping("/media/entries")
+    public ResponseEntity<@NonNull List<UserEntryResponse>> getUserEntries(Authentication authentication) {
+
+        String username = authentication.getName();
+        Long userId = userService.getUserIdByUsername(username);
+        List<UserEntryResponse> responses = mediaService.getUserEntries(userId);
+
+        return ResponseEntity.status(200).body(responses);
+    }
 }
