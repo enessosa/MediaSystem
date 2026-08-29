@@ -14,10 +14,10 @@ import de.mediasystem.backend.model.Status;
 import de.mediasystem.backend.model.UserEntry;
 import de.mediasystem.backend.model.roles.User;
 import de.mediasystem.backend.provider.Provider;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -46,8 +46,13 @@ class MediaServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @InjectMocks
     private MediaService mediaService;
+
+    @BeforeEach
+    void setUp() {
+        mediaService = new MediaService(List.of(provider), mediaItemRepository, sourceRepository,
+                userEntryRepository, userRepository);
+    }
 
     @Test
     void searchMedia_mapsProviderResultsToSearchResults() {

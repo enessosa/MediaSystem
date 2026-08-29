@@ -23,19 +23,19 @@ import java.util.Optional;
 @Service
 public class MediaService {
 
-    private final Provider provider;
+    private final List<Provider> providers;
     private final MediaItemRepository mediaItemRepository;
     private final SourceRepository sourceRepository;
     private final UserEntryRepository userEntryRepository;
     private final UserRepository userRepository;
 
 
-    public MediaService(Provider provider,
+    public MediaService(List<Provider> providers,
                         MediaItemRepository mediaItemRepository,
                         SourceRepository sourceRepository,
                         UserEntryRepository userEntryRepository,
                         UserRepository userRepository) {
-        this.provider = provider;
+        this.providers = providers;
         this.mediaItemRepository = mediaItemRepository;
         this.sourceRepository = sourceRepository;
         this.userEntryRepository = userEntryRepository;
@@ -48,7 +48,10 @@ public class MediaService {
      * @return the converted Record class wrapped  in a list.
      */
     public List<MediaSearchResult> searchMedia(String query) {
-        List<MediaItem> results = provider.searchMedia(query);
+        List<MediaItem> results = new ArrayList<>();
+        for (Provider provider : providers) {
+            results.addAll(provider.searchMedia(query));
+        }
         List<MediaSearchResult> converted = new ArrayList<>();
         for (MediaItem item : results) {
             Source source = item.getSources().iterator().next();
