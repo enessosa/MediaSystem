@@ -167,10 +167,11 @@ public class MediaService {
     @Transactional
     public UserEntryResponse updateUserEntry(Long entryId, Long userId,
                                               UpdateUserEntryRequest request) {
-        UserEntry userEntry = userEntryRepository.getReferenceById(entryId);
+        UserEntry userEntry = userEntryRepository.findById(entryId)
+                .orElseThrow(UserEntryNotFoundException::new);
 
         if (!userEntry.getUser().getId().equals(userId)) {
-            throw new UserEntryNotFoundException("Eintrag nicht gefunden.");
+            throw new UserEntryNotFoundException();
         }
 
         userEntry.updateStatus(request.status());
