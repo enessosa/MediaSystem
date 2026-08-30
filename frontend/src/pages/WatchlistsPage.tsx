@@ -81,7 +81,13 @@ function WatchlistsPage() {
           }}
         >
           {filtered.map((entry) => (
-            <MediaCard key={entry.entryId} item={entry.item} status={entry.status} rating={entry.rating} />
+            <MediaCard
+              key={entry.entryId}
+              item={entry.item}
+              status={entry.status}
+              rating={entry.rating}
+              linkTo={`/media/${entry.entryId}`}
+            />
           ))}
         </div>
       )}

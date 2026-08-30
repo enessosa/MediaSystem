@@ -1,74 +1,111 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import type { CatalogItem, LibraryEntry, WatchStatus } from '../types/media'
+import {
+  addToUserList,
+  getUserEntries,
+  updateUserEntry,
+  type MediaSearchResult,
+  type UserEntryResponse,
+} from '../api/media'
+import { ApiError } from '../api/client'
+import type { CatalogItem, LibraryEntry, MediaType, WatchStatus } from '../types/media'
 
-const STORAGE_KEY = 'ms_library'
+/** Fallback-Farbe pro Medientyp, falls der Provider kein Cover-Bild liefert (z.B. TMDB ohne poster_path). */
+const FALLBACK_COLOR: Record<MediaType, string> = {
+  ANIME: '#5b2f6b',
+  MANGA: '#c9581f',
+  BOOK: '#2f6b4f',
+  SERIES: '#3f5e6b',
+  MOVIE: '#7a1f2b',
+}
+
+function toLibraryEntry(response: UserEntryResponse): LibraryEntry {
+  const item: CatalogItem = {
+    id: String(response.mediaItemid),
+    title: response.title,
+    description: response.description,
+    releaseYear: response.releaseYear,
+    mediaType: response.mediaType,
+    creator: response.creator,
+    coverColor: FALLBACK_COLOR[response.mediaType],
+    coverUrl: response.coverUrl ?? undefined,
+  }
+  return {
+    entryId: String(response.id),
+    item,
+    status: response.status,
+    rating: response.rating,
+    note: response.note ?? '',
+    updatedAt: response.addedAt,
+  }
+}
 
 interface LibraryContextValue {
   entries: LibraryEntry[]
-  getEntryByItemId: (itemId: string) => LibraryEntry | undefined
+  isLoading: boolean
+  error: string | null
   getEntry: (entryId: string) => LibraryEntry | undefined
-  addEntry: (item: CatalogItem, status: WatchStatus) => void
-  updateEntry: (entryId: string, changes: Partial<Pick<LibraryEntry, 'status' | 'rating' | 'note'>>) => void
-  removeEntry: (entryId: string) => void
+  addEntry: (result: MediaSearchResult) => Promise<LibraryEntry>
+  updateEntry: (
+    entryId: string,
+    changes: Partial<Pick<LibraryEntry, 'status' | 'rating' | 'note'>>,
+  ) => Promise<void>
 }
 
 const LibraryContext = createContext<LibraryContextValue | null>(null)
 
-function loadInitial(): LibraryEntry[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? (JSON.parse(raw) as LibraryEntry[]) : []
-  } catch {
-    return []
-  }
-}
-
 /**
  * Verwaltet die persönliche Liste (User-Eintrag <-> MediaItem, siehe CLAUDE.md Domain-Glossar).
- * Solange es dafür noch keinen Backend-Endpoint gibt, wird lokal im Browser gespeichert
- * (localStorage), damit die App über Reloads hinweg nutzbar bleibt. Ersetzen, sobald
- * "Medium hinzufügen" serverseitig existiert.
+ * Läuft jetzt komplett gegen das echte Backend (GET/POST/PUT /media/entries) statt localStorage.
+ * Kein removeEntry: das Backend hat noch keinen DELETE-Endpoint für UserEntry (siehe PROGRESS.md).
  */
 export function LibraryProvider({ children }: { children: ReactNode }) {
-  const [entries, setEntries] = useState<LibraryEntry[]>(loadInitial)
+  const [entries, setEntries] = useState<LibraryEntry[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries))
-  }, [entries])
+    let cancelled = false
+    getUserEntries()
+      .then((data) => {
+        if (!cancelled) setEntries(data.map(toLibraryEntry))
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof ApiError ? err.message : 'Liste konnte nicht geladen werden.')
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const value = useMemo<LibraryContextValue>(
     () => ({
       entries,
-      getEntryByItemId: (itemId) => entries.find((e) => e.item.id === itemId),
+      isLoading,
+      error,
       getEntry: (entryId) => entries.find((e) => e.entryId === entryId),
-      addEntry: (item, status) => {
-        setEntries((prev) => {
-          if (prev.some((e) => e.item.id === item.id)) {
-            return prev
-          }
-          const newEntry: LibraryEntry = {
-            entryId: crypto.randomUUID(),
-            item,
-            status,
-            rating: null,
-            note: '',
-            updatedAt: new Date().toISOString(),
-          }
-          return [newEntry, ...prev]
-        })
+      addEntry: async (result) => {
+        const response = await addToUserList(result)
+        const entry = toLibraryEntry(response)
+        setEntries((prev) => [entry, ...prev])
+        return entry
       },
-      updateEntry: (entryId, changes) => {
-        setEntries((prev) =>
-          prev.map((e) =>
-            e.entryId === entryId ? { ...e, ...changes, updatedAt: new Date().toISOString() } : e,
-          ),
-        )
-      },
-      removeEntry: (entryId) => {
-        setEntries((prev) => prev.filter((e) => e.entryId !== entryId))
+      updateEntry: async (entryId, changes) => {
+        const current = entries.find((e) => e.entryId === entryId)
+        if (!current) return
+        const status: WatchStatus = changes.status ?? current.status
+        const rating = changes.rating !== undefined ? changes.rating : current.rating
+        const note = changes.note !== undefined ? changes.note : current.note
+        const response = await updateUserEntry(Number(entryId), { status, rating, note })
+        const updated = toLibraryEntry(response)
+        setEntries((prev) => prev.map((e) => (e.entryId === entryId ? updated : e)))
       },
     }),
-    [entries],
+    [entries, isLoading, error],
   )
 
   return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>

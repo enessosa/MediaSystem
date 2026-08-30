@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { searchMedia, type MediaSearchResult } from '../api/media'
 import { ApiError } from '../api/client'
-import { useLibrary } from '../context/LibraryContext'
 import type { CatalogItem } from '../types/media'
 import MediaCard from '../components/MediaCard'
 import AddToListModal from '../components/AddToListModal'
@@ -17,16 +16,15 @@ function toCatalogItem(result: MediaSearchResult): CatalogItem {
     mediaType: result.mediaType,
     creator: result.creator,
     coverColor: '#3f5e6b',
-    coverUrl: result.coverUrl,
+    coverUrl: result.coverUrl ?? undefined,
   }
 }
 
 function SearchResultsPage() {
   const [searchParams] = useSearchParams()
   const query = searchParams.get('q')?.trim() ?? ''
-  const { getEntryByItemId } = useLibrary()
 
-  const [results, setResults] = useState<CatalogItem[]>([])
+  const [results, setResults] = useState<MediaSearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -43,7 +41,7 @@ function SearchResultsPage() {
 
     searchMedia(query)
       .then((data) => {
-        if (!cancelled) setResults(data.map(toCatalogItem))
+        if (!cancelled) setResults(data)
       })
       .catch((err) => {
         if (!cancelled) {
@@ -59,7 +57,7 @@ function SearchResultsPage() {
     }
   }, [query])
 
-  const [selectedItem, setSelectedItem] = useState<CatalogItem | null>(null)
+  const [selectedResult, setSelectedResult] = useState<MediaSearchResult | null>(null)
 
   return (
     <div>
@@ -115,34 +113,26 @@ function SearchResultsPage() {
             gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
           }}
         >
-          {results.map((item) => {
-            const existingEntry = getEntryByItemId(item.id)
-            return (
-              <MediaCard
-                key={item.id}
-                item={item}
-                status={existingEntry?.status}
-                action={
-                  existingEntry ? (
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Schon in deiner Liste</span>
-                  ) : (
-                    <button
-                      type="button"
-                      className="btn btn--primary"
-                      style={{ width: '100%' }}
-                      onClick={() => setSelectedItem(item)}
-                    >
-                      Zur Liste hinzufügen
-                    </button>
-                  )
-                }
-              />
-            )
-          })}
+          {results.map((result) => (
+            <MediaCard
+              key={`${result.sourceType}-${result.externalId}`}
+              item={toCatalogItem(result)}
+              action={
+                <button
+                  type="button"
+                  className="btn btn--primary"
+                  style={{ width: '100%' }}
+                  onClick={() => setSelectedResult(result)}
+                >
+                  Zur Liste hinzufügen
+                </button>
+              }
+            />
+          ))}
         </div>
       )}
 
-      {selectedItem && <AddToListModal item={selectedItem} onClose={() => setSelectedItem(null)} />}
+      {selectedResult && <AddToListModal result={selectedResult} onClose={() => setSelectedResult(null)} />}
     </div>
   )
 }

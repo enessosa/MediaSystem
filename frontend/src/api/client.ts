@@ -10,16 +10,30 @@ export class ApiError extends Error {
 }
 
 /**
+ * Liest den XSRF-TOKEN-Cookie aus (von SecurityConfig/CsrfCookieFilter bei jedem Request gesetzt,
+ * kein HttpOnly, damit JS ihn lesen kann). Muss bei state-verändernden Requests (POST/PUT/DELETE)
+ * als X-XSRF-TOKEN-Header mitgeschickt werden, sonst 403 (/auth/** ist davon explizit ausgenommen).
+ */
+function readCsrfCookie(): string | null {
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/)
+  return match ? decodeURIComponent(match[1]) : null
+}
+
+/**
  * Kleiner fetch-Wrapper für Aufrufe gegen das Backend.
  * - schickt Cookies mit (`credentials: 'include'`), damit die Server-Side Session (ADR-005) funktioniert
+ * - schickt den CSRF-Token-Header mit, falls ein Cookie vorhanden ist (nötig für POST/PUT/DELETE außerhalb /auth/**)
  * - Backend liefert Fehler mal als JSON (Bean-Validation), mal als reiner Text (GlobalExceptionHandler) -> beides abfangen
  */
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const csrfToken = readCsrfCookie()
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      ...(csrfToken ? { 'X-XSRF-TOKEN': csrfToken } : {}),
       ...options.headers,
     },
   })

@@ -1,5 +1,5 @@
 import { apiFetch } from './client'
-import type { MediaType } from '../types/media'
+import type { MediaType, WatchStatus } from '../types/media'
 
 export type SourceType = 'ANILIST' | 'TMDB' | 'OPENLIBRARY' | 'MANUAL'
 
@@ -9,11 +9,52 @@ export interface MediaSearchResult {
   releaseYear: number | null
   mediaType: MediaType
   creator: string | null
-  coverUrl: string
+  coverUrl: string | null
   sourceType: SourceType
-  externalId: string
+  /** null bei SourceType.MANUAL erlaubt (DB-Constraint: external_id nur für nicht-manuelle Quellen Pflicht). */
+  externalId: string | null
+}
+
+/** Spiegelt de.mediasystem.backend.api.dto.UserEntryResponse */
+export interface UserEntryResponse {
+  id: number
+  status: WatchStatus
+  rating: number | null
+  note: string | null
+  addedAt: string
+  mediaItemid: number
+  title: string
+  description: string
+  releaseYear: number | null
+  mediaType: MediaType
+  creator: string | null
+  coverUrl: string | null
+}
+
+export interface UpdateUserEntryPayload {
+  status: WatchStatus
+  rating: number | null
+  note: string | null
 }
 
 export function searchMedia(query: string) {
   return apiFetch<MediaSearchResult[]>(`/media/search?q=${encodeURIComponent(query)}`)
+}
+
+export function getUserEntries() {
+  return apiFetch<UserEntryResponse[]>('/media/entries')
+}
+
+export function addToUserList(result: MediaSearchResult) {
+  return apiFetch<UserEntryResponse>('/media/entries', {
+    method: 'POST',
+    body: JSON.stringify(result),
+  })
+}
+
+export function updateUserEntry(entryId: number, payload: UpdateUserEntryPayload) {
+  return apiFetch<UserEntryResponse>(`/media/entries/${entryId}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
 }

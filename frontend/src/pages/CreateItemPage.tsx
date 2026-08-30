@@ -1,39 +1,47 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLibrary } from '../context/LibraryContext'
-import { MEDIA_TYPE_LABELS, type CatalogItem, type MediaType } from '../types/media'
-
-const COLORS = ['#5b2f6b', '#3f5e6b', '#8a4b1f', '#2f6b4f', '#7a1f2b']
+import { ApiError } from '../api/client'
+import { MEDIA_TYPE_LABELS, type MediaType } from '../types/media'
 
 function CreateItemPage() {
-  const { addEntry, updateEntry, getEntryByItemId } = useLibrary()
+  const { addEntry, updateEntry } = useLibrary()
   const navigate = useNavigate()
 
   const [title, setTitle] = useState('')
   const [mediaType, setMediaType] = useState<MediaType>('ANIME')
   const [note, setNote] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     const trimmedTitle = title.trim()
     if (!trimmedTitle) return
 
-    const item: CatalogItem = {
-      id: `manual-${crypto.randomUUID()}`,
-      title: trimmedTitle,
-      description: '',
-      releaseYear: null,
-      mediaType,
-      creator: null,
-      coverColor: COLORS[Math.floor(Math.random() * COLORS.length)],
+    setIsSaving(true)
+    setError(null)
+    try {
+      // SourceType.MANUAL erlaubt externalId: null (DB-Constraint chk_external_id_present).
+      const entry = await addEntry({
+        title: trimmedTitle,
+        description: '',
+        releaseYear: null,
+        mediaType,
+        creator: null,
+        coverUrl: null,
+        sourceType: 'MANUAL',
+        externalId: null,
+      })
+      if (note.trim()) {
+        await updateEntry(entry.entryId, { note: note.trim() })
+      }
+      navigate(`/media/${entry.entryId}`)
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Anlegen fehlgeschlagen. Versuch es erneut.')
+    } finally {
+      setIsSaving(false)
     }
-
-    addEntry(item, 'PLANNED')
-    if (note.trim()) {
-      const entry = getEntryByItemId(item.id)
-      if (entry) updateEntry(entry.entryId, { note: note.trim() })
-    }
-    navigate(`/media/${item.id}`)
   }
 
   return (
@@ -85,8 +93,10 @@ function CreateItemPage() {
           <textarea id="ci-note" className="input" rows={3} value={note} onChange={(e) => setNote(e.target.value)} />
         </div>
 
-        <button type="submit" className="btn btn--primary">
-          Anlegen
+        {error && <p style={{ color: 'var(--danger, #c0392b)' }}>{error}</p>}
+
+        <button type="submit" className="btn btn--primary" disabled={isSaving}>
+          {isSaving ? 'Legt an…' : 'Anlegen'}
         </button>
       </form>
     </div>

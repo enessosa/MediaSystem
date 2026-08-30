@@ -1,13 +1,27 @@
 import { useState } from 'react'
 import { CATALOG } from '../data/catalog'
-import { useLibrary } from '../context/LibraryContext'
 import type { CatalogItem } from '../types/media'
+import type { MediaSearchResult, SourceType } from '../api/media'
 import MediaCard from '../components/MediaCard'
 import AddToListModal from '../components/AddToListModal'
 
+/** CATALOG ist ein statischer Beispiel-Katalog (kein Backend-Endpoint dafür) mit ids im Schema `<sourceType>-<externalId>`. */
+function toSearchResult(item: CatalogItem): MediaSearchResult {
+  const [prefix, ...rest] = item.id.split('-')
+  return {
+    title: item.title,
+    description: item.description,
+    releaseYear: item.releaseYear,
+    mediaType: item.mediaType,
+    creator: item.creator,
+    coverUrl: item.coverUrl ?? null,
+    sourceType: prefix.toUpperCase() as SourceType,
+    externalId: rest.join('-'),
+  }
+}
+
 function DiscoveryPage() {
-  const { getEntryByItemId } = useLibrary()
-  const [selectedItem, setSelectedItem] = useState<CatalogItem | null>(null)
+  const [selectedResult, setSelectedResult] = useState<MediaSearchResult | null>(null)
 
   return (
     <div>
@@ -22,33 +36,25 @@ function DiscoveryPage() {
           gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
         }}
       >
-        {CATALOG.map((item) => {
-          const existingEntry = getEntryByItemId(item.id)
-          return (
-            <MediaCard
-              key={item.id}
-              item={item}
-              status={existingEntry?.status}
-              action={
-                existingEntry ? (
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Schon in deiner Liste</span>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn btn--primary"
-                    style={{ width: '100%' }}
-                    onClick={() => setSelectedItem(item)}
-                  >
-                    Zur Liste hinzufügen
-                  </button>
-                )
-              }
-            />
-          )
-        })}
+        {CATALOG.map((item) => (
+          <MediaCard
+            key={item.id}
+            item={item}
+            action={
+              <button
+                type="button"
+                className="btn btn--primary"
+                style={{ width: '100%' }}
+                onClick={() => setSelectedResult(toSearchResult(item))}
+              >
+                Zur Liste hinzufügen
+              </button>
+            }
+          />
+        ))}
       </div>
 
-      {selectedItem && <AddToListModal item={selectedItem} onClose={() => setSelectedItem(null)} />}
+      {selectedResult && <AddToListModal result={selectedResult} onClose={() => setSelectedResult(null)} />}
     </div>
   )
 }

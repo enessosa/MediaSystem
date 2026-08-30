@@ -72,7 +72,13 @@ function DashboardPage() {
             }}
           >
             {recentlyUpdated.map((entry) => (
-              <MediaCard key={entry.entryId} item={entry.item} status={entry.status} rating={entry.rating} />
+              <MediaCard
+                key={entry.entryId}
+                item={entry.item}
+                status={entry.status}
+                rating={entry.rating}
+                linkTo={`/media/${entry.entryId}`}
+              />
             ))}
           </div>
         )}
@@ -90,7 +96,13 @@ function DashboardPage() {
             }}
           >
             {upNext.map((entry) => (
-              <MediaCard key={entry.entryId} item={entry.item} status={entry.status} rating={entry.rating} />
+              <MediaCard
+                key={entry.entryId}
+                item={entry.item}
+                status={entry.status}
+                rating={entry.rating}
+                linkTo={`/media/${entry.entryId}`}
+              />
             ))}
           </div>
         </section>

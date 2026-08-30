@@ -10,6 +10,7 @@ const TYPE_ICON: Record<CatalogItem['mediaType'], 'clapper' | 'book' | 'tv'> = {
   MANGA: 'book',
   BOOK: 'book',
   SERIES: 'tv',
+  MOVIE: 'clapper',
 }
 
 interface MediaCardProps {
@@ -17,28 +18,43 @@ interface MediaCardProps {
   status?: WatchStatus
   rating?: number | null
   action?: ReactNode
+  /** Ziel für Cover/Titel-Link. Ohne Detailseite (z.B. noch nicht hinzugefügte Suchergebnisse) weglassen. */
+  linkTo?: string
 }
 
-function MediaCard({ item, status, rating, action }: MediaCardProps) {
+function MediaCard({ item, status, rating, action, linkTo }: MediaCardProps) {
+  const cover = item.coverUrl ? (
+    <img src={item.coverUrl} alt="" className="media-card__cover-img" />
+  ) : (
+    <Icon name={TYPE_ICON[item.mediaType]} size={28} className="media-card__cover-icon" />
+  )
+
   return (
     <div className="media-card">
-      <Link
-        to={`/media/${item.id}`}
-        className="media-card__cover"
-        style={item.coverUrl ? undefined : { background: item.coverColor }}
-      >
-        {item.coverUrl ? (
-          <img src={item.coverUrl} alt="" className="media-card__cover-img" />
-        ) : (
-          <Icon name={TYPE_ICON[item.mediaType]} size={28} className="media-card__cover-icon" />
-        )}
-        {status && <StatusBadge status={status} />}
-      </Link>
+      {linkTo ? (
+        <Link
+          to={linkTo}
+          className="media-card__cover"
+          style={item.coverUrl ? undefined : { background: item.coverColor }}
+        >
+          {cover}
+          {status && <StatusBadge status={status} />}
+        </Link>
+      ) : (
+        <div className="media-card__cover" style={item.coverUrl ? undefined : { background: item.coverColor }}>
+          {cover}
+          {status && <StatusBadge status={status} />}
+        </div>
+      )}
 
       <div className="media-card__body">
-        <Link to={`/media/${item.id}`} className="media-card__title">
-          {item.title}
-        </Link>
+        {linkTo ? (
+          <Link to={linkTo} className="media-card__title">
+            {item.title}
+          </Link>
+        ) : (
+          <span className="media-card__title">{item.title}</span>
+        )}
         <div className="media-card__meta">
           <span>{MEDIA_TYPE_LABELS[item.mediaType]}</span>
           {item.releaseYear && (
