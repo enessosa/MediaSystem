@@ -1,6 +1,7 @@
 package de.mediasystem.backend.service;
 
 import de.mediasystem.backend.api.dto.MediaSearchResult;
+import de.mediasystem.backend.api.dto.UpdateUserEntryRequest;
 import de.mediasystem.backend.api.dto.UserEntryResponse;
 import de.mediasystem.backend.db.MediaItemRepository;
 import de.mediasystem.backend.db.SourceRepository;
@@ -13,6 +14,7 @@ import de.mediasystem.backend.model.UserEntry;
 import de.mediasystem.backend.model.roles.User;
 import de.mediasystem.backend.provider.Provider;
 import de.mediasystem.backend.service.exception.AlreadyInListException;
+import de.mediasystem.backend.service.exception.UserEntryNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -153,5 +155,29 @@ public class MediaService {
             userEntryResponses.add(mapUserEntrytoResponse(userEntry));
         }
         return userEntryResponses;
+    }
+
+    /**
+     * this method updates the rating, status and note of a UserEntry.
+     * @param entryId the entry id
+     * @param userId user id
+     * @param request the new information
+     * @return returns a UserEntryResponse record
+     */
+    @Transactional
+    public UserEntryResponse updateUserEntry(Long entryId, Long userId,
+                                              UpdateUserEntryRequest request) {
+        UserEntry userEntry = userEntryRepository.getReferenceById(entryId);
+
+        if (!userEntry.getUser().getId().equals(userId)) {
+            throw new UserEntryNotFoundException("Eintrag nicht gefunden.");
+        }
+
+        userEntry.updateStatus(request.status());
+        userEntry.updateRating(request.rating());
+        userEntry.setNote(request.note());
+        userEntryRepository.save(userEntry);
+
+        return mapUserEntrytoResponse(userEntry);
     }
 }
