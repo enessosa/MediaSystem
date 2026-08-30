@@ -1,6 +1,7 @@
 package de.mediasystem.backend.service;
 
 import de.mediasystem.backend.api.dto.MediaSearchResult;
+import de.mediasystem.backend.api.dto.UpdateUserEntryRequest;
 import de.mediasystem.backend.api.dto.UserEntryResponse;
 import de.mediasystem.backend.db.MediaItemRepository;
 import de.mediasystem.backend.db.SourceRepository;
@@ -14,6 +15,7 @@ import de.mediasystem.backend.model.Status;
 import de.mediasystem.backend.model.UserEntry;
 import de.mediasystem.backend.model.roles.User;
 import de.mediasystem.backend.provider.Provider;
+import de.mediasystem.backend.service.exception.UserEntryNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -180,5 +183,64 @@ class MediaServiceTest {
         List<UserEntryResponse> result = mediaService.getUserEntries(userId);
 
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void updateUserEntry_ownEntry_updatesStatusRatingAndNote() {
+        Long userId = 1L;
+        User owner = new User();
+        owner.setId(userId);
+
+        MediaItem item = new MediaItem();
+        item.setId(42L);
+        item.setTitle("Naruto");
+        item.setMediaType(MediaType.MANGA);
+
+        UserEntry entry = new UserEntry();
+        entry.setId(7L);
+        entry.setUser(owner);
+        entry.setMediaItem(item);
+        entry.setStatus(Status.PLANNED);
+
+        UpdateUserEntryRequest request = new UpdateUserEntryRequest(Status.WATCHING, 8, "Sehr gut bisher.");
+
+        when(userEntryRepository.findById(7L)).thenReturn(Optional.of(entry));
+        when(userEntryRepository.save(entry)).thenReturn(entry);
+
+        UserEntryResponse response = mediaService.updateUserEntry(7L, userId, request);
+
+        assertThat(entry.getStatus()).isEqualTo(Status.WATCHING);
+        assertThat(entry.getRating()).isEqualTo(8);
+        assertThat(entry.getNote()).isEqualTo("Sehr gut bisher.");
+        assertThat(response.status()).isEqualTo(Status.WATCHING);
+        assertThat(response.rating()).isEqualTo(8);
+        assertThat(response.note()).isEqualTo("Sehr gut bisher.");
+    }
+
+    @Test
+    void updateUserEntry_entryDoesNotExist_throwsUserEntryNotFoundException() {
+        when(userEntryRepository.findById(999L)).thenReturn(Optional.empty());
+
+        UpdateUserEntryRequest request = new UpdateUserEntryRequest(Status.WATCHING, null, null);
+
+        assertThatThrownBy(() -> mediaService.updateUserEntry(999L, 1L, request))
+                .isInstanceOf(UserEntryNotFoundException.class);
+    }
+
+    @Test
+    void updateUserEntry_entryBelongsToOtherUser_throwsUserEntryNotFoundException() {
+        User otherUser = new User();
+        otherUser.setId(2L);
+
+        UserEntry entry = new UserEntry();
+        entry.setId(7L);
+        entry.setUser(otherUser);
+
+        when(userEntryRepository.findById(7L)).thenReturn(Optional.of(entry));
+
+        UpdateUserEntryRequest request = new UpdateUserEntryRequest(Status.WATCHING, null, null);
+
+        assertThatThrownBy(() -> mediaService.updateUserEntry(7L, 1L, request))
+                .isInstanceOf(UserEntryNotFoundException.class);
     }
 }

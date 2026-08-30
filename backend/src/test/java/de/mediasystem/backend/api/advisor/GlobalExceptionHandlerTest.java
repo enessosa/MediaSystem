@@ -3,6 +3,7 @@ package de.mediasystem.backend.api.advisor;
 import de.mediasystem.backend.service.exception.CodewordNotConfiguredException;
 import de.mediasystem.backend.service.exception.EmailAlreadyExistsException;
 import de.mediasystem.backend.service.exception.InvalidCodewordException;
+import de.mediasystem.backend.service.exception.UserEntryNotFoundException;
 import de.mediasystem.backend.service.exception.UsernameAlreadyExistsException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -50,5 +51,12 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<?> response = advice.handleBadCredentials(new BadCredentialsException("Bad credentials"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void userEntryNotFound_returns404() {
+        ResponseEntity<?> response = advice.userEntryNotFound(new UserEntryNotFoundException());
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 }

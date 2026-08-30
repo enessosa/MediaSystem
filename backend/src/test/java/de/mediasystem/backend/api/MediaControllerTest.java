@@ -1,6 +1,7 @@
 package de.mediasystem.backend.api;
 
 import de.mediasystem.backend.api.dto.MediaSearchResult;
+import de.mediasystem.backend.api.dto.UpdateUserEntryRequest;
 import de.mediasystem.backend.api.dto.UserEntryResponse;
 import de.mediasystem.backend.model.MediaType;
 import de.mediasystem.backend.model.SourceType;
@@ -103,5 +104,26 @@ class MediaControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEmpty();
+    }
+
+    @Test
+    void updateUserEntry_validRequest_returnsOkWithServiceResult() {
+        UpdateUserEntryRequest request = new UpdateUserEntryRequest(Status.WATCHING, 8, "Sehr gut bisher.");
+        UserEntryResponse entryResponse = new UserEntryResponse(
+                7L, Status.WATCHING, 8, "Sehr gut bisher.", Instant.now(),
+                2L, "Naruto", "Ein Manga über einen Ninja.", 1999, MediaType.MANGA,
+                "Masashi Kishimoto", "https://example.org/cover.jpg");
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("testuser");
+        when(userService.getUserIdByUsername("testuser")).thenReturn(1L);
+        when(mediaService.updateUserEntry(7L, 1L, request)).thenReturn(entryResponse);
+
+        ResponseEntity<@NonNull UserEntryResponse> response =
+                mediaController.updateUserEntry(7L, request, authentication);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(entryResponse);
+        verify(mediaService).updateUserEntry(7L, 1L, request);
     }
 }
