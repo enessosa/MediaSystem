@@ -69,9 +69,10 @@ public class MediaController {
      * @return response
      */
     @PutMapping("/media/entries/{id}")
-    public ResponseEntity<@NonNull UserEntryResponse> updateUserEntry(@PathVariable Long id,
-                                                                      @RequestBody @Valid UpdateUserEntryRequest request,
-                                                                      Authentication authentication) {
+    public ResponseEntity<@NonNull UserEntryResponse>
+            updateUserEntry(@PathVariable Long id,
+                            @RequestBody @Valid UpdateUserEntryRequest request,
+                            Authentication authentication) {
         String username = authentication.getName();
         Long userId = userService.getUserIdByUsername(username);
         UserEntryResponse response = mediaService.updateUserEntry(id, userId, request);

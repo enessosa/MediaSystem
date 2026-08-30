@@ -42,6 +42,11 @@ public class TmdbProvider implements Provider {
         return Integer.parseInt(date.substring(0, 4));
     }
 
+    /**
+     * map method.
+     * @param response the raw response
+     * @return the list of Mediaitems
+     */
     public List<MediaItem> mapToMediaItems(TmdbSearchResponse response) {
 
         List<MediaItem> result = new ArrayList<>();
