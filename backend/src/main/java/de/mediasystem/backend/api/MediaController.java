@@ -1,9 +1,11 @@
 package de.mediasystem.backend.api;
 
 import de.mediasystem.backend.api.dto.MediaSearchResult;
+import de.mediasystem.backend.api.dto.UpdateUserEntryRequest;
 import de.mediasystem.backend.api.dto.UserEntryResponse;
 import de.mediasystem.backend.service.MediaService;
 import de.mediasystem.backend.service.UserService;
+import jakarta.validation.Valid;
 import lombok.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -57,5 +59,23 @@ public class MediaController {
         List<UserEntryResponse> responses = mediaService.getUserEntries(userId);
 
         return ResponseEntity.status(200).body(responses);
+    }
+
+    /**
+     * diese methode ist dafür da, user entries zu updaten.
+     * @param id UserEntry id
+     * @param request input der neuen daten
+     * @param authentication auth
+     * @return response
+     */
+    @PutMapping("/media/entries/{id}")
+    public ResponseEntity<@NonNull UserEntryResponse> updateUserEntry(@PathVariable Long id,
+                                                                      @RequestBody @Valid UpdateUserEntryRequest request,
+                                                                      Authentication authentication) {
+        String username = authentication.getName();
+        Long userId = userService.getUserIdByUsername(username);
+        UserEntryResponse response = mediaService.updateUserEntry(id, userId, request);
+
+        return ResponseEntity.ok(response);
     }
 }
