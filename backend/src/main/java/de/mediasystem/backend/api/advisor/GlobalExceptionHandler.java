@@ -39,4 +39,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<@NonNull String> handleAlreadyInList(AlreadyInListException e) {
         return ResponseEntity.status(409).body(e.getMessage());
     }
+
+    @ExceptionHandler(UserEntryNotFoundException.class)
+    public ResponseEntity<@NonNull String> userEntryNotFound(UserEntryNotFoundException e) {
+        return ResponseEntity.status(404).body(e.getMessage());
+    }
 }
