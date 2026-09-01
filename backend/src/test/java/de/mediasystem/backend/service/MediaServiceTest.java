@@ -29,6 +29,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -137,6 +138,39 @@ class MediaServiceTest {
         assertThat(result.getMediaItem().getMediaType()).isEqualTo(MediaType.MANGA);
         assertThat(result.getMediaItem().getCreator()).isEqualTo("Masashi Kishimoto");
         assertThat(result.getMediaItem().getCoverUrl()).isEqualTo("https://example.org/cover.jpg");
+    }
+
+    @Test
+    void addToUserList_manualSource_neverLooksUpExistingSourceAndAlwaysCreatesNewMediaItem() {
+        MediaSearchResult first = new MediaSearchResult(
+                "Herr der Ringe", "", null, MediaType.BOOK, null, null, SourceType.MANUAL, null);
+        MediaSearchResult second = new MediaSearchResult(
+                "Der Hobbit", "", null, MediaType.BOOK, null, null, SourceType.MANUAL, null);
+        Long userId = 1L;
+        User testUser = new User();
+        testUser.setUsername("testuser");
+
+        when(mediaItemRepository.save(any(MediaItem.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(userEntryRepository.existsByUserIdAndMediaItemId(any(), any()))
+                .thenReturn(false);
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.of(testUser));
+        ArgumentCaptor<UserEntry> savedEntries = ArgumentCaptor.forClass(UserEntry.class);
+        when(userEntryRepository.save(savedEntries.capture()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        mediaService.addToUserList(first, userId);
+        mediaService.addToUserList(second, userId);
+
+        // Ebene-1-Duplikat-Prüfung darf für MANUAL nie greifen (kein externes Original zum Abgleichen).
+        verify(sourceRepository, never()).findBySourceTypeAndExternalId(any(), any());
+
+        List<UserEntry> entries = savedEntries.getAllValues();
+        assertThat(entries).hasSize(2);
+        assertThat(entries.get(0).getMediaItem()).isNotSameAs(entries.get(1).getMediaItem());
+        assertThat(entries.get(0).getMediaItem().getTitle()).isEqualTo("Herr der Ringe");
+        assertThat(entries.get(1).getMediaItem().getTitle()).isEqualTo("Der Hobbit");
     }
 
     @Test
