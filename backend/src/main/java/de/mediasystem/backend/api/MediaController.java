@@ -80,7 +80,7 @@ public class MediaController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("media/entries/{id}")
+    @DeleteMapping("/media/entries/{id}")
     public ResponseEntity<@NonNull Void> deleteUserEntry(@PathVariable Long id,
                                                 Authentication authentication) {
         String username = authentication.getName();
