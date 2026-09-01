@@ -7,10 +7,7 @@ import de.mediasystem.backend.db.MediaItemRepository;
 import de.mediasystem.backend.db.SourceRepository;
 import de.mediasystem.backend.db.UserEntryRepository;
 import de.mediasystem.backend.db.UserRepository;
-import de.mediasystem.backend.model.MediaItem;
-import de.mediasystem.backend.model.Source;
-import de.mediasystem.backend.model.Status;
-import de.mediasystem.backend.model.UserEntry;
+import de.mediasystem.backend.model.*;
 import de.mediasystem.backend.model.roles.User;
 import de.mediasystem.backend.provider.Provider;
 import de.mediasystem.backend.service.exception.AlreadyInListException;
@@ -80,8 +77,10 @@ public class MediaService {
      */
     @Transactional
     public UserEntryResponse addToUserList(MediaSearchResult result, Long userId) {
-        Optional<Source> optionalSource =
-                sourceRepository.findBySourceTypeAndExternalId(result.sourceType(), result.externalId());
+        Optional<Source> optionalSource = result.sourceType() == SourceType.MANUAL
+                ? Optional.empty()
+                : sourceRepository.findBySourceTypeAndExternalId(result.sourceType(),
+                result.externalId());
 
         MediaItem item;
         if (optionalSource.isPresent()) {
