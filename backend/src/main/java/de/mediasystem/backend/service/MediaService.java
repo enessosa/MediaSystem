@@ -181,4 +181,21 @@ public class MediaService {
 
         return mapUserEntrytoResponse(userEntry);
     }
+
+    /**
+     * method to delete userEntry.
+     * @param entryId entry
+     * @param userId user
+     */
+    @Transactional
+    public void deleteUserEntry(Long entryId, Long userId) {
+        UserEntry userEntry = userEntryRepository.findById(entryId)
+                .orElseThrow(UserEntryNotFoundException::new);
+
+        if (!userEntry.getUser().getId().equals(userId)) {
+            throw new UserEntryNotFoundException();
+        }
+
+        userEntryRepository.delete(userEntry);
+    }
 }
