@@ -79,4 +79,14 @@ public class MediaController {
 
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("media/entries/{id}")
+    public ResponseEntity<@NonNull Void> deleteUserEntry(@PathVariable Long id,
+                                                Authentication authentication) {
+        String username = authentication.getName();
+        Long userId = userService.getUserIdByUsername(username);
+        mediaService.deleteUserEntry(id, userId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
