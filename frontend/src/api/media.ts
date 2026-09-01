@@ -58,3 +58,7 @@ export function updateUserEntry(entryId: number, payload: UpdateUserEntryPayload
     body: JSON.stringify(payload),
   })
 }
+
+export function deleteUserEntry(entryId: number) {
+  return apiFetch<void>(`/media/entries/${entryId}`, { method: 'DELETE' })
+}

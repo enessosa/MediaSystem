@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useLibrary } from '../context/LibraryContext'
 import { ApiError } from '../api/client'
 import { MEDIA_TYPE_LABELS, STATUS_LABELS, type WatchStatus } from '../types/media'
@@ -10,7 +10,8 @@ const STATUS_OPTIONS: WatchStatus[] = ['PLANNED', 'WATCHING', 'COMPLETED', 'DROP
 
 function MediaDetailPage() {
   const { id } = useParams()
-  const { getEntry, updateEntry } = useLibrary()
+  const navigate = useNavigate()
+  const { getEntry, updateEntry, removeEntry } = useLibrary()
 
   const entry = id ? getEntry(id) : undefined
 
@@ -57,6 +58,18 @@ function MediaDetailPage() {
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Speichern fehlgeschlagen. Versuch es erneut.')
     } finally {
+      setIsSaving(false)
+    }
+  }
+
+  async function handleDelete() {
+    setIsSaving(true)
+    setError(null)
+    try {
+      await removeEntry(entry!.entryId)
+      navigate('/watchlists')
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Löschen fehlgeschlagen. Versuch es erneut.')
       setIsSaving(false)
     }
   }
@@ -139,9 +152,14 @@ function MediaDetailPage() {
 
         {error && <p style={{ color: 'var(--danger, #c0392b)', marginBottom: 16 }}>{error}</p>}
 
-        <button type="button" className="btn btn--primary" onClick={handleSave} disabled={isSaving}>
-          {isSaving ? 'Speichert…' : 'Speichern'}
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="button" className="btn btn--primary" onClick={handleSave} disabled={isSaving}>
+            {isSaving ? 'Speichert…' : 'Speichern'}
+          </button>
+          <button type="button" className="btn btn--danger" onClick={handleDelete} disabled={isSaving}>
+            Eintrag löschen
+          </button>
+        </div>
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   addToUserList,
+  deleteUserEntry,
   getUserEntries,
   updateUserEntry,
   type MediaSearchResult,
@@ -49,14 +50,14 @@ interface LibraryContextValue {
     entryId: string,
     changes: Partial<Pick<LibraryEntry, 'status' | 'rating' | 'note'>>,
   ) => Promise<void>
+  removeEntry: (entryId: string) => Promise<void>
 }
 
 const LibraryContext = createContext<LibraryContextValue | null>(null)
 
 /**
  * Verwaltet die persönliche Liste (User-Eintrag <-> MediaItem, siehe CLAUDE.md Domain-Glossar).
- * Läuft jetzt komplett gegen das echte Backend (GET/POST/PUT /media/entries) statt localStorage.
- * Kein removeEntry: das Backend hat noch keinen DELETE-Endpoint für UserEntry (siehe PROGRESS.md).
+ * Läuft komplett gegen das echte Backend (GET/POST/PUT/DELETE /media/entries) statt localStorage.
  */
 export function LibraryProvider({ children }: { children: ReactNode }) {
   const [entries, setEntries] = useState<LibraryEntry[]>([])
@@ -103,6 +104,10 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
         const response = await updateUserEntry(Number(entryId), { status, rating, note })
         const updated = toLibraryEntry(response)
         setEntries((prev) => prev.map((e) => (e.entryId === entryId ? updated : e)))
+      },
+      removeEntry: async (entryId) => {
+        await deleteUserEntry(Number(entryId))
+        setEntries((prev) => prev.filter((e) => e.entryId !== entryId))
       },
     }),
     [entries, isLoading, error],
