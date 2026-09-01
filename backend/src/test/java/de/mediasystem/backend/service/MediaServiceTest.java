@@ -29,6 +29,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -241,6 +242,46 @@ class MediaServiceTest {
         UpdateUserEntryRequest request = new UpdateUserEntryRequest(Status.WATCHING, null, null);
 
         assertThatThrownBy(() -> mediaService.updateUserEntry(7L, 1L, request))
+                .isInstanceOf(UserEntryNotFoundException.class);
+    }
+
+    @Test
+    void deleteUserEntry_ownEntry_deletesIt() {
+        Long userId = 1L;
+        User owner = new User();
+        owner.setId(userId);
+
+        UserEntry entry = new UserEntry();
+        entry.setId(7L);
+        entry.setUser(owner);
+
+        when(userEntryRepository.findById(7L)).thenReturn(Optional.of(entry));
+
+        mediaService.deleteUserEntry(7L, userId);
+
+        verify(userEntryRepository).delete(entry);
+    }
+
+    @Test
+    void deleteUserEntry_entryDoesNotExist_throwsUserEntryNotFoundException() {
+        when(userEntryRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> mediaService.deleteUserEntry(999L, 1L))
+                .isInstanceOf(UserEntryNotFoundException.class);
+    }
+
+    @Test
+    void deleteUserEntry_entryBelongsToOtherUser_throwsUserEntryNotFoundException() {
+        User otherUser = new User();
+        otherUser.setId(2L);
+
+        UserEntry entry = new UserEntry();
+        entry.setId(7L);
+        entry.setUser(otherUser);
+
+        when(userEntryRepository.findById(7L)).thenReturn(Optional.of(entry));
+
+        assertThatThrownBy(() -> mediaService.deleteUserEntry(7L, 1L))
                 .isInstanceOf(UserEntryNotFoundException.class);
     }
 }

@@ -126,4 +126,17 @@ class MediaControllerTest {
         assertThat(response.getBody()).isEqualTo(entryResponse);
         verify(mediaService).updateUserEntry(7L, 1L, request);
     }
+
+    @Test
+    void deleteUserEntry_validRequest_returnsNoContent() {
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("testuser");
+        when(userService.getUserIdByUsername("testuser")).thenReturn(1L);
+
+        ResponseEntity<Void> response = mediaController.deleteUserEntry(7L, authentication);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(response.getBody()).isNull();
+        verify(mediaService).deleteUserEntry(7L, 1L);
+    }
 }
