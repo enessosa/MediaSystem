@@ -133,7 +133,7 @@ class MediaControllerTest {
         when(authentication.getName()).thenReturn("testuser");
         when(userService.getUserIdByUsername("testuser")).thenReturn(1L);
 
-        ResponseEntity<Void> response = mediaController.deleteUserEntry(7L, authentication);
+        ResponseEntity<@NonNull Void> response = mediaController.deleteUserEntry(7L, authentication);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         assertThat(response.getBody()).isNull();

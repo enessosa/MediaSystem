@@ -80,6 +80,12 @@ public class MediaController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Controller Method for deleting userEntry.
+     * @param id entry id
+     * @param authentication auth
+     * @return nothing
+     */
     @DeleteMapping("/media/entries/{id}")
     public ResponseEntity<@NonNull Void> deleteUserEntry(@PathVariable Long id,
                                                 Authentication authentication) {
