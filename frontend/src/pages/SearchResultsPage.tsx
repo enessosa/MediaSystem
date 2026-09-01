@@ -30,12 +30,14 @@ function SearchResultsPage() {
 
   useEffect(() => {
     if (!query) {
-      setResults([])
-      setError(null)
       return
     }
 
     let cancelled = false
+    // Datenabruf ist der von React dokumentierte legitime Anwendungsfall für Effects
+    // (https://react.dev/learn/you-might-not-need-an-effect#fetching-data) - Lade-/Fehlerzustand
+    // muss hier direkt gesetzt werden, bevor der eigentliche Fetch losläuft.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true)
     setError(null)
 
@@ -74,7 +76,7 @@ function SearchResultsPage() {
 
       {isLoading && <p style={{ marginTop: 24 }}>Suche läuft…</p>}
 
-      {error && (
+      {query && error && (
         <div style={{ marginTop: 24 }}>
           <EmptyState
             icon="search"
@@ -104,7 +106,7 @@ function SearchResultsPage() {
         </div>
       )}
 
-      {!isLoading && !error && results.length > 0 && (
+      {!isLoading && !error && query && results.length > 0 && (
         <div
           style={{
             marginTop: 24,
