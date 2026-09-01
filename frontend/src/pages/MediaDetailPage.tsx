@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useLibrary } from '../context/LibraryContext'
 import { ApiError } from '../api/client'
-import { MEDIA_TYPE_LABELS, STATUS_LABELS, type WatchStatus } from '../types/media'
+import { MEDIA_TYPE_LABELS, STATUS_LABELS, type LibraryEntry, type WatchStatus } from '../types/media'
 import Icon from '../components/Icon'
 import EmptyState from '../components/EmptyState'
 
@@ -10,24 +10,13 @@ const STATUS_OPTIONS: WatchStatus[] = ['PLANNED', 'WATCHING', 'COMPLETED', 'DROP
 
 function MediaDetailPage() {
   const { id } = useParams()
-  const navigate = useNavigate()
-  const { getEntry, updateEntry, removeEntry } = useLibrary()
+  const { getEntry, isLoading } = useLibrary()
 
   const entry = id ? getEntry(id) : undefined
 
-  const [status, setStatus] = useState<WatchStatus>(entry?.status ?? 'PLANNED')
-  const [rating, setRating] = useState(entry?.rating?.toString() ?? '')
-  const [note, setNote] = useState(entry?.note ?? '')
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (entry) {
-      setStatus(entry.status)
-      setRating(entry.rating?.toString() ?? '')
-      setNote(entry.note)
-    }
-  }, [entry])
+  if (isLoading) {
+    return <p>Lädt…</p>
+  }
 
   if (!entry) {
     return (
@@ -44,13 +33,28 @@ function MediaDetailPage() {
     )
   }
 
+  // key sorgt dafür, dass der lokale Formular-State beim Wechsel zu einem anderen
+  // Eintrag (gleiche Route /media/:id, anderer :id) sauber neu initialisiert wird.
+  return <MediaDetailForm key={entry.entryId} entry={entry} />
+}
+
+function MediaDetailForm({ entry }: { entry: LibraryEntry }) {
+  const navigate = useNavigate()
+  const { updateEntry, removeEntry } = useLibrary()
+
+  const [status, setStatus] = useState<WatchStatus>(entry.status)
+  const [rating, setRating] = useState(entry.rating?.toString() ?? '')
+  const [note, setNote] = useState(entry.note)
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
   const item = entry.item
 
   async function handleSave() {
     setIsSaving(true)
     setError(null)
     try {
-      await updateEntry(entry!.entryId, {
+      await updateEntry(entry.entryId, {
         status,
         rating: rating.trim() === '' ? null : Number(rating),
         note,
@@ -66,7 +70,7 @@ function MediaDetailPage() {
     setIsSaving(true)
     setError(null)
     try {
-      await removeEntry(entry!.entryId)
+      await removeEntry(entry.entryId)
       navigate('/watchlists')
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Löschen fehlgeschlagen. Versuch es erneut.')

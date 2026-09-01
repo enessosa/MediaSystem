@@ -116,6 +116,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
   return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- Hook gehört fachlich zum Context, kein separates File nötig für ein Ein-Personen-Projekt.
 export function useLibrary() {
   const ctx = useContext(LibraryContext)
   if (!ctx) {
