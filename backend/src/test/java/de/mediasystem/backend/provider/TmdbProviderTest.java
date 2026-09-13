@@ -96,4 +96,39 @@ class TmdbProviderTest {
 
         assertThat(result).isEmpty();
     }
+
+    @Test
+    void buildMediaItem_mapsMovie() {
+        MediaItem item = tmdbProvider.buildMediaItem(
+                603L, "The Matrix", "A computer hacker learns...", "1999-03-30", "/abc123.jpg", true);
+
+        assertThat(item.getTitle()).isEqualTo("The Matrix");
+        assertThat(item.getDescription()).isEqualTo("A computer hacker learns...");
+        assertThat(item.getReleaseYear()).isEqualTo(1999);
+        assertThat(item.getMediaType()).isEqualTo(MediaType.MOVIE);
+        assertThat(item.getCoverUrl()).isEqualTo("https://image.tmdb.org/t/p/w500/abc123.jpg");
+
+        assertThat(item.getSources()).hasSize(1);
+        Source source = item.getSources().iterator().next();
+        assertThat(source.getSourceType()).isEqualTo(SourceType.TMDB);
+        assertThat(source.getExternalId()).isEqualTo("603");
+    }
+
+    @Test
+    void buildMediaItem_mapsSeries() {
+        MediaItem item = tmdbProvider.buildMediaItem(
+                1396L, "Breaking Bad", "A chemistry teacher...", "2008-01-20", "/xyz456.jpg", false);
+
+        assertThat(item.getTitle()).isEqualTo("Breaking Bad");
+        assertThat(item.getReleaseYear()).isEqualTo(2008);
+        assertThat(item.getMediaType()).isEqualTo(MediaType.SERIES);
+    }
+
+    @Test
+    void buildMediaItem_missingPosterAndDate_coverUrlAndReleaseYearAreNull() {
+        MediaItem item = tmdbProvider.buildMediaItem(1L, "Unknown Movie", "", "", null, true);
+
+        assertThat(item.getCoverUrl()).isNull();
+        assertThat(item.getReleaseYear()).isNull();
+    }
 }

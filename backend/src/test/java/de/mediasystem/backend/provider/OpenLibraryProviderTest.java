@@ -6,10 +6,12 @@ import de.mediasystem.backend.model.Source;
 import de.mediasystem.backend.model.SourceType;
 import de.mediasystem.backend.provider.openlibrary.OpenLibraryProvider;
 import de.mediasystem.backend.provider.openlibrary.OpenLibrarySearchResponse;
+import de.mediasystem.backend.provider.openlibrary.OpenLibraryWorkDetail;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -80,5 +82,54 @@ class OpenLibraryProviderTest {
         List<MediaItem> result = openLibraryProvider.mapToMediaItems(response);
 
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void mapDetail_descriptionAsPlainString() {
+        OpenLibraryWorkDetail detail = new OpenLibraryWorkDetail(
+                "/works/OL45804W", "Der Hobbit", "Ein Fantasy-Roman.", List.of(258027L));
+
+        MediaItem item = openLibraryProvider.mapDetail(detail);
+
+        assertThat(item.getTitle()).isEqualTo("Der Hobbit");
+        assertThat(item.getDescription()).isEqualTo("Ein Fantasy-Roman.");
+        assertThat(item.getReleaseYear()).isNull();
+        assertThat(item.getMediaType()).isEqualTo(MediaType.BOOK);
+        assertThat(item.getCoverUrl()).isEqualTo("https://covers.openlibrary.org/b/id/258027-M.jpg");
+
+        assertThat(item.getSources()).hasSize(1);
+        Source source = item.getSources().iterator().next();
+        assertThat(source.getSourceType()).isEqualTo(SourceType.OPENLIBRARY);
+        assertThat(source.getExternalId()).isEqualTo("/works/OL45804W");
+    }
+
+    @Test
+    void mapDetail_descriptionAsObject_extractsValue() {
+        OpenLibraryWorkDetail detail = new OpenLibraryWorkDetail(
+                "/works/OL1W", "Unbekanntes Buch",
+                Map.of("type", "/type/text", "value", "Beschreibung als Objekt."), List.of());
+
+        MediaItem item = openLibraryProvider.mapDetail(detail);
+
+        assertThat(item.getDescription()).isEqualTo("Beschreibung als Objekt.");
+        assertThat(item.getCoverUrl()).isNull();
+    }
+
+    @Test
+    void mapDetail_noDescription_descriptionIsNull() {
+        OpenLibraryWorkDetail detail = new OpenLibraryWorkDetail(
+                "/works/OL2W", "Noch ein Buch", null, null);
+
+        MediaItem item = openLibraryProvider.mapDetail(detail);
+
+        assertThat(item.getDescription()).isNull();
+        assertThat(item.getCoverUrl()).isNull();
+    }
+
+    @Test
+    void mapDetail_nullDetail_returnsNull() {
+        MediaItem item = openLibraryProvider.mapDetail(null);
+
+        assertThat(item).isNull();
     }
 }

@@ -15,6 +15,7 @@ import de.mediasystem.backend.model.Status;
 import de.mediasystem.backend.model.UserEntry;
 import de.mediasystem.backend.model.roles.User;
 import de.mediasystem.backend.provider.Provider;
+import de.mediasystem.backend.service.exception.MediaNotFoundException;
 import de.mediasystem.backend.service.exception.UserEntryNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -420,5 +421,59 @@ class MediaServiceTest {
 
         assertThatThrownBy(() -> mediaService.deleteUserEntry(7L, 1L))
                 .isInstanceOf(UserEntryNotFoundException.class);
+    }
+
+    @Test
+    void fetchMediaDetail_matchingProviderReturnsItem_mapsToMediaSearchResult() {
+        Provider rawgProvider = mock(Provider.class);
+        when(rawgProvider.supportedSourceType()).thenReturn(SourceType.RAWG);
+
+        MediaItem game = new MediaItem();
+        game.setTitle("Grand Theft Auto V");
+        game.setMediaType(MediaType.GAME);
+        Source source = new Source();
+        source.setSourceType(SourceType.RAWG);
+        source.setExternalId("3498");
+        source.setMediaItem(game);
+        game.getSources().add(source);
+
+        when(rawgProvider.fetchById("3498")).thenReturn(game);
+        MediaService service = new MediaService(List.of(rawgProvider), mediaItemRepository,
+                sourceRepository, userEntryRepository, userRepository);
+
+        MediaSearchResult result = service.fetchMediaDetail(SourceType.RAWG, "3498");
+
+        assertThat(result.title()).isEqualTo("Grand Theft Auto V");
+        assertThat(result.sourceType()).isEqualTo(SourceType.RAWG);
+        assertThat(result.externalId()).isEqualTo("3498");
+    }
+
+    @Test
+    void fetchMediaDetail_noProviderForSourceType_throwsMediaNotFoundException() {
+        Provider rawgProvider = mock(Provider.class);
+        when(rawgProvider.supportedSourceType()).thenReturn(SourceType.RAWG);
+        MediaService service = new MediaService(List.of(rawgProvider), mediaItemRepository,
+                sourceRepository, userEntryRepository, userRepository);
+
+        assertThatThrownBy(() -> service.fetchMediaDetail(SourceType.TMDB, "603"))
+                .isInstanceOf(MediaNotFoundException.class);
+    }
+
+    @Test
+    void fetchMediaDetail_providerDoesNotKnowExternalId_throwsMediaNotFoundException() {
+        Provider rawgProvider = mock(Provider.class);
+        when(rawgProvider.supportedSourceType()).thenReturn(SourceType.RAWG);
+        when(rawgProvider.fetchById("999")).thenReturn(null);
+        MediaService service = new MediaService(List.of(rawgProvider), mediaItemRepository,
+                sourceRepository, userEntryRepository, userRepository);
+
+        assertThatThrownBy(() -> service.fetchMediaDetail(SourceType.RAWG, "999"))
+                .isInstanceOf(MediaNotFoundException.class);
+    }
+
+    @Test
+    void fetchMediaDetail_nullSourceType_throwsMediaNotFoundException() {
+        assertThatThrownBy(() -> mediaService.fetchMediaDetail(null, "123"))
+                .isInstanceOf(MediaNotFoundException.class);
     }
 }

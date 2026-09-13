@@ -78,4 +78,50 @@ class AniListProviderTest {
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getCreator()).isNull();
     }
+
+    @Test
+    void mapMedia_mapsSingleAnimeWithCreator() {
+        Media media = new Media(
+                "ANIME",
+                "Ein Anime über einen Ninja.",
+                1L,
+                new Title("NARUTO", "Naruto"),
+                new StartDate(1999),
+                new CoverImage("https://example.org/cover.jpg"),
+                new Staff(List.of(
+                        new StaffEdge("Story & Art", new StaffNode(new StaffName("Masashi Kishimoto")))
+                ))
+        );
+
+        MediaItem item = aniListProvider.mapMedia(media);
+
+        assertThat(item.getTitle()).isEqualTo("NARUTO");
+        assertThat(item.getDescription()).isEqualTo("Ein Anime über einen Ninja.");
+        assertThat(item.getReleaseYear()).isEqualTo(1999);
+        assertThat(item.getMediaType()).isEqualTo(MediaType.ANIME);
+        assertThat(item.getCreator()).isEqualTo("Masashi Kishimoto");
+        assertThat(item.getCoverUrl()).isEqualTo("https://example.org/cover.jpg");
+
+        assertThat(item.getSources()).hasSize(1);
+        Source source = item.getSources().iterator().next();
+        assertThat(source.getSourceType()).isEqualTo(SourceType.ANILIST);
+        assertThat(source.getExternalId()).isEqualTo("1");
+    }
+
+    @Test
+    void mapMedia_usesEnglishTitle_whenRomajiIsNull() {
+        Media media = new Media(
+                "MANGA",
+                "Beschreibung.",
+                3L,
+                new Title(null, "English Title"),
+                new StartDate(2010),
+                new CoverImage("https://example.org/cover2.jpg"),
+                new Staff(List.of())
+        );
+
+        MediaItem item = aniListProvider.mapMedia(media);
+
+        assertThat(item.getTitle()).isEqualTo("English Title");
+    }
 }

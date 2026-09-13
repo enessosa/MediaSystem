@@ -4,6 +4,7 @@ import de.mediasystem.backend.model.MediaItem;
 import de.mediasystem.backend.model.MediaType;
 import de.mediasystem.backend.model.Source;
 import de.mediasystem.backend.model.SourceType;
+import de.mediasystem.backend.provider.rawg.RawgGameDetail;
 import de.mediasystem.backend.provider.rawg.RawgProvider;
 import de.mediasystem.backend.provider.rawg.RawgSearchResult;
 import org.junit.jupiter.api.Test;
@@ -67,5 +68,32 @@ class RawgProviderTest {
         List<MediaItem> result = rawgProvider.mapToMediaItems(response);
 
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void mapDetail_mapsGameWithDescription() {
+        RawgGameDetail detail = new RawgGameDetail(
+                3498L, "Grand Theft Auto V", "2013-09-17",
+                "https://example.org/gtav.jpg", "Open-World-Actionspiel...");
+
+        MediaItem item = rawgProvider.mapDetail(detail);
+
+        assertThat(item.getTitle()).isEqualTo("Grand Theft Auto V");
+        assertThat(item.getDescription()).isEqualTo("Open-World-Actionspiel...");
+        assertThat(item.getReleaseYear()).isEqualTo(2013);
+        assertThat(item.getMediaType()).isEqualTo(MediaType.GAME);
+        assertThat(item.getCoverUrl()).isEqualTo("https://example.org/gtav.jpg");
+
+        assertThat(item.getSources()).hasSize(1);
+        Source source = item.getSources().iterator().next();
+        assertThat(source.getSourceType()).isEqualTo(SourceType.RAWG);
+        assertThat(source.getExternalId()).isEqualTo("3498");
+    }
+
+    @Test
+    void mapDetail_nullDetail_returnsNull() {
+        MediaItem item = rawgProvider.mapDetail(null);
+
+        assertThat(item).isNull();
     }
 }
