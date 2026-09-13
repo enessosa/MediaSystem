@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.client.ResourceAccessException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,5 +59,16 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<?> response = advice.userEntryNotFound(new UserEntryNotFoundException());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void handleProviderFailure_returns502WithCleanMessage_notRawException() {
+        ResourceAccessException providerException = new ResourceAccessException("Connection refused");
+
+        ResponseEntity<?> response = advice.handleProviderFailure(providerException);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+        assertThat(response.getBody()).isNotEqualTo(providerException.getMessage());
+        assertThat(response.getBody()).asString().doesNotContain("Connection refused");
     }
 }

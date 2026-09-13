@@ -2,13 +2,33 @@ package de.mediasystem.backend.api.advisor;
 
 import de.mediasystem.backend.service.exception.*;
 import lombok.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.RestClientException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    /**
+     * Fängt Fehler von externen Provider-Calls ab (RestClient), z.B. fehlender/ungültiger API-Key,
+     * Rate-Limit oder die externe API ist down. Bewusst kein Try/Catch pro Provider in MediaService -
+     * schlägt ein Provider fehl, soll die komplette Suche fehlschlagen (Qualität vor Vollständigkeit),
+     * aber sauber und ohne Stacktrace-Leak statt als roher 500.
+     * @param e die RestClient-Exception (HttpClientErrorException, HttpServerErrorException,
+     *          ResourceAccessException bei Timeout/Verbindungsproblem, ...)
+     * @return 502 mit einer für den Client verständlichen Meldung
+     */
+    @ExceptionHandler(RestClientException.class)
+    public ResponseEntity<@NonNull String> handleProviderFailure(RestClientException e) {
+        log.error("Externer Provider-Call fehlgeschlagen", e);
+        return ResponseEntity.status(502).body("Ein externer Anbieter ist gerade nicht erreichbar. Versuch's später erneut.");
+    }
 
     @ExceptionHandler(InvalidCodewordException.class)
     public ResponseEntity<@NonNull String> handleInvalidCodeword(InvalidCodewordException e) {
