@@ -7,6 +7,10 @@ import java.util.List;
  * "description" ist bei OpenLibrary inkonsistent: mal ein reiner String, mal ein Objekt
  * {"type": "/type/text", "value": "..."} - deshalb hier bewusst als Object typisiert
  * und in OpenLibraryProvider manuell auf beide Fälle geprüft.
+ * @param key key
+ * @param title title
+ * @param description description
+ * @param covers covers
  */
 public record OpenLibraryWorkDetail(String key,
                                      String title,

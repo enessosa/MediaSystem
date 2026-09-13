@@ -21,7 +21,7 @@ class OpenLibraryProviderTest {
     private final OpenLibraryProvider openLibraryProvider = new OpenLibraryProvider(mock(RestClient.class));
 
     @Test
-    void mapToMediaItems_mapsSingleBookWithAuthorAndCover() {
+    void mapToMediaItemsMapsSingleBookWithAuthorAndCover() {
         OpenLibrarySearchResponse.Doc doc = new OpenLibrarySearchResponse.Doc(
                 "/works/OL45804W", "Der Hobbit", List.of("J.R.R. Tolkien"), 1937, 258027L);
         OpenLibrarySearchResponse response = new OpenLibrarySearchResponse(List.of(doc));
@@ -29,7 +29,7 @@ class OpenLibraryProviderTest {
         List<MediaItem> result = openLibraryProvider.mapToMediaItems(response);
 
         assertThat(result).hasSize(1);
-        MediaItem item = result.get(0);
+        MediaItem item = result.getFirst();
         assertThat(item.getTitle()).isEqualTo("Der Hobbit");
         assertThat(item.getDescription()).isNull();
         assertThat(item.getReleaseYear()).isEqualTo(1937);
@@ -44,7 +44,7 @@ class OpenLibraryProviderTest {
     }
 
     @Test
-    void mapToMediaItems_missingAuthorAndCover_creatorAndCoverUrlAreNull() {
+    void mapToMediaItemsMissingAuthorAndCoverCreatorAndCoverUrlAreNull() {
         OpenLibrarySearchResponse.Doc doc = new OpenLibrarySearchResponse.Doc(
                 "/works/OL1W", "Unbekanntes Buch", List.of(), 2000, null);
         OpenLibrarySearchResponse response = new OpenLibrarySearchResponse(List.of(doc));
@@ -52,12 +52,12 @@ class OpenLibraryProviderTest {
         List<MediaItem> result = openLibraryProvider.mapToMediaItems(response);
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getCreator()).isNull();
-        assertThat(result.get(0).getCoverUrl()).isNull();
+        assertThat(result.getFirst().getCreator()).isNull();
+        assertThat(result.getFirst().getCoverUrl()).isNull();
     }
 
     @Test
-    void mapToMediaItems_authorNameNull_creatorIsNull() {
+    void mapToMediaItemsAuthorNameNullCreatorIsNull() {
         OpenLibrarySearchResponse.Doc doc = new OpenLibrarySearchResponse.Doc(
                 "/works/OL2W", "Noch ein Buch", null, 1999, null);
         OpenLibrarySearchResponse response = new OpenLibrarySearchResponse(List.of(doc));
@@ -65,18 +65,18 @@ class OpenLibraryProviderTest {
         List<MediaItem> result = openLibraryProvider.mapToMediaItems(response);
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getCreator()).isNull();
+        assertThat(result.getFirst().getCreator()).isNull();
     }
 
     @Test
-    void mapToMediaItems_nullResponse_returnsEmptyList() {
+    void mapToMediaItemsNullResponseReturnsEmptyList() {
         List<MediaItem> result = openLibraryProvider.mapToMediaItems(null);
 
         assertThat(result).isEmpty();
     }
 
     @Test
-    void mapToMediaItems_noResults_returnsEmptyList() {
+    void mapToMediaItemsNoResultsReturnsEmptyList() {
         OpenLibrarySearchResponse response = new OpenLibrarySearchResponse(List.of());
 
         List<MediaItem> result = openLibraryProvider.mapToMediaItems(response);
@@ -85,7 +85,7 @@ class OpenLibraryProviderTest {
     }
 
     @Test
-    void mapDetail_descriptionAsPlainString() {
+    void mapDetailDescriptionAsPlainString() {
         OpenLibraryWorkDetail detail = new OpenLibraryWorkDetail(
                 "/works/OL45804W", "Der Hobbit", "Ein Fantasy-Roman.", List.of(258027L));
 
@@ -104,7 +104,7 @@ class OpenLibraryProviderTest {
     }
 
     @Test
-    void mapDetail_descriptionAsObject_extractsValue() {
+    void mapDetailDescriptionAsObjectExtractsValue() {
         OpenLibraryWorkDetail detail = new OpenLibraryWorkDetail(
                 "/works/OL1W", "Unbekanntes Buch",
                 Map.of("type", "/type/text", "value", "Beschreibung als Objekt."), List.of());
@@ -116,7 +116,7 @@ class OpenLibraryProviderTest {
     }
 
     @Test
-    void mapDetail_noDescription_descriptionIsNull() {
+    void mapDetailNoDescriptionDescriptionIsNull() {
         OpenLibraryWorkDetail detail = new OpenLibraryWorkDetail(
                 "/works/OL2W", "Noch ein Buch", null, null);
 
@@ -127,7 +127,7 @@ class OpenLibraryProviderTest {
     }
 
     @Test
-    void mapDetail_nullDetail_returnsNull() {
+    void mapDetailNullDetailReturnsNull() {
         MediaItem item = openLibraryProvider.mapDetail(null);
 
         assertThat(item).isNull();

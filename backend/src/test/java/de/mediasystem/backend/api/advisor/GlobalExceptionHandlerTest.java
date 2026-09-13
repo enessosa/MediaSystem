@@ -18,29 +18,29 @@ class GlobalExceptionHandlerTest {
     private final GlobalExceptionHandler advice = new GlobalExceptionHandler();
 
     @Test
-    void handleInvalidCodeword_returns400() {
+    void handleInvalidCodewordReturns400() {
         ResponseEntity<?> response = advice.handleInvalidCodeword(new InvalidCodewordException());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
-    void handleCodewordNotConfigured_returns500() {
+    void handleCodewordNotConfiguredReturns500() {
         ResponseEntity<?> response = advice.handleCodewordNotConfigured(new CodewordNotConfiguredException());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Test
-    void handleUsernameAlreadyExists_returns409() {
-        ResponseEntity<?> response =
-                advice.handleUsernameAlreadyExists(new UsernameAlreadyExistsException("Username is already registered"));
+    void handleUsernameAlreadyExistsReturns409() {
+        ResponseEntity<?> response = advice.handleUsernameAlreadyExists(
+                new UsernameAlreadyExistsException("Username is already registered"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     }
 
     @Test
-    void handleEmailAlreadyExists_returns409() {
+    void handleEmailAlreadyExistsReturns409() {
         ResponseEntity<?> response =
                 advice.handleEmailAlreadyExists(new EmailAlreadyExistsException("E-Mail is already Registered"));
 
@@ -48,21 +48,21 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void handleBadCredentials_returns401() {
+    void handleBadCredentialsReturns401() {
         ResponseEntity<?> response = advice.handleBadCredentials(new BadCredentialsException("Bad credentials"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    void userEntryNotFound_returns404() {
+    void userEntryNotFoundReturns404() {
         ResponseEntity<?> response = advice.userEntryNotFound(new UserEntryNotFoundException());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
-    void handleProviderFailure_returns502WithCleanMessage_notRawException() {
+    void handleProviderFailureReturns502WithCleanMessageNotRawException() {
         ResourceAccessException providerException = new ResourceAccessException("Connection refused");
 
         ResponseEntity<?> response = advice.handleProviderFailure(providerException);

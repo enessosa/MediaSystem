@@ -39,7 +39,7 @@ class AuthControllerTest {
     private AuthController authController;
 
     @Test
-    void register_validRequest_returnsCreatedAndCallsService() {
+    void registerValidRequestReturnsCreatedAndCallsService() {
         RegisterResponse registerResponse = new RegisterResponse(1L, "newuser", "new@test.de", Instant.now());
         when(authService.register(any(RegisterRequest.class))).thenReturn(registerResponse);
 
@@ -53,7 +53,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void login_validCredentials_returnsOkAndPersistsSecurityContext() {
+    void loginValidCredentialsReturnsOkAndPersistsSecurityContext() {
         Authentication authentication = mock(Authentication.class);
         when(authService.login(any(LoginRequest.class))).thenReturn(authentication);
 

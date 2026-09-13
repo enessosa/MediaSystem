@@ -53,7 +53,7 @@ class AuthServiceTest {
     private AuthService authService;
 
     @Test
-    void register_belowCap_createsUserWithoutCodewordCheck() {
+    void registerBelowCapCreatesUserWithoutCodewordCheck() {
         when(userRepository.count()).thenReturn(5L);
         when(passwordEncoder.encode("rawPassword")).thenReturn("hashed-password");
         ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
@@ -70,7 +70,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void register_atCap_withCorrectCodeword_createsUser() {
+    void registerAtCapWithCorrectCodewordCreatesUser() {
         when(userRepository.count()).thenReturn(10L);
         AppSetting codewordSetting = new AppSetting();
         codewordSetting.setKey(CODEWORD_SETTING_KEY);
@@ -87,7 +87,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void register_atCap_withWrongCodeword_throwsAndDoesNotSave() {
+    void registerAtCapWithWrongCodewordThrowsAndDoesNotSave() {
         when(userRepository.count()).thenReturn(10L);
         AppSetting codewordSetting = new AppSetting();
         codewordSetting.setKey(CODEWORD_SETTING_KEY);
@@ -102,7 +102,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void register_atCap_withMissingCodeword_throwsAndDoesNotSave() {
+    void registerAtCapWithMissingCodewordThrowsAndDoesNotSave() {
         when(userRepository.count()).thenReturn(10L);
         AppSetting codewordSetting = new AppSetting();
         codewordSetting.setKey(CODEWORD_SETTING_KEY);
@@ -117,7 +117,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void register_atCap_withNoCodewordConfigured_throwsAndDoesNotSave() {
+    void registerAtCapWithNoCodewordConfiguredThrowsAndDoesNotSave() {
         when(userRepository.count()).thenReturn(10L);
         when(appSettingRepository.findById(CODEWORD_SETTING_KEY)).thenReturn(Optional.empty());
 
@@ -129,7 +129,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void register_usernameAlreadyTaken_throwsAndDoesNotSave() {
+    void registerUsernameAlreadyTakenThrowsAndDoesNotSave() {
         when(userRepository.count()).thenReturn(0L);
         when(userRepository.existsByUsername("newuser")).thenReturn(true);
 
@@ -141,7 +141,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void register_emailAlreadyTaken_throwsAndDoesNotSave() {
+    void registerEmailAlreadyTakenThrowsAndDoesNotSave() {
         when(userRepository.count()).thenReturn(0L);
         when(userRepository.existsByEmail("new@test.de")).thenReturn(true);
 
@@ -153,7 +153,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void register_neverStoresPlaintextPassword() {
+    void registerNeverStoresPlaintextPassword() {
         when(userRepository.count()).thenReturn(0L);
         when(passwordEncoder.encode("rawPassword")).thenReturn("hashed-password");
         ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
@@ -169,7 +169,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void login_delegatesToAuthenticationManager_andReturnsItsResult() {
+    void loginDelegatesToAuthenticationManagerAndReturnsItsResult() {
         Authentication expectedAuthentication = mock(Authentication.class);
         ArgumentCaptor<UsernamePasswordAuthenticationToken> tokenCaptor =
                 ArgumentCaptor.forClass(UsernamePasswordAuthenticationToken.class);

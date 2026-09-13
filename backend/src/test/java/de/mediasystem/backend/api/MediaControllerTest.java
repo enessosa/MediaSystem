@@ -39,7 +39,7 @@ class MediaControllerTest {
     private MediaController mediaController;
 
     @Test
-    void searchResult_returnsOkWithServiceResults() {
+    void searchResultReturnsOkWithServiceResults() {
         MediaSearchResult searchResult = new MediaSearchResult(
                 "Naruto", "Ein Manga über einen Ninja.", 1999, MediaType.MANGA,
                 "Masashi Kishimoto", "https://example.org/cover.jpg", SourceType.ANILIST, "1");
@@ -53,7 +53,7 @@ class MediaControllerTest {
     }
 
     @Test
-    void searchResult_withMediaTypeFilter_passesFilterToService() {
+    void searchResultWithMediaTypeFilterPassesFilterToService() {
         MediaSearchResult searchResult = new MediaSearchResult(
                 "Zelda II", "", 1987, MediaType.GAME, null, null, SourceType.RAWG, "53205");
         List<MediaType> filter = List.of(MediaType.GAME);
@@ -67,7 +67,7 @@ class MediaControllerTest {
     }
 
     @Test
-    void addToUserList_validRequest_returnsCreatedWithServiceResult() {
+    void addToUserListValidRequestReturnsCreatedWithServiceResult() {
         MediaSearchResult searchResult = new MediaSearchResult(
                 "Naruto", "Ein Manga über einen Ninja.", 1999, MediaType.MANGA,
                 "Masashi Kishimoto", "https://example.org/cover.jpg", SourceType.ANILIST, "1");
@@ -81,7 +81,8 @@ class MediaControllerTest {
         when(userService.getUserIdByUsername("testuser")).thenReturn(1L);
         when(mediaService.addToUserList(searchResult, 1L)).thenReturn(entryResponse);
 
-        ResponseEntity<@NonNull UserEntryResponse> response = mediaController.addToUserList(searchResult, authentication);
+        ResponseEntity<@NonNull UserEntryResponse> response =
+                mediaController.addToUserList(searchResult, authentication);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(entryResponse);
@@ -89,7 +90,7 @@ class MediaControllerTest {
     }
 
     @Test
-    void getUserEntries_validRequest_returnsOkWithServiceResults() {
+    void getUserEntriesValidRequestReturnsOkWithServiceResults() {
         UserEntryResponse entryResponse = new UserEntryResponse(
                 1L, Status.PLANNED, null, null, Instant.now(),
                 2L, "Naruto", "Ein Manga über einen Ninja.", 1999, MediaType.MANGA,
@@ -108,7 +109,7 @@ class MediaControllerTest {
     }
 
     @Test
-    void getUserEntries_noEntries_returnsOkWithEmptyList() {
+    void getUserEntriesNoEntriesReturnsOkWithEmptyList() {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("testuser");
         when(userService.getUserIdByUsername("testuser")).thenReturn(1L);
@@ -121,7 +122,7 @@ class MediaControllerTest {
     }
 
     @Test
-    void updateUserEntry_validRequest_returnsOkWithServiceResult() {
+    void updateUserEntryValidRequestReturnsOkWithServiceResult() {
         UpdateUserEntryRequest request = new UpdateUserEntryRequest(Status.WATCHING, 8, "Sehr gut bisher.");
         UserEntryResponse entryResponse = new UserEntryResponse(
                 7L, Status.WATCHING, 8, "Sehr gut bisher.", Instant.now(),
@@ -142,7 +143,7 @@ class MediaControllerTest {
     }
 
     @Test
-    void deleteUserEntry_validRequest_returnsNoContent() {
+    void deleteUserEntryValidRequestReturnsNoContent() {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("testuser");
         when(userService.getUserIdByUsername("testuser")).thenReturn(1L);

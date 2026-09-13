@@ -40,6 +40,9 @@ public class TmdbProvider implements Provider {
                     .uri(uriBuilder -> uriBuilder.path("/movie/{id}").build(id))
                     .retrieve()
                     .body(TmdbDetailResponse.class);
+            if (movie == null) {
+                return null;
+            }
             return buildMediaItem(movie.id(), movie.title(), movie.overview(),
                     movie.releaseDate(), movie.posterPath(), true);
         } catch (HttpClientErrorException.NotFound movieNotFound) {
@@ -48,6 +51,9 @@ public class TmdbProvider implements Provider {
                         .uri(uriBuilder -> uriBuilder.path("/tv/{id}").build(id))
                         .retrieve()
                         .body(TmdbDetailResponse.class);
+                if (series == null) {
+                    return null;
+                }
                 return buildMediaItem(series.id(), series.name(), series.overview(),
                         series.firstAirDate(), series.posterPath(), false);
             } catch (HttpClientErrorException.NotFound seriesNotFound) {

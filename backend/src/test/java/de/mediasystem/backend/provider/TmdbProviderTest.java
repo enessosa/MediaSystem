@@ -19,7 +19,7 @@ class TmdbProviderTest {
     private final TmdbProvider tmdbProvider = new TmdbProvider(mock(RestClient.class));
 
     @Test
-    void mapToMediaItems_mapsMovie() {
+    void mapToMediaItemsMapsMovie() {
         TmdbSearchResponse.Result movie = new TmdbSearchResponse.Result(
                 603L, "movie", "The Matrix", "A computer hacker learns...",
                 "1999-03-30", "/abc123.jpg", null, null);
@@ -28,7 +28,7 @@ class TmdbProviderTest {
         List<MediaItem> result = tmdbProvider.mapToMediaItems(response);
 
         assertThat(result).hasSize(1);
-        MediaItem item = result.get(0);
+        MediaItem item = result.getFirst();
         assertThat(item.getTitle()).isEqualTo("The Matrix");
         assertThat(item.getDescription()).isEqualTo("A computer hacker learns...");
         assertThat(item.getReleaseYear()).isEqualTo(1999);
@@ -42,7 +42,7 @@ class TmdbProviderTest {
     }
 
     @Test
-    void mapToMediaItems_mapsSeries_usesNameAndFirstAirDate() {
+    void mapToMediaItemsMapsSeriesUsesNameAndFirstAirDate() {
         TmdbSearchResponse.Result series = new TmdbSearchResponse.Result(
                 1396L, "tv", null, "A chemistry teacher...",
                 null, "/xyz456.jpg", "Breaking Bad", "2008-01-20");
@@ -51,14 +51,14 @@ class TmdbProviderTest {
         List<MediaItem> result = tmdbProvider.mapToMediaItems(response);
 
         assertThat(result).hasSize(1);
-        MediaItem item = result.get(0);
+        MediaItem item = result.getFirst();
         assertThat(item.getTitle()).isEqualTo("Breaking Bad");
         assertThat(item.getReleaseYear()).isEqualTo(2008);
         assertThat(item.getMediaType()).isEqualTo(MediaType.SERIES);
     }
 
     @Test
-    void mapToMediaItems_filtersOutPersonResults() {
+    void mapToMediaItemsFiltersOutPersonResults() {
         TmdbSearchResponse.Result person = new TmdbSearchResponse.Result(
                 99L, "person", null, null, null, null, "Keanu Reeves", null);
         TmdbSearchResponse response = new TmdbSearchResponse(List.of(person));
@@ -69,7 +69,7 @@ class TmdbProviderTest {
     }
 
     @Test
-    void mapToMediaItems_missingPosterAndReleaseDate_coverUrlAndReleaseYearAreNull() {
+    void mapToMediaItemsMissingPosterAndReleaseDateCoverUrlAndReleaseYearAreNull() {
         TmdbSearchResponse.Result movie = new TmdbSearchResponse.Result(
                 1L, "movie", "Unknown Movie", "", "", null, null, null);
         TmdbSearchResponse response = new TmdbSearchResponse(List.of(movie));
@@ -77,19 +77,19 @@ class TmdbProviderTest {
         List<MediaItem> result = tmdbProvider.mapToMediaItems(response);
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getCoverUrl()).isNull();
-        assertThat(result.get(0).getReleaseYear()).isNull();
+        assertThat(result.getFirst().getCoverUrl()).isNull();
+        assertThat(result.getFirst().getReleaseYear()).isNull();
     }
 
     @Test
-    void mapToMediaItems_nullResponse_returnsEmptyList() {
+    void mapToMediaItemsNullResponseReturnsEmptyList() {
         List<MediaItem> result = tmdbProvider.mapToMediaItems(null);
 
         assertThat(result).isEmpty();
     }
 
     @Test
-    void mapToMediaItems_noResults_returnsEmptyList() {
+    void mapToMediaItemsNoResultsReturnsEmptyList() {
         TmdbSearchResponse response = new TmdbSearchResponse(List.of());
 
         List<MediaItem> result = tmdbProvider.mapToMediaItems(response);
@@ -98,7 +98,7 @@ class TmdbProviderTest {
     }
 
     @Test
-    void buildMediaItem_mapsMovie() {
+    void buildMediaItemMapsMovie() {
         MediaItem item = tmdbProvider.buildMediaItem(
                 603L, "The Matrix", "A computer hacker learns...", "1999-03-30", "/abc123.jpg", true);
 
@@ -115,7 +115,7 @@ class TmdbProviderTest {
     }
 
     @Test
-    void buildMediaItem_mapsSeries() {
+    void buildMediaItemMapsSeries() {
         MediaItem item = tmdbProvider.buildMediaItem(
                 1396L, "Breaking Bad", "A chemistry teacher...", "2008-01-20", "/xyz456.jpg", false);
 
@@ -125,7 +125,7 @@ class TmdbProviderTest {
     }
 
     @Test
-    void buildMediaItem_missingPosterAndDate_coverUrlAndReleaseYearAreNull() {
+    void buildMediaItemMissingPosterAndDateCoverUrlAndReleaseYearAreNull() {
         MediaItem item = tmdbProvider.buildMediaItem(1L, "Unknown Movie", "", "", null, true);
 
         assertThat(item.getCoverUrl()).isNull();

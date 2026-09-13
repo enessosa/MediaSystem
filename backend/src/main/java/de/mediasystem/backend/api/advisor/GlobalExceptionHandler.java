@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClientException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
      * Fängt Fehler von externen Provider-Calls ab (RestClient), z.B. fehlender/ungültiger API-Key,
@@ -26,8 +26,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RestClientException.class)
     public ResponseEntity<@NonNull String> handleProviderFailure(RestClientException e) {
-        log.error("Externer Provider-Call fehlgeschlagen", e);
-        return ResponseEntity.status(502).body("Ein externer Anbieter ist gerade nicht erreichbar. Versuch's später erneut.");
+        LOG.error("Externer Provider-Call fehlgeschlagen", e);
+        return ResponseEntity.status(502)
+                .body("Ein externer Anbieter ist gerade nicht erreichbar. Versuch's später erneut.");
     }
 
     @ExceptionHandler(InvalidCodewordException.class)

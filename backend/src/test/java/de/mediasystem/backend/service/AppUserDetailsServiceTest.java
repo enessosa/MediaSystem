@@ -26,7 +26,7 @@ class AppUserDetailsServiceTest {
     private AppUserDetailsService appUserDetailsService;
 
     @Test
-    void loadUserByUsername_mapsExistingUserToUserDetails() {
+    void loadUserByUsernameMapsExistingUserToUserDetails() {
         User user = new User();
         user.setUsername("testuser");
         user.setPasswordHash("hashed-password");
@@ -43,7 +43,7 @@ class AppUserDetailsServiceTest {
     }
 
     @Test
-    void loadUserByUsername_mapsExistingUserToUserDetails_whenFoundByEmail() {
+    void loadUserByUsernameMapsExistingUserToUserDetailsWhenFoundByEmail() {
         User user = new User();
         user.setUsername("testuser");
         user.setPasswordHash("hashed-password");
@@ -58,7 +58,7 @@ class AppUserDetailsServiceTest {
     }
 
     @Test
-    void loadUserByUsername_throwsWhenUserNotFound() {
+    void loadUserByUsernameThrowsWhenUserNotFound() {
         when(userRepository.findByUsername("ghost")).thenReturn(Optional.empty());
 
         assertThatExceptionOfType(UsernameNotFoundException.class)

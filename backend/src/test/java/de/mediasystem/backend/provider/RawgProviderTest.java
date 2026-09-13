@@ -20,7 +20,7 @@ class RawgProviderTest {
     private final RawgProvider rawgProvider = new RawgProvider(mock(RestClient.class), "test-key");
 
     @Test
-    void mapToMediaItems_mapsSingleGame() {
+    void mapToMediaItemsMapsSingleGame() {
         RawgSearchResult.Result game = new RawgSearchResult.Result(
                 3498L, "Grand Theft Auto V", "2013-09-17", "https://example.org/gtav.jpg");
         RawgSearchResult response = new RawgSearchResult(List.of(game));
@@ -28,7 +28,7 @@ class RawgProviderTest {
         List<MediaItem> result = rawgProvider.mapToMediaItems(response);
 
         assertThat(result).hasSize(1);
-        MediaItem item = result.get(0);
+        MediaItem item = result.getFirst();
         assertThat(item.getTitle()).isEqualTo("Grand Theft Auto V");
         assertThat(item.getDescription()).isNull();
         assertThat(item.getReleaseYear()).isEqualTo(2013);
@@ -42,7 +42,7 @@ class RawgProviderTest {
     }
 
     @Test
-    void mapToMediaItems_missingReleasedDate_releaseYearIsNull() {
+    void mapToMediaItemsMissingReleasedDateReleaseYearIsNull() {
         RawgSearchResult.Result game = new RawgSearchResult.Result(
                 1L, "Unbekanntes Spiel", null, null);
         RawgSearchResult response = new RawgSearchResult(List.of(game));
@@ -50,19 +50,19 @@ class RawgProviderTest {
         List<MediaItem> result = rawgProvider.mapToMediaItems(response);
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getReleaseYear()).isNull();
-        assertThat(result.get(0).getCoverUrl()).isNull();
+        assertThat(result.getFirst().getReleaseYear()).isNull();
+        assertThat(result.getFirst().getCoverUrl()).isNull();
     }
 
     @Test
-    void mapToMediaItems_nullResponse_returnsEmptyList() {
+    void mapToMediaItemsNullResponseReturnsEmptyList() {
         List<MediaItem> result = rawgProvider.mapToMediaItems(null);
 
         assertThat(result).isEmpty();
     }
 
     @Test
-    void mapToMediaItems_noResults_returnsEmptyList() {
+    void mapToMediaItemsNoResultsReturnsEmptyList() {
         RawgSearchResult response = new RawgSearchResult(List.of());
 
         List<MediaItem> result = rawgProvider.mapToMediaItems(response);
@@ -71,7 +71,7 @@ class RawgProviderTest {
     }
 
     @Test
-    void mapDetail_mapsGameWithDescription() {
+    void mapDetailMapsGameWithDescription() {
         RawgGameDetail detail = new RawgGameDetail(
                 3498L, "Grand Theft Auto V", "2013-09-17",
                 "https://example.org/gtav.jpg", "Open-World-Actionspiel...");
@@ -91,7 +91,7 @@ class RawgProviderTest {
     }
 
     @Test
-    void mapDetail_nullDetail_returnsNull() {
+    void mapDetailNullDetailReturnsNull() {
         MediaItem item = rawgProvider.mapDetail(null);
 
         assertThat(item).isNull();

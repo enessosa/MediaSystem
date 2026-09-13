@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -35,6 +34,11 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
+    /**
+     * Registriert einen neuen Nutzer, inkl. Signup-Cap/Codewort-Prüfung und Duplikat-Prüfung.
+     * @param request die Registrierungsdaten
+     * @return der neu angelegte Nutzer, ohne Passwort-Hash
+     */
     public RegisterResponse register(RegisterRequest request) {
         if (userRepository.count() >= 10) {
             AppSetting appSetting = appSettingRepository.findById("signup_codeword")
@@ -60,6 +64,11 @@ public class AuthService {
         return new RegisterResponse(user.getId(), user.getUsername(), user.getEmail(), user.getCreatedAt());
     }
 
+    /**
+     * Authentifiziert einen Nutzer per Username oder Email und Passwort.
+     * @param request Login-Credentials
+     * @return das Authentication-Objekt des eingeloggten Nutzers
+     */
     public Authentication login(LoginRequest request) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 request.identifier(),

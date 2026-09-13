@@ -8,7 +8,12 @@ import java.util.Optional;
 
 public interface SourceRepository extends JpaRepository<Source, Long> {
 
-    /** Duplikat-Prüfung Ebene 1: existiert dieses externe Medium global bereits? */
+    /**
+     * Duplikat-Prüfung Ebene 1: existiert dieses externe Medium global bereits?
+     * @param sourceType die Herkunfts-API
+     * @param externalId die externe ID bei dieser Herkunfts-API
+     * @return der bestehende Source-Eintrag, falls vorhanden
+     */
     Optional<Source> findBySourceTypeAndExternalId(SourceType sourceType, String externalId);
 
     boolean existsBySourceTypeAndExternalId(SourceType sourceType, String externalId);

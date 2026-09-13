@@ -9,6 +9,11 @@ public interface UserEntryRepository extends JpaRepository<UserEntry, Long> {
 
     List<UserEntry> findByUserId(Long userId);
 
-    /** Duplikat-Prüfung Ebene 2: existiert für diesen Nutzer bereits ein Eintrag zu diesem Medium? */
+    /**
+     * Duplikat-Prüfung Ebene 2: existiert für diesen Nutzer bereits ein Eintrag zu diesem Medium?
+     * @param userId der Nutzer
+     * @param mediaItemId das Medium
+     * @return true, falls bereits ein Eintrag existiert
+     */
     boolean existsByUserIdAndMediaItemId(Long userId, Long mediaItemId);
 }

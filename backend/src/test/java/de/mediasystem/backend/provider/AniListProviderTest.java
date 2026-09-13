@@ -29,7 +29,7 @@ class AniListProviderTest {
     private final AniListProvider aniListProvider = new AniListProvider(mock(RestClient.class));
 
     @Test
-    void mapToMediaItems_mapsSingleMangaWithCreator() {
+    void mapToMediaItemsMapsSingleMangaWithCreator() {
         Media media = new Media(
                 "MANGA",
                 "Ein Manga über einen Ninja.",
@@ -46,7 +46,7 @@ class AniListProviderTest {
         List<MediaItem> result = aniListProvider.mapToMediaItems(response);
 
         assertThat(result).hasSize(1);
-        MediaItem item = result.get(0);
+        MediaItem item = result.getFirst();
         assertThat(item.getTitle()).isEqualTo("NARUTO");
         assertThat(item.getDescription()).isEqualTo("Ein Manga über einen Ninja.");
         assertThat(item.getReleaseYear()).isEqualTo(1999);
@@ -61,7 +61,7 @@ class AniListProviderTest {
     }
 
     @Test
-    void mapToMediaItems_mapsAnimeWithoutStaff_creatorIsNull() {
+    void mapToMediaItemsMapsAnimeWithoutStaffCreatorIsNull() {
         Media media = new Media(
                 "ANIME",
                 "Ein Anime ohne Staff-Angabe.",
@@ -76,11 +76,18 @@ class AniListProviderTest {
         List<MediaItem> result = aniListProvider.mapToMediaItems(response);
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getCreator()).isNull();
+        assertThat(result.getFirst().getCreator()).isNull();
     }
 
     @Test
-    void mapMedia_mapsSingleAnimeWithCreator() {
+    void mapToMediaItemsNullResponseReturnsEmptyList() {
+        List<MediaItem> result = aniListProvider.mapToMediaItems(null);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void mapMediaMapsSingleAnimeWithCreator() {
         Media media = new Media(
                 "ANIME",
                 "Ein Anime über einen Ninja.",
@@ -109,7 +116,7 @@ class AniListProviderTest {
     }
 
     @Test
-    void mapMedia_usesEnglishTitle_whenRomajiIsNull() {
+    void mapMediaUsesEnglishTitleWhenRomajiIsNull() {
         Media media = new Media(
                 "MANGA",
                 "Beschreibung.",

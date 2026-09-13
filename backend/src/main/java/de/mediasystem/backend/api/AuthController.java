@@ -33,6 +33,13 @@ public class AuthController {
         return ResponseEntity.status(201).body(authService.register(request));
     }
 
+    /**
+     * Loggt einen Nutzer per Username oder Email ein und persistiert die Server-Side Session.
+     * @param request Login-Credentials
+     * @param httpServletRequest die eingehende HTTP-Anfrage, für die die Session gespeichert wird
+     * @param httpServletResponse die HTTP-Antwort, in die das Session-Cookie geschrieben wird
+     * @return das Authentication-Objekt des eingeloggten Nutzers
+     */
     @PostMapping("/auth/login")
     public ResponseEntity<@NonNull Authentication> login(@RequestBody @Valid LoginRequest request,
                                                          HttpServletRequest httpServletRequest,

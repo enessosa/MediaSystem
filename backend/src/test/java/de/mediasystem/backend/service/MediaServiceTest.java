@@ -63,7 +63,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void searchMedia_mapsProviderResultsToSearchResults() {
+    void searchMediaMapsProviderResultsToSearchResults() {
         MediaItem item = new MediaItem();
         item.setTitle("Naruto");
         item.setDescription("Ein Manga über einen Ninja.");
@@ -95,7 +95,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void searchMedia_noProviderResults_returnsEmptyList() {
+    void searchMediaNoProviderResultsReturnsEmptyList() {
         when(provider.searchMedia("nothing")).thenReturn(List.of());
 
         List<MediaSearchResult> result = mediaService.searchMedia("nothing", null);
@@ -104,7 +104,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void searchMedia_withMediaTypeFilter_onlyQueriesMatchingProviders() {
+    void searchMediaWithMediaTypeFilterOnlyQueriesMatchingProviders() {
         Provider animeProvider = mock(Provider.class);
         Provider gameProvider = mock(Provider.class);
         when(animeProvider.supportedMediaTypes()).thenReturn(Set.of(MediaType.ANIME, MediaType.MANGA));
@@ -120,7 +120,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void searchMedia_providerReturnsMultipleTypes_filtersDownToRequestedType() {
+    void searchMediaProviderReturnsMultipleTypesFiltersDownToRequestedType() {
         // AniList liefert Anime UND Manga in einer Antwort (bewusste Design-Entscheidung, siehe AniListProvider) -
         // der Filter muss trotzdem nur den angeforderten Typ durchlassen.
         Provider aniListProvider = mock(Provider.class);
@@ -155,7 +155,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void searchMedia_differentMultiTypeProvider_filtersDownToRequestedType() {
+    void searchMediaDifferentMultiTypeProviderFiltersDownToRequestedType() {
         // Gleiches Prinzip wie bei AniList, aber mit einem anderen Mehrfach-Typ-Provider (TMDB: MOVIE+SERIES),
         // um zu belegen, dass der Filter generisch für jeden Provider gilt, nicht AniList-spezifisch ist.
         Provider tmdbProvider = mock(Provider.class);
@@ -190,7 +190,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void searchMedia_emptyMediaTypeFilter_queriesAllProviders() {
+    void searchMediaEmptyMediaTypeFilterQueriesAllProviders() {
         Provider animeProvider = mock(Provider.class);
         Provider gameProvider = mock(Provider.class);
         when(animeProvider.searchMedia("Zelda")).thenReturn(List.of());
@@ -205,7 +205,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void addToUserList_newExternalMedia_createsMediaItemAndUserEntry() {
+    void addToUserListNewExternalMediaCreatesMediaItemAndUserEntry() {
         MediaSearchResult data = new MediaSearchResult(
                 "Naruto",
                 "Ein Manga über einen Ninja.",
@@ -245,7 +245,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void addToUserList_manualSource_neverLooksUpExistingSourceAndAlwaysCreatesNewMediaItem() {
+    void addToUserListManualSourceNeverLooksUpExistingSourceAndAlwaysCreatesNewMediaItem() {
         MediaSearchResult first = new MediaSearchResult(
                 "Herr der Ringe", "", null, MediaType.BOOK, null, null, SourceType.MANUAL, null);
         MediaSearchResult second = new MediaSearchResult(
@@ -278,7 +278,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void getUserEntries_returnsMappedResponsesForUser() {
+    void getUserEntriesReturnsMappedResponsesForUser() {
         Long userId = 1L;
 
         MediaItem item = new MediaItem();
@@ -315,7 +315,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void getUserEntries_noEntriesForUser_returnsEmptyList() {
+    void getUserEntriesNoEntriesForUserReturnsEmptyList() {
         Long userId = 1L;
         when(userEntryRepository.findByUserId(userId)).thenReturn(List.of());
 
@@ -325,7 +325,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void updateUserEntry_ownEntry_updatesStatusRatingAndNote() {
+    void updateUserEntryOwnEntryUpdatesStatusRatingAndNote() {
         Long userId = 1L;
         User owner = new User();
         owner.setId(userId);
@@ -357,7 +357,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void updateUserEntry_entryDoesNotExist_throwsUserEntryNotFoundException() {
+    void updateUserEntryEntryDoesNotExistThrowsUserEntryNotFoundException() {
         when(userEntryRepository.findById(999L)).thenReturn(Optional.empty());
 
         UpdateUserEntryRequest request = new UpdateUserEntryRequest(Status.WATCHING, null, null);
@@ -367,7 +367,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void updateUserEntry_entryBelongsToOtherUser_throwsUserEntryNotFoundException() {
+    void updateUserEntryEntryBelongsToOtherUserThrowsUserEntryNotFoundException() {
         User otherUser = new User();
         otherUser.setId(2L);
 
@@ -384,7 +384,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void deleteUserEntry_ownEntry_deletesIt() {
+    void deleteUserEntryOwnEntryDeletesIt() {
         Long userId = 1L;
         User owner = new User();
         owner.setId(userId);
@@ -401,7 +401,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void deleteUserEntry_entryDoesNotExist_throwsUserEntryNotFoundException() {
+    void deleteUserEntryEntryDoesNotExistThrowsUserEntryNotFoundException() {
         when(userEntryRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> mediaService.deleteUserEntry(999L, 1L))
@@ -409,7 +409,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void deleteUserEntry_entryBelongsToOtherUser_throwsUserEntryNotFoundException() {
+    void deleteUserEntryEntryBelongsToOtherUserThrowsUserEntryNotFoundException() {
         User otherUser = new User();
         otherUser.setId(2L);
 
@@ -424,7 +424,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void fetchMediaDetail_matchingProviderReturnsItem_mapsToMediaSearchResult() {
+    void fetchMediaDetailMatchingProviderReturnsItemMapsToMediaSearchResult() {
         Provider rawgProvider = mock(Provider.class);
         when(rawgProvider.supportedSourceType()).thenReturn(SourceType.RAWG);
 
@@ -449,7 +449,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void fetchMediaDetail_noProviderForSourceType_throwsMediaNotFoundException() {
+    void fetchMediaDetailNoProviderForSourceTypeThrowsMediaNotFoundException() {
         Provider rawgProvider = mock(Provider.class);
         when(rawgProvider.supportedSourceType()).thenReturn(SourceType.RAWG);
         MediaService service = new MediaService(List.of(rawgProvider), mediaItemRepository,
@@ -460,7 +460,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void fetchMediaDetail_providerDoesNotKnowExternalId_throwsMediaNotFoundException() {
+    void fetchMediaDetailProviderDoesNotKnowExternalIdThrowsMediaNotFoundException() {
         Provider rawgProvider = mock(Provider.class);
         when(rawgProvider.supportedSourceType()).thenReturn(SourceType.RAWG);
         when(rawgProvider.fetchById("999")).thenReturn(null);
@@ -472,7 +472,7 @@ class MediaServiceTest {
     }
 
     @Test
-    void fetchMediaDetail_nullSourceType_throwsMediaNotFoundException() {
+    void fetchMediaDetailNullSourceTypeThrowsMediaNotFoundException() {
         assertThatThrownBy(() -> mediaService.fetchMediaDetail(null, "123"))
                 .isInstanceOf(MediaNotFoundException.class);
     }

@@ -129,6 +129,9 @@ public class AniListProvider implements Provider {
      */
     public List<MediaItem> mapToMediaItems(AniListSearchResponse response) {
         List<MediaItem> result = new ArrayList<>();
+        if (response == null) {
+            return result;
+        }
         for (AniListSearchResponse.Media media : response.data().Page().media()) {
             result.add(mapMedia(media));
         }
