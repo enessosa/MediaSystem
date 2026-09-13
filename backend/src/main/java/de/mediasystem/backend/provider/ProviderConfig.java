@@ -33,4 +33,15 @@ public class ProviderConfig {
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tmdbApiKey)
                 .build();
     }
+
+    /**
+     * Rest Client for rawg.
+     * @return the client
+     */
+    @Bean
+    public RestClient rawgRestClient() {
+        return RestClient.builder()
+                .baseUrl("https://api.rawg.io/api")
+                .build();
+    }
 }
