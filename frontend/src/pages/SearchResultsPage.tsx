@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { searchMedia, type MediaSearchResult } from '../api/media'
 import { ApiError } from '../api/client'
-import type { CatalogItem } from '../types/media'
+import type { CatalogItem, MediaType } from '../types/media'
 import MediaCard from '../components/MediaCard'
+import MediaTypeFilter from '../components/MediaTypeFilter'
 import AddToListModal from '../components/AddToListModal'
 import EmptyState from '../components/EmptyState'
 
@@ -21,8 +22,14 @@ function toCatalogItem(result: MediaSearchResult): CatalogItem {
 }
 
 function SearchResultsPage() {
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get('q')?.trim() ?? ''
+  const mediaTypesParam = searchParams.get('mediaTypes') ?? ''
+
+  const selectedTypes = useMemo(
+    () => (mediaTypesParam ? (mediaTypesParam.split(',') as MediaType[]) : []),
+    [mediaTypesParam],
+  )
 
   const [results, setResults] = useState<MediaSearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -41,7 +48,7 @@ function SearchResultsPage() {
     setIsLoading(true)
     setError(null)
 
-    searchMedia(query)
+    searchMedia(query, selectedTypes)
       .then((data) => {
         if (!cancelled) setResults(data)
       })
@@ -57,7 +64,21 @@ function SearchResultsPage() {
     return () => {
       cancelled = true
     }
-  }, [query])
+  }, [query, mediaTypesParam, selectedTypes])
+
+  function toggleType(type: MediaType) {
+    const next = selectedTypes.includes(type)
+      ? selectedTypes.filter((t) => t !== type)
+      : [...selectedTypes, type]
+
+    const nextParams = new URLSearchParams(searchParams)
+    if (next.length > 0) {
+      nextParams.set('mediaTypes', next.join(','))
+    } else {
+      nextParams.delete('mediaTypes')
+    }
+    setSearchParams(nextParams)
+  }
 
   const [selectedResult, setSelectedResult] = useState<MediaSearchResult | null>(null)
 
@@ -73,6 +94,12 @@ function SearchResultsPage() {
           'Gib oben einen Suchbegriff ein.'
         )}
       </p>
+
+      {query && (
+        <div style={{ marginTop: 16 }}>
+          <MediaTypeFilter selected={selectedTypes} onToggle={toggleType} />
+        </div>
+      )}
 
       {isLoading && <p style={{ marginTop: 24 }}>Suche läuft…</p>}
 
@@ -96,7 +123,7 @@ function SearchResultsPage() {
           <EmptyState
             icon="search"
             title="Keine Treffer"
-            description="Versuch einen anderen Suchbegriff."
+            description="Versuch einen anderen Suchbegriff oder passe die Filter an."
             action={
               <Link to="/search" className="btn" style={{ marginTop: 8 }}>
                 Neue Suche

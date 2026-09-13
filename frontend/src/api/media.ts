@@ -37,8 +37,12 @@ export interface UpdateUserEntryPayload {
   note: string | null
 }
 
-export function searchMedia(query: string) {
-  return apiFetch<MediaSearchResult[]>(`/media/search?q=${encodeURIComponent(query)}`)
+export function searchMedia(query: string, mediaTypes?: MediaType[]) {
+  const params = new URLSearchParams({ q: query })
+  if (mediaTypes && mediaTypes.length > 0) {
+    params.set('mediaTypes', mediaTypes.join(','))
+  }
+  return apiFetch<MediaSearchResult[]>(`/media/search?${params.toString()}`)
 }
 
 export function getUserEntries() {
