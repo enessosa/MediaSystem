@@ -5,12 +5,13 @@ import Icon from './Icon'
 import StatusBadge from './StatusBadge'
 import './MediaCard.css'
 
-const TYPE_ICON: Record<CatalogItem['mediaType'], 'clapper' | 'book' | 'tv'> = {
+const TYPE_ICON: Record<CatalogItem['mediaType'], 'clapper' | 'book' | 'tv' | 'gamepad'> = {
   ANIME: 'clapper',
   MANGA: 'book',
   BOOK: 'book',
   SERIES: 'tv',
   MOVIE: 'clapper',
+  GAME: 'gamepad',
 }
 
 interface MediaCardProps {

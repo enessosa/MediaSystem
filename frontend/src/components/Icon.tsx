@@ -10,6 +10,8 @@ const PATHS: Record<string, string> = {
   tv: 'M3 5h18v11H3zM8 20h8M12 16v4',
   clapper: 'M3 8.5 5 5h14l2 3.5M3 8.5V19a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8.5M3 8.5h18M7 5l1.5 3.5M12 5l1.5 3.5M17 5l1.5 3.5',
   sparkles: 'M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2 2M16 16l2 2M6 18l2-2M16 8l2-2',
+  gamepad:
+    'M7 9h10a3 3 0 0 1 3 3v3.5a2.5 2.5 0 0 1-4.5 1.5l-.5-.7a1 1 0 0 0-.8-.4H9.8a1 1 0 0 0-.8.4l-.5.7A2.5 2.5 0 0 1 4 15.5V12a3 3 0 0 1 3-3ZM8 12v2M7 13h2M16 12.5h.01M14.5 14h.01',
 }
 
 interface IconProps {

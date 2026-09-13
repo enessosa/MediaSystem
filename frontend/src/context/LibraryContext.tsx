@@ -17,6 +17,7 @@ const FALLBACK_COLOR: Record<MediaType, string> = {
   BOOK: '#2f6b4f',
   SERIES: '#3f5e6b',
   MOVIE: '#7a1f2b',
+  GAME: '#1f6b5b',
 }
 
 function toLibraryEntry(response: UserEntryResponse): LibraryEntry {

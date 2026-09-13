@@ -1,6 +1,6 @@
 // Spiegelt die Backend-Enums (de.mediasystem.backend.model.MediaType / .Status)
 
-export type MediaType = 'ANIME' | 'MANGA' | 'BOOK' | 'SERIES' | 'MOVIE'
+export type MediaType = 'ANIME' | 'MANGA' | 'BOOK' | 'SERIES' | 'MOVIE' | 'GAME'
 
 export type WatchStatus = 'WATCHING' | 'COMPLETED' | 'PLANNED' | 'DROPPED'
 
@@ -31,6 +31,7 @@ export const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
   BOOK: 'Buch',
   SERIES: 'Serie',
   MOVIE: 'Film',
+  GAME: 'Spiel',
 }
 
 export const STATUS_LABELS: Record<WatchStatus, string> = {
