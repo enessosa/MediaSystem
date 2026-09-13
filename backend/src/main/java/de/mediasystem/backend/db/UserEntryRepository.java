@@ -1,11 +1,12 @@
 package de.mediasystem.backend.db;
 
 import de.mediasystem.backend.model.UserEntry;
+import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface UserEntryRepository extends JpaRepository<UserEntry, Long> {
+public interface UserEntryRepository extends JpaRepository<@NonNull UserEntry, @NonNull Long> {
 
     List<UserEntry> findByUserId(Long userId);
 
