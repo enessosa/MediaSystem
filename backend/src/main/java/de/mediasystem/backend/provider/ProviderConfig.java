@@ -44,4 +44,15 @@ public class ProviderConfig {
                 .baseUrl("https://api.rawg.io/api")
                 .build();
     }
+
+    /**
+     * Rest Client for OpenLibrary. Keine Auth nötig, die API ist komplett offen.
+     * @return the client
+     */
+    @Bean
+    public RestClient openLibraryRestClient() {
+        return RestClient.builder()
+                .baseUrl("https://openlibrary.org")
+                .build();
+    }
 }

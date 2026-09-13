@@ -3,6 +3,7 @@ package de.mediasystem.backend.api;
 import de.mediasystem.backend.api.dto.MediaSearchResult;
 import de.mediasystem.backend.api.dto.UpdateUserEntryRequest;
 import de.mediasystem.backend.api.dto.UserEntryResponse;
+import de.mediasystem.backend.model.MediaType;
 import de.mediasystem.backend.service.MediaService;
 import de.mediasystem.backend.service.UserService;
 import jakarta.validation.Valid;
@@ -24,9 +25,17 @@ public class MediaController {
         this.userService = userService;
     }
 
+    /**
+     * Suche über alle (oder gefilterte) Provider.
+     * @param q Suchbegriff
+     * @param mediaTypes optionaler Filter, z.B. ?mediaTypes=ANIME,MANGA — nur die passenden Provider werden angefragt
+     * @return Liste der Suchergebnisse
+     */
     @GetMapping("/media/search")
-    public ResponseEntity<@NonNull List<MediaSearchResult>> searchResult(@RequestParam String q) {
-        return ResponseEntity.ok(mediaService.searchMedia(q));
+    public ResponseEntity<@NonNull List<MediaSearchResult>> searchResult(
+            @RequestParam String q,
+            @RequestParam(required = false) List<MediaType> mediaTypes) {
+        return ResponseEntity.ok(mediaService.searchMedia(q, mediaTypes));
     }
 
 

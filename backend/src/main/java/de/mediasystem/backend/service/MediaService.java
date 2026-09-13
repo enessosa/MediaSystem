@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,12 +45,25 @@ public class MediaService {
     /**
      * this method converts search results into a record class to prepare the data that is send to the frontend.
      * @param query is the query for the search
+     * @param mediaTypes optionaler Filter: nur Provider anfragen, die mindestens einen dieser Typen abdecken,
+     *                    und aus deren Ergebnissen nur Treffer mit genau diesen Typen behalten (ein Provider
+     *                    kann intern mehrere Typen liefern, z.B. AniList Anime *und* Manga in einer Antwort).
+     *                    null oder leer heißt: alle Provider anfragen, kein Nachfiltern (bisheriges Verhalten).
      * @return the converted Record class wrapped  in a list.
      */
-    public List<MediaSearchResult> searchMedia(String query) {
+    public List<MediaSearchResult> searchMedia(String query, List<MediaType> mediaTypes) {
+        boolean hasFilter = mediaTypes != null && !mediaTypes.isEmpty();
+
         List<MediaItem> results = new ArrayList<>();
         for (Provider provider : providers) {
-            results.addAll(provider.searchMedia(query));
+            if (hasFilter && Collections.disjoint(provider.supportedMediaTypes(), mediaTypes)) {
+                continue;
+            }
+            for (MediaItem item : provider.searchMedia(query)) {
+                if (!hasFilter || mediaTypes.contains(item.getMediaType())) {
+                    results.add(item);
+                }
+            }
         }
         List<MediaSearchResult> converted = new ArrayList<>();
         for (MediaItem item : results) {

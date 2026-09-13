@@ -69,6 +69,11 @@ public class AniListProvider implements Provider {
         return null;
     }
 
+    @Override
+    public Set<MediaType> supportedMediaTypes() {
+        return Set.of(MediaType.ANIME, MediaType.MANGA);
+    }
+
     /**
      * mapps the Result of the GraphQL query to the Items.
      * @param response is the response to the query.

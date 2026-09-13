@@ -11,6 +11,7 @@ import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class TmdbProvider implements Provider {
@@ -34,6 +35,11 @@ public class TmdbProvider implements Provider {
     @Override
     public MediaItem fetchById(String id) {
         return null;
+    }
+
+    @Override
+    public Set<MediaType> supportedMediaTypes() {
+        return Set.of(MediaType.MOVIE, MediaType.SERIES);
     }
 
     private Integer extractYear(String date) {
