@@ -23,3 +23,6 @@ spring:
 
 tmdb:
   api-key: ${TMDB_API_KEY:}
+
+rawg:
+  api-key: ${RAWG_API_KEY:}
