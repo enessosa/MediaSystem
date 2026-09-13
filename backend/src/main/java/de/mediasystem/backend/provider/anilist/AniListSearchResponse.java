@@ -1,4 +1,4 @@
-package de.mediasystem.backend.provider;
+package de.mediasystem.backend.provider.anilist;
 
 import java.util.List;
 

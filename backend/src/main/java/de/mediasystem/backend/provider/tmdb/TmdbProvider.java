@@ -1,9 +1,10 @@
-package de.mediasystem.backend.provider;
+package de.mediasystem.backend.provider.tmdb;
 
 import de.mediasystem.backend.model.MediaItem;
 import de.mediasystem.backend.model.MediaType;
 import de.mediasystem.backend.model.Source;
 import de.mediasystem.backend.model.SourceType;
+import de.mediasystem.backend.provider.Provider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;

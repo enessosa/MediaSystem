@@ -1,6 +1,8 @@
-package de.mediasystem.backend.provider;
+package de.mediasystem.backend.provider.openlibrary;
 
 import de.mediasystem.backend.model.MediaItem;
+import de.mediasystem.backend.provider.Provider;
+
 import java.util.List;
 
 public class OpenLibraryProvider implements Provider {

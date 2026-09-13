@@ -1,4 +1,4 @@
-package de.mediasystem.backend.provider;
+package de.mediasystem.backend.provider.tmdb;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
