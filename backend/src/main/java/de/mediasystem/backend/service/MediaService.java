@@ -11,6 +11,7 @@ import de.mediasystem.backend.model.*;
 import de.mediasystem.backend.model.roles.User;
 import de.mediasystem.backend.provider.Provider;
 import de.mediasystem.backend.service.exception.AlreadyInListException;
+import de.mediasystem.backend.service.exception.MediaNotFoundException;
 import de.mediasystem.backend.service.exception.UserEntryNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -210,5 +211,39 @@ public class MediaService {
         }
 
         userEntryRepository.delete(userEntry);
+    }
+
+    /**
+     * method to fetch mediadetails.
+     * @param sourceType type
+     * @param externalId id
+     * @return the item details
+     */
+    public MediaSearchResult fetchMediaDetail(SourceType sourceType, String externalId) {
+        if (sourceType == null || externalId == null) {
+            throw new MediaNotFoundException();
+        }
+
+        for (Provider provider : providers) {
+            if (provider.supportedSourceType() == sourceType) {
+                MediaItem item = provider.fetchById(externalId);
+                if (item == null) {
+                    throw new MediaNotFoundException();
+                }
+
+                Source source = item.getSources().iterator().next();
+                return new MediaSearchResult(
+                        item.getTitle(),
+                        item.getDescription(),
+                        item.getReleaseYear(),
+                        item.getMediaType(),
+                        item.getCreator(),
+                        item.getCoverUrl(),
+                        source.getSourceType(),
+                        source.getExternalId());
+            }
+        }
+
+        throw new MediaNotFoundException();
     }
 }
