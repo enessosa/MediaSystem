@@ -2,6 +2,7 @@ package de.mediasystem.backend.service;
 
 import de.mediasystem.backend.api.dto.LoginRequest;
 import de.mediasystem.backend.api.dto.RegisterRequest;
+import de.mediasystem.backend.api.dto.RegisterResponse;
 import de.mediasystem.backend.db.AppSettingRepository;
 import de.mediasystem.backend.db.UserRepository;
 import de.mediasystem.backend.model.AppSetting;
@@ -55,15 +56,16 @@ class AuthServiceTest {
     void register_belowCap_createsUserWithoutCodewordCheck() {
         when(userRepository.count()).thenReturn(5L);
         when(passwordEncoder.encode("rawPassword")).thenReturn("hashed-password");
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
+        when(userRepository.save(savedUser.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
         RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
 
-        User result = authService.register(request);
+        RegisterResponse result = authService.register(request);
 
-        assertThat(result.getUsername()).isEqualTo("newuser");
-        assertThat(result.getEmail()).isEqualTo("new@test.de");
-        assertThat(result.getPasswordHash()).isEqualTo("hashed-password");
+        assertThat(result.username()).isEqualTo("newuser");
+        assertThat(result.email()).isEqualTo("new@test.de");
+        assertThat(savedUser.getValue().getPasswordHash()).isEqualTo("hashed-password");
         verify(appSettingRepository, never()).findById(any());
     }
 
@@ -79,9 +81,9 @@ class AuthServiceTest {
 
         RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", "geheim");
 
-        User result = authService.register(request);
+        RegisterResponse result = authService.register(request);
 
-        assertThat(result.getUsername()).isEqualTo("newuser");
+        assertThat(result.username()).isEqualTo("newuser");
     }
 
     @Test

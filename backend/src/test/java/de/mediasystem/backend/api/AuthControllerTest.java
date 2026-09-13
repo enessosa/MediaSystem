@@ -2,8 +2,10 @@ package de.mediasystem.backend.api;
 
 import de.mediasystem.backend.api.dto.LoginRequest;
 import de.mediasystem.backend.api.dto.RegisterRequest;
-import de.mediasystem.backend.model.roles.User;
+import de.mediasystem.backend.api.dto.RegisterResponse;
 import de.mediasystem.backend.service.AuthService;
+
+import java.time.Instant;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
@@ -38,16 +40,15 @@ class AuthControllerTest {
 
     @Test
     void register_validRequest_returnsCreatedAndCallsService() {
-        User savedUser = new User();
-        savedUser.setUsername("newuser");
-        savedUser.setEmail("new@test.de");
-        when(authService.register(any(RegisterRequest.class))).thenReturn(savedUser);
+        RegisterResponse registerResponse = new RegisterResponse(1L, "newuser", "new@test.de", Instant.now());
+        when(authService.register(any(RegisterRequest.class))).thenReturn(registerResponse);
 
         RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
 
         ResponseEntity<?> response = authController.register(request);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isEqualTo(registerResponse);
         verify(authService).register(request);
     }
 
