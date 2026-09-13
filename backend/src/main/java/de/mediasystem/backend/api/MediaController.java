@@ -4,6 +4,7 @@ import de.mediasystem.backend.api.dto.MediaSearchResult;
 import de.mediasystem.backend.api.dto.UpdateUserEntryRequest;
 import de.mediasystem.backend.api.dto.UserEntryResponse;
 import de.mediasystem.backend.model.MediaType;
+import de.mediasystem.backend.model.SourceType;
 import de.mediasystem.backend.service.MediaService;
 import de.mediasystem.backend.service.UserService;
 import jakarta.validation.Valid;
@@ -103,5 +104,12 @@ public class MediaController {
         mediaService.deleteUserEntry(id, userId);
 
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/media/items")
+    public ResponseEntity<@NonNull MediaSearchResult> getMediaDetail(@RequestParam SourceType sourceType,
+                                                                  @RequestParam String externalId) {
+        return ResponseEntity.ok(mediaService.fetchMediaDetail(sourceType, externalId));
     }
 }
