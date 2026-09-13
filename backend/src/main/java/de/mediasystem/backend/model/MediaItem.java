@@ -37,7 +37,6 @@ public class MediaItem {
     @Column(name = "release_year")
     private Integer releaseYear;
 
-    @Column(length = 255)
     private String creator;
 
     @Column(name = "cover_url", length = 1000)

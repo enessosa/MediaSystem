@@ -64,16 +64,31 @@ public class RawgProvider implements Provider {
         if (detail == null) {
             return null;
         }
+        return buildMediaItem(detail.id(), detail.name(), detail.descriptionRaw(),
+                detail.released(), detail.backgroundImage());
+    }
 
+    /**
+     * baut ein MediaItem aus den RAWG-Feldern, die Such- und Detail-Antwort gemeinsam haben -
+     * genutzt sowohl von mapToMediaItems (mehrere Treffer) als auch von mapDetail (ein Treffer).
+     * @param id die RAWG-ID
+     * @param title Titel
+     * @param description Beschreibung (bei der Suche immer null, RAWGs Suchliste liefert keine)
+     * @param releasedDate Erscheinungsdatum
+     * @param coverUrl Cover-URL
+     * @return das gemappte MediaItem
+     */
+    private MediaItem buildMediaItem(Long id, String title, String description,
+                                      String releasedDate, String coverUrl) {
         MediaItem item = new MediaItem();
-        item.setTitle(detail.name());
-        item.setDescription(detail.descriptionRaw());
-        item.setReleaseYear(extractYear(detail.released()));
+        item.setTitle(title);
+        item.setDescription(description);
+        item.setReleaseYear(extractYear(releasedDate));
         item.setMediaType(MediaType.GAME);
-        item.setCoverUrl(detail.backgroundImage());
+        item.setCoverUrl(coverUrl);
 
         Source source = new Source();
-        source.setExternalId(detail.id().toString());
+        source.setExternalId(id.toString());
         source.setMediaItem(item);
         source.setSourceType(SourceType.RAWG);
         item.getSources().add(source);
@@ -107,22 +122,9 @@ public class RawgProvider implements Provider {
         }
 
         for (RawgSearchResult.Result r : response.results()) {
-            MediaItem item = new MediaItem();
-            item.setTitle(r.name());
             // RAWG liefert im Such-Endpoint keine Beschreibung, nur der Detail-Call pro Treffer hätte eine
             // (ähnliche Lücke wie fehlender creator bei TMDB).
-            item.setDescription(null);
-            item.setReleaseYear(extractYear(r.released()));
-            item.setMediaType(MediaType.GAME);
-            item.setCoverUrl(r.backgroundImage());
-
-            Source source = new Source();
-            source.setExternalId(r.id().toString());
-            source.setMediaItem(item);
-            source.setSourceType(SourceType.RAWG);
-            item.getSources().add(source);
-
-            result.add(item);
+            result.add(buildMediaItem(r.id(), r.name(), null, r.released(), r.backgroundImage()));
         }
         return result;
     }

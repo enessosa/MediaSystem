@@ -2,6 +2,7 @@ package de.mediasystem.backend.service;
 
 import de.mediasystem.backend.db.UserRepository;
 import de.mediasystem.backend.model.roles.User;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,7 +34,7 @@ public class AppUserDetailsService implements UserDetailsService {
      * @throws UsernameNotFoundException wenn kein solcher Nutzer existiert
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public @NonNull UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .or(() -> userRepository.findByEmail(username))
                 .orElseThrow(() -> new UsernameNotFoundException(username));

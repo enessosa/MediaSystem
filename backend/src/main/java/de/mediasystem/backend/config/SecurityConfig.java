@@ -31,10 +31,9 @@ public class SecurityConfig {
      * hier kommen die Security Regeln rein.
      * @param http wird von Spring boot erstellt und der methode ohne aufruf übergeben.
      * @return gibt eine liste an Filtern zurück, die angewandt werden soll
-     * @throws Exception wegen der API ist es nötig ohne weitere Konkretisierung eine generelle Exception zu werfen.
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) {
         http.authorizeHttpRequests(auth -> {
             auth.requestMatchers("/auth/**", "/error").permitAll();
             auth.anyRequest().authenticated();

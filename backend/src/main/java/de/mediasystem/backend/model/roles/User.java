@@ -2,14 +2,12 @@ package de.mediasystem.backend.model.roles;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -20,8 +18,8 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "app_user")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING, length = 20)
+@Inheritance
+@DiscriminatorColumn(name = "role", length = 20)
 @DiscriminatorValue("USER")
 @Getter
 @Setter
