@@ -8,6 +8,7 @@ import de.mediasystem.backend.provider.Provider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
@@ -40,7 +41,44 @@ public class RawgProvider implements Provider {
 
     @Override
     public MediaItem fetchById(String id) {
-        return null;
+        try {
+            RawgGameDetail detail = restClient.get()
+                    .uri(uriBuilder -> uriBuilder.path("/games/{id}")
+                            .queryParam("key", apiKey)
+                            .build(id))
+                    .retrieve()
+                    .body(RawgGameDetail.class);
+            return mapDetail(detail);
+        } catch (HttpClientErrorException.NotFound notFound) {
+            // RAWG antwortet bei unbekannter ID mit echtem HTTP 404.
+            return null;
+        }
+    }
+
+    /**
+     * map method für den Detail-Call.
+     * @param detail die rohe Antwort von /games/{id}
+     * @return das gemappte MediaItem, oder null falls detail null ist
+     */
+    public MediaItem mapDetail(RawgGameDetail detail) {
+        if (detail == null) {
+            return null;
+        }
+
+        MediaItem item = new MediaItem();
+        item.setTitle(detail.name());
+        item.setDescription(detail.descriptionRaw());
+        item.setReleaseYear(extractYear(detail.released()));
+        item.setMediaType(MediaType.GAME);
+        item.setCoverUrl(detail.backgroundImage());
+
+        Source source = new Source();
+        source.setExternalId(detail.id().toString());
+        source.setMediaItem(item);
+        source.setSourceType(SourceType.RAWG);
+        item.getSources().add(source);
+
+        return item;
     }
 
     @Override
@@ -87,5 +125,10 @@ public class RawgProvider implements Provider {
             result.add(item);
         }
         return result;
+    }
+
+    @Override
+    public SourceType supportedSourceType() {
+        return SourceType.RAWG;
     }
 }

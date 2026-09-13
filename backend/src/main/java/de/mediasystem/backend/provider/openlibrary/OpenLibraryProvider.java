@@ -7,10 +7,12 @@ import de.mediasystem.backend.model.SourceType;
 import de.mediasystem.backend.provider.Provider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -35,6 +37,56 @@ public class OpenLibraryProvider implements Provider {
 
     @Override
     public MediaItem fetchById(String id) {
+        try {
+            OpenLibraryWorkDetail detail = restClient.get()
+                    .uri(id + ".json")
+                    .retrieve()
+                    .body(OpenLibraryWorkDetail.class);
+            return mapDetail(detail);
+        } catch (HttpClientErrorException.NotFound notFound) {
+            // OpenLibrary antwortet bei unbekanntem Key mit echtem HTTP 404.
+            return null;
+        }
+    }
+
+    /**
+     * map method für den Detail-Call.
+     * @param detail die rohe Antwort von /works/{key}.json
+     * @return das gemappte MediaItem, oder null falls detail null ist
+     */
+    public MediaItem mapDetail(OpenLibraryWorkDetail detail) {
+        if (detail == null) {
+            return null;
+        }
+
+        MediaItem item = new MediaItem();
+        item.setTitle(detail.title());
+        item.setDescription(extractDescription(detail.description()));
+        // Erscheinungsjahr gibt's bei OpenLibrary nur auf Editions-Ebene, nicht auf dem Work selbst.
+        item.setReleaseYear(null);
+        item.setMediaType(MediaType.BOOK);
+        // Autor-Namen brauchen einen zusätzlichen Call gegen /authors/{id}.json (Work liefert nur Autor-Keys) -
+        // bewusst ausgelassen, um die Detail-Ansicht nicht mit einem zweiten externen Call zu verlangsamen.
+        item.setCreator(null);
+        item.setCoverUrl(detail.covers() != null && !detail.covers().isEmpty()
+                ? "https://covers.openlibrary.org/b/id/" + detail.covers().getFirst() + "-M.jpg" : null);
+
+        Source source = new Source();
+        source.setExternalId(detail.key());
+        source.setMediaItem(item);
+        source.setSourceType(SourceType.OPENLIBRARY);
+        item.getSources().add(source);
+
+        return item;
+    }
+
+    private String extractDescription(Object description) {
+        if (description instanceof String text) {
+            return text;
+        }
+        if (description instanceof Map<?, ?> map && map.get("value") instanceof String text) {
+            return text;
+        }
         return null;
     }
 
@@ -77,5 +129,11 @@ public class OpenLibraryProvider implements Provider {
             result.add(item);
         }
         return result;
+    }
+
+
+    @Override
+    public SourceType supportedSourceType() {
+        return SourceType.OPENLIBRARY;
     }
 }
