@@ -2,6 +2,7 @@ package de.mediasystem.backend.service;
 
 import de.mediasystem.backend.api.dto.LoginRequest;
 import de.mediasystem.backend.api.dto.RegisterRequest;
+import de.mediasystem.backend.api.dto.RegisterResponse;
 import de.mediasystem.backend.db.AppSettingRepository;
 import de.mediasystem.backend.db.UserRepository;
 import de.mediasystem.backend.model.AppSetting;
@@ -34,7 +35,7 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    public User register(RegisterRequest request) {
+    public RegisterResponse register(RegisterRequest request) {
         if (userRepository.count() >= 10) {
             AppSetting appSetting = appSettingRepository.findById("signup_codeword")
                     // Intellij meinte ich soll das mit :: machen anstatt lambda.
@@ -56,7 +57,7 @@ public class AuthService {
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         userRepository.save(user);
 
-        return user;
+        return new RegisterResponse(user.getId(), user.getUsername(), user.getEmail(), user.getCreatedAt());
     }
 
     public Authentication login(LoginRequest request) {

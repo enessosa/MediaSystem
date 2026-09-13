@@ -2,7 +2,7 @@ package de.mediasystem.backend.api;
 
 import de.mediasystem.backend.api.dto.LoginRequest;
 import de.mediasystem.backend.api.dto.RegisterRequest;
-import de.mediasystem.backend.model.roles.User;
+import de.mediasystem.backend.api.dto.RegisterResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -29,7 +29,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<@NonNull User> register(@RequestBody @Valid RegisterRequest request) {
+    public ResponseEntity<@NonNull RegisterResponse> register(@RequestBody @Valid RegisterRequest request) {
         return ResponseEntity.status(201).body(authService.register(request));
     }
 
