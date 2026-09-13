@@ -64,4 +64,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<@NonNull String> userEntryNotFound(UserEntryNotFoundException e) {
         return ResponseEntity.status(404).body(e.getMessage());
     }
+
+    @ExceptionHandler(MediaNotFoundException.class)
+    public ResponseEntity<@NonNull String> handleMediaNotFound(MediaNotFoundException e) {
+        return ResponseEntity.status(404).body(e.getMessage());
+    }
 }
