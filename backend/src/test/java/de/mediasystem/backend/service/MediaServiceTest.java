@@ -25,10 +25,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -77,7 +79,7 @@ class MediaServiceTest {
 
         when(provider.searchMedia("Naruto")).thenReturn(List.of(item));
 
-        List<MediaSearchResult> result = mediaService.searchMedia("Naruto");
+        List<MediaSearchResult> result = mediaService.searchMedia("Naruto", null);
 
         assertThat(result).hasSize(1);
         MediaSearchResult searchResult = result.getFirst();
@@ -95,9 +97,110 @@ class MediaServiceTest {
     void searchMedia_noProviderResults_returnsEmptyList() {
         when(provider.searchMedia("nothing")).thenReturn(List.of());
 
-        List<MediaSearchResult> result = mediaService.searchMedia("nothing");
+        List<MediaSearchResult> result = mediaService.searchMedia("nothing", null);
 
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void searchMedia_withMediaTypeFilter_onlyQueriesMatchingProviders() {
+        Provider animeProvider = mock(Provider.class);
+        Provider gameProvider = mock(Provider.class);
+        when(animeProvider.supportedMediaTypes()).thenReturn(Set.of(MediaType.ANIME, MediaType.MANGA));
+        when(gameProvider.supportedMediaTypes()).thenReturn(Set.of(MediaType.GAME));
+        when(gameProvider.searchMedia("Zelda")).thenReturn(List.of());
+        MediaService service = new MediaService(List.of(animeProvider, gameProvider), mediaItemRepository,
+                sourceRepository, userEntryRepository, userRepository);
+
+        service.searchMedia("Zelda", List.of(MediaType.GAME));
+
+        verify(gameProvider).searchMedia("Zelda");
+        verify(animeProvider, never()).searchMedia(any());
+    }
+
+    @Test
+    void searchMedia_providerReturnsMultipleTypes_filtersDownToRequestedType() {
+        // AniList liefert Anime UND Manga in einer Antwort (bewusste Design-Entscheidung, siehe AniListProvider) -
+        // der Filter muss trotzdem nur den angeforderten Typ durchlassen.
+        Provider aniListProvider = mock(Provider.class);
+        when(aniListProvider.supportedMediaTypes()).thenReturn(Set.of(MediaType.ANIME, MediaType.MANGA));
+
+        MediaItem anime = new MediaItem();
+        anime.setTitle("Naruto");
+        anime.setMediaType(MediaType.ANIME);
+        Source animeSource = new Source();
+        animeSource.setSourceType(SourceType.ANILIST);
+        animeSource.setExternalId("1");
+        animeSource.setMediaItem(anime);
+        anime.getSources().add(animeSource);
+
+        MediaItem manga = new MediaItem();
+        manga.setTitle("Naruto");
+        manga.setMediaType(MediaType.MANGA);
+        Source mangaSource = new Source();
+        mangaSource.setSourceType(SourceType.ANILIST);
+        mangaSource.setExternalId("2");
+        mangaSource.setMediaItem(manga);
+        manga.getSources().add(mangaSource);
+
+        when(aniListProvider.searchMedia("Naruto")).thenReturn(List.of(anime, manga));
+        MediaService service = new MediaService(List.of(aniListProvider), mediaItemRepository,
+                sourceRepository, userEntryRepository, userRepository);
+
+        List<MediaSearchResult> result = service.searchMedia("Naruto", List.of(MediaType.ANIME));
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().mediaType()).isEqualTo(MediaType.ANIME);
+    }
+
+    @Test
+    void searchMedia_differentMultiTypeProvider_filtersDownToRequestedType() {
+        // Gleiches Prinzip wie bei AniList, aber mit einem anderen Mehrfach-Typ-Provider (TMDB: MOVIE+SERIES),
+        // um zu belegen, dass der Filter generisch für jeden Provider gilt, nicht AniList-spezifisch ist.
+        Provider tmdbProvider = mock(Provider.class);
+        when(tmdbProvider.supportedMediaTypes()).thenReturn(Set.of(MediaType.MOVIE, MediaType.SERIES));
+
+        MediaItem movie = new MediaItem();
+        movie.setTitle("Naruto: The Last");
+        movie.setMediaType(MediaType.MOVIE);
+        Source movieSource = new Source();
+        movieSource.setSourceType(SourceType.TMDB);
+        movieSource.setExternalId("1");
+        movieSource.setMediaItem(movie);
+        movie.getSources().add(movieSource);
+
+        MediaItem series = new MediaItem();
+        series.setTitle("Naruto Shippuden");
+        series.setMediaType(MediaType.SERIES);
+        Source seriesSource = new Source();
+        seriesSource.setSourceType(SourceType.TMDB);
+        seriesSource.setExternalId("2");
+        seriesSource.setMediaItem(series);
+        series.getSources().add(seriesSource);
+
+        when(tmdbProvider.searchMedia("Naruto")).thenReturn(List.of(movie, series));
+        MediaService service = new MediaService(List.of(tmdbProvider), mediaItemRepository,
+                sourceRepository, userEntryRepository, userRepository);
+
+        List<MediaSearchResult> result = service.searchMedia("Naruto", List.of(MediaType.SERIES));
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().mediaType()).isEqualTo(MediaType.SERIES);
+    }
+
+    @Test
+    void searchMedia_emptyMediaTypeFilter_queriesAllProviders() {
+        Provider animeProvider = mock(Provider.class);
+        Provider gameProvider = mock(Provider.class);
+        when(animeProvider.searchMedia("Zelda")).thenReturn(List.of());
+        when(gameProvider.searchMedia("Zelda")).thenReturn(List.of());
+        MediaService service = new MediaService(List.of(animeProvider, gameProvider), mediaItemRepository,
+                sourceRepository, userEntryRepository, userRepository);
+
+        service.searchMedia("Zelda", List.of());
+
+        verify(animeProvider).searchMedia("Zelda");
+        verify(gameProvider).searchMedia("Zelda");
     }
 
     @Test

@@ -43,13 +43,27 @@ class MediaControllerTest {
         MediaSearchResult searchResult = new MediaSearchResult(
                 "Naruto", "Ein Manga über einen Ninja.", 1999, MediaType.MANGA,
                 "Masashi Kishimoto", "https://example.org/cover.jpg", SourceType.ANILIST, "1");
-        when(mediaService.searchMedia("Naruto")).thenReturn(List.of(searchResult));
+        when(mediaService.searchMedia("Naruto", null)).thenReturn(List.of(searchResult));
 
-        ResponseEntity<@NonNull List<MediaSearchResult>> response = mediaController.searchResult("Naruto");
+        ResponseEntity<@NonNull List<MediaSearchResult>> response = mediaController.searchResult("Naruto", null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).containsExactly(searchResult);
-        verify(mediaService).searchMedia("Naruto");
+        verify(mediaService).searchMedia("Naruto", null);
+    }
+
+    @Test
+    void searchResult_withMediaTypeFilter_passesFilterToService() {
+        MediaSearchResult searchResult = new MediaSearchResult(
+                "Zelda II", "", 1987, MediaType.GAME, null, null, SourceType.RAWG, "53205");
+        List<MediaType> filter = List.of(MediaType.GAME);
+        when(mediaService.searchMedia("Zelda", filter)).thenReturn(List.of(searchResult));
+
+        ResponseEntity<@NonNull List<MediaSearchResult>> response = mediaController.searchResult("Zelda", filter);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).containsExactly(searchResult);
+        verify(mediaService).searchMedia("Zelda", filter);
     }
 
     @Test
