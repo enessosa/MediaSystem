@@ -2,6 +2,7 @@ package de.mediasystem.backend.api;
 
 import de.mediasystem.backend.api.dto.UpdateCodewordRequest;
 import de.mediasystem.backend.service.AdminService;
+import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,7 +27,7 @@ class AdminControllerTest {
     void updateCodewordValidRequestReturnsNoContentAndCallsService() {
         UpdateCodewordRequest request = new UpdateCodewordRequest("neuesGeheimnis");
 
-        ResponseEntity<Void> response = adminController.updateCodeword(request);
+        ResponseEntity<@NonNull Void> response = adminController.updateCodeword(request);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(adminService).updateCodeword("neuesGeheimnis");

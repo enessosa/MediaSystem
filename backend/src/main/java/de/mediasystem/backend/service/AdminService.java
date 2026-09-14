@@ -19,7 +19,7 @@ public class AdminService {
     /**
      * Setzt/ändert das Signup-Codewort (ab dem 11. Nutzer Pflicht, siehe AuthService.register).
      * Zusätzlich zur URL-Regel in SecurityConfig ("/admin/**" -> ROLE_ADMIN) hier nochmal per
-     * @PreAuthorize geprüft - zweite, unabhängige Schutzschicht direkt an der sensiblen Methode
+     * {@code @PreAuthorize} geprüft - zweite, unabhängige Schutzschicht direkt an der sensiblen Methode
      * (siehe learn-progress/Defense-in-Depth-Autorisierung.md).
      * @param codeword das neue Codewort
      */
