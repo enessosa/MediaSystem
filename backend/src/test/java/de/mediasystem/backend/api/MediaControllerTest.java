@@ -1,5 +1,6 @@
 package de.mediasystem.backend.api;
 
+import de.mediasystem.backend.api.dto.AddToListRequest;
 import de.mediasystem.backend.api.dto.MediaSearchResult;
 import de.mediasystem.backend.api.dto.UpdateUserEntryRequest;
 import de.mediasystem.backend.api.dto.UserEntryResponse;
@@ -68,7 +69,7 @@ class MediaControllerTest {
 
     @Test
     void addToUserListValidRequestReturnsCreatedWithServiceResult() {
-        MediaSearchResult searchResult = new MediaSearchResult(
+        AddToListRequest request = new AddToListRequest(
                 "Naruto", "Ein Manga über einen Ninja.", 1999, MediaType.MANGA,
                 "Masashi Kishimoto", "https://example.org/cover.jpg", SourceType.ANILIST, "1");
         UserEntryResponse entryResponse = new UserEntryResponse(
@@ -79,14 +80,14 @@ class MediaControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("testuser");
         when(userService.getUserIdByUsername("testuser")).thenReturn(1L);
-        when(mediaService.addToUserList(searchResult, 1L)).thenReturn(entryResponse);
+        when(mediaService.addToUserList(request, 1L)).thenReturn(entryResponse);
 
         ResponseEntity<@NonNull UserEntryResponse> response =
-                mediaController.addToUserList(searchResult, authentication);
+                mediaController.addToUserList(request, authentication);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(entryResponse);
-        verify(mediaService).addToUserList(searchResult, 1L);
+        verify(mediaService).addToUserList(request, 1L);
     }
 
     @Test

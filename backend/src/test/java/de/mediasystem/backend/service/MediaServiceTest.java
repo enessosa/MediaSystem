@@ -1,5 +1,6 @@
 package de.mediasystem.backend.service;
 
+import de.mediasystem.backend.api.dto.AddToListRequest;
 import de.mediasystem.backend.api.dto.MediaSearchResult;
 import de.mediasystem.backend.api.dto.UpdateUserEntryRequest;
 import de.mediasystem.backend.api.dto.UserEntryResponse;
@@ -206,7 +207,7 @@ class MediaServiceTest {
 
     @Test
     void addToUserListNewExternalMediaCreatesMediaItemAndUserEntry() {
-        MediaSearchResult data = new MediaSearchResult(
+        AddToListRequest data = new AddToListRequest(
                 "Naruto",
                 "Ein Manga über einen Ninja.",
                 1999,
@@ -246,9 +247,9 @@ class MediaServiceTest {
 
     @Test
     void addToUserListManualSourceNeverLooksUpExistingSourceAndAlwaysCreatesNewMediaItem() {
-        MediaSearchResult first = new MediaSearchResult(
+        AddToListRequest first = new AddToListRequest(
                 "Herr der Ringe", "", null, MediaType.BOOK, null, null, SourceType.MANUAL, null);
-        MediaSearchResult second = new MediaSearchResult(
+        AddToListRequest second = new AddToListRequest(
                 "Der Hobbit", "", null, MediaType.BOOK, null, null, SourceType.MANUAL, null);
         Long userId = 1L;
         User testUser = new User();

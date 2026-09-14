@@ -1,5 +1,6 @@
 package de.mediasystem.backend.api;
 
+import de.mediasystem.backend.api.dto.AddToListRequest;
 import de.mediasystem.backend.api.dto.MediaSearchResult;
 import de.mediasystem.backend.api.dto.UpdateUserEntryRequest;
 import de.mediasystem.backend.api.dto.UserEntryResponse;
@@ -42,16 +43,16 @@ public class MediaController {
 
     /**
      * Post method for the entry response.
-     * @param result the search result
+     * @param request das hinzuzufügende Medium
      * @param authentication user infos without leaking hash
      * @return the response Entity
      */
     @PostMapping("/media/entries")
-    public ResponseEntity<@NonNull UserEntryResponse> addToUserList(@RequestBody MediaSearchResult result,
+    public ResponseEntity<@NonNull UserEntryResponse> addToUserList(@RequestBody @Valid AddToListRequest request,
                                                                     Authentication authentication) {
         String username = authentication.getName();
         Long userId = userService.getUserIdByUsername(username);
-        UserEntryResponse userEntryResponse = mediaService.addToUserList(result, userId);
+        UserEntryResponse userEntryResponse = mediaService.addToUserList(request, userId);
 
         return ResponseEntity.status(201).body(userEntryResponse);
     }

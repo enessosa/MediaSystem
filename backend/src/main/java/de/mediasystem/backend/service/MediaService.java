@@ -1,5 +1,6 @@
 package de.mediasystem.backend.service;
 
+import de.mediasystem.backend.api.dto.AddToListRequest;
 import de.mediasystem.backend.api.dto.MediaSearchResult;
 import de.mediasystem.backend.api.dto.UpdateUserEntryRequest;
 import de.mediasystem.backend.api.dto.UserEntryResponse;
@@ -91,7 +92,7 @@ public class MediaService {
      * @return userEntry
      */
     @Transactional
-    public UserEntryResponse addToUserList(MediaSearchResult result, Long userId) {
+    public UserEntryResponse addToUserList(AddToListRequest result, Long userId) {
         Optional<Source> optionalSource = result.sourceType() == SourceType.MANUAL
                 ? Optional.empty()
                 : sourceRepository.findBySourceTypeAndExternalId(result.sourceType(),
@@ -120,7 +121,7 @@ public class MediaService {
         return mapUserEntrytoResponse(userEntry);
     }
 
-    private MediaItem mapToNewMediaItem(MediaSearchResult result) {
+    private MediaItem mapToNewMediaItem(AddToListRequest result) {
         MediaItem item = new MediaItem();
         item.setTitle(result.title());
         item.setDescription(result.description());
