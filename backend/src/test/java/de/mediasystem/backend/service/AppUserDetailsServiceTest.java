@@ -1,6 +1,7 @@
 package de.mediasystem.backend.service;
 
 import de.mediasystem.backend.db.UserRepository;
+import de.mediasystem.backend.model.roles.Admin;
 import de.mediasystem.backend.model.roles.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,6 +56,21 @@ class AppUserDetailsServiceTest {
 
         assertThat(result.getUsername()).isEqualTo("testuser");
         assertThat(result.getPassword()).isEqualTo("hashed-password");
+    }
+
+    @Test
+    void loadUserByUsernameGrantsRoleAdminForAdminUser() {
+        Admin admin = new Admin();
+        admin.setUsername("adminuser");
+        admin.setPasswordHash("hashed-password");
+
+        when(userRepository.findByUsername("adminuser")).thenReturn(Optional.of(admin));
+
+        UserDetails result = appUserDetailsService.loadUserByUsername("adminuser");
+
+        assertThat(result.getAuthorities())
+                .extracting(Object::toString)
+                .containsExactlyInAnyOrder("ROLE_USER", "ROLE_ADMIN");
     }
 
     @Test

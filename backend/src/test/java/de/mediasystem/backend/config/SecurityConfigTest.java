@@ -5,9 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -33,5 +36,25 @@ class SecurityConfigTest {
     void unknownProtectedPathIsBlockedWithoutLogin() throws Exception {
         mockMvc.perform(get("/dashboard"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void adminPathIsBlockedWithoutLogin() throws Exception {
+        mockMvc.perform(put("/admin/codeword").with(csrf()).contentType("application/json").content("{}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void adminPathIsBlockedForPlainUser() throws Exception {
+        mockMvc.perform(put("/admin/codeword").with(csrf()).contentType("application/json").content("{}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void adminPathIsNotBlockedForAdmin() throws Exception {
+        mockMvc.perform(put("/admin/codeword").with(csrf()).contentType("application/json").content("{}"))
+                .andExpect(status().is(Matchers.not(403)));
     }
 }

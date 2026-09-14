@@ -18,6 +18,11 @@ export interface RegisteredUser {
   email: string
 }
 
+/** Spring Security liefert beim Login das rohe Authentication-Objekt inkl. Rollen zurück. */
+export interface LoginResponse {
+  authorities: { authority: string }[]
+}
+
 export function registerUser(payload: RegisterPayload) {
   return apiFetch<RegisteredUser>('/auth/register', {
     method: 'POST',
@@ -26,7 +31,7 @@ export function registerUser(payload: RegisterPayload) {
 }
 
 export function loginUser(payload: LoginPayload) {
-  return apiFetch<unknown>('/auth/login', {
+  return apiFetch<LoginResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify(payload),
   })

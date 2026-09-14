@@ -2,9 +2,11 @@ import { createContext, useContext, useState, type ReactNode } from 'react'
 import { loginUser, registerUser, type LoginPayload, type RegisterPayload } from '../api/auth'
 
 const FLAG_KEY = 'ms_authenticated'
+const IS_ADMIN_KEY = 'ms_is_admin'
 
 interface AuthContextValue {
   isAuthenticated: boolean
+  isAdmin: boolean
   login: (payload: LoginPayload) => Promise<void>
   register: (payload: RegisterPayload) => Promise<void>
   logout: () => void
@@ -22,11 +24,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(
     () => sessionStorage.getItem(FLAG_KEY) === 'true',
   )
+  const [isAdmin, setIsAdmin] = useState(
+    () => sessionStorage.getItem(IS_ADMIN_KEY) === 'true',
+  )
 
   async function login(payload: LoginPayload) {
-    await loginUser(payload)
+    const response = await loginUser(payload)
+    const admin = response.authorities.some((a) => a.authority === 'ROLE_ADMIN')
     sessionStorage.setItem(FLAG_KEY, 'true')
+    sessionStorage.setItem(IS_ADMIN_KEY, String(admin))
     setIsAuthenticated(true)
+    setIsAdmin(admin)
   }
 
   async function register(payload: RegisterPayload) {
@@ -35,11 +43,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   function logout() {
     sessionStorage.removeItem(FLAG_KEY)
+    sessionStorage.removeItem(IS_ADMIN_KEY)
     setIsAuthenticated(false)
+    setIsAdmin(false)
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, register, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isAdmin, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   )
