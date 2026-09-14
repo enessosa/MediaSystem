@@ -36,22 +36,26 @@ function DiscoveryPage() {
           gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
         }}
       >
-        {CATALOG.map((item) => (
-          <MediaCard
-            key={item.id}
-            item={item}
-            action={
-              <button
-                type="button"
-                className="btn btn--primary"
-                style={{ width: '100%' }}
-                onClick={() => setSelectedResult(toSearchResult(item))}
-              >
-                Zur Liste hinzufügen
-              </button>
-            }
-          />
-        ))}
+        {CATALOG.map((item) => {
+          const searchResult = toSearchResult(item)
+          return (
+            <MediaCard
+              key={item.id}
+              item={item}
+              linkTo={`/media/external/${searchResult.sourceType}/${encodeURIComponent(searchResult.externalId ?? '')}`}
+              action={
+                <button
+                  type="button"
+                  className="btn btn--primary"
+                  style={{ width: '100%' }}
+                  onClick={() => setSelectedResult(searchResult)}
+                >
+                  Zur Liste hinzufügen
+                </button>
+              }
+            />
+          )
+        })}
       </div>
 
       {selectedResult && <AddToListModal result={selectedResult} onClose={() => setSelectedResult(null)} />}

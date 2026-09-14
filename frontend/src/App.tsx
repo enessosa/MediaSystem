@@ -10,6 +10,7 @@ import SearchPage from './pages/SearchPage'
 import SearchResultsPage from './pages/SearchResultsPage'
 import DiscoveryPage from './pages/DiscoveryPage'
 import MediaDetailPage from './pages/MediaDetailPage'
+import ExternalMediaDetailPage from './pages/ExternalMediaDetailPage'
 import CreateItemPage from './pages/CreateItemPage'
 import ProfilePage from './pages/ProfilePage'
 import SettingsPage from './pages/SettingsPage'
@@ -33,6 +34,7 @@ function App() {
           <Route path="/search/results" element={<SearchResultsPage />} />
           <Route path="/discovery" element={<DiscoveryPage />} />
           <Route path="/media/:id" element={<MediaDetailPage />} />
+          <Route path="/media/external/:sourceType/:externalId" element={<ExternalMediaDetailPage />} />
           <Route path="/create" element={<CreateItemPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />

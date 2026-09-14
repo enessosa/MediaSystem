@@ -146,6 +146,7 @@ function SearchResultsPage() {
             <MediaCard
               key={`${result.sourceType}-${result.externalId}`}
               item={toCatalogItem(result)}
+              linkTo={`/media/external/${result.sourceType}/${encodeURIComponent(result.externalId ?? '')}`}
               action={
                 <button
                   type="button"

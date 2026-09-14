@@ -1,7 +1,7 @@
 import { apiFetch } from './client'
 import type { MediaType, WatchStatus } from '../types/media'
 
-export type SourceType = 'ANILIST' | 'TMDB' | 'OPENLIBRARY' | 'MANUAL'
+export type SourceType = 'ANILIST' | 'TMDB' | 'RAWG' | 'OPENLIBRARY' | 'MANUAL'
 
 export interface MediaSearchResult {
   title: string
@@ -47,6 +47,12 @@ export function searchMedia(query: string, mediaTypes?: MediaType[]) {
 
 export function getUserEntries() {
   return apiFetch<UserEntryResponse[]>('/media/entries')
+}
+
+/** Lädt die Detailansicht eines externen Treffers direkt vom passenden Provider (GET /media/items). */
+export function fetchMediaDetail(sourceType: SourceType, externalId: string) {
+  const params = new URLSearchParams({ sourceType, externalId })
+  return apiFetch<MediaSearchResult>(`/media/items?${params.toString()}`)
 }
 
 export function addToUserList(result: MediaSearchResult) {
