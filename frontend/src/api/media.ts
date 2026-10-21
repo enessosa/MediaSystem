@@ -68,6 +68,9 @@ export function mediaDetailPath(sourceType: string, externalId: string): string 
   return `/media/items?${params}`
 }
 
+/** Medientypen, die gerade durchsuchbar sind (Provider ohne API-Key fallen weg). */
+export const AVAILABLE_TYPES_PATH = '/media/available-types'
+
 export const ENTRIES_PATH = '/media/entries'
 
 export function addToList(request: AddToListRequest): Promise<UserEntryResponse> {

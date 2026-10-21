@@ -5,9 +5,11 @@ import styles from './MediaTypeFilter.module.css'
 interface MediaTypeFilterProps {
   selected: MediaType[]
   onChange: (selected: MediaType[]) => void
+  /** Typen, die gerade nicht durchsuchbar sind (kein API-Key) – werden ausgegraut. */
+  unavailable?: MediaType[]
 }
 
-function MediaTypeFilter({ selected, onChange }: MediaTypeFilterProps) {
+function MediaTypeFilter({ selected, onChange, unavailable = [] }: MediaTypeFilterProps) {
   function toggle(type: MediaType) {
     onChange(selected.includes(type) ? selected.filter((t) => t !== type) : [...selected, type])
   }
@@ -17,9 +19,12 @@ function MediaTypeFilter({ selected, onChange }: MediaTypeFilterProps) {
       <legend className={styles.legend}>Medientyp</legend>
       <Stack direction="horizontal" wrap="wrap" gap="normal">
         {MEDIA_TYPES.map((type) => (
-          <FormControl key={type}>
+          <FormControl key={type} disabled={unavailable.includes(type)}>
             <Checkbox checked={selected.includes(type)} onChange={() => toggle(type)} />
-            <FormControl.Label>{MEDIA_TYPE_LABELS[type]}</FormControl.Label>
+            <FormControl.Label>
+              {MEDIA_TYPE_LABELS[type]}
+              {unavailable.includes(type) && ' (deaktiviert)'}
+            </FormControl.Label>
           </FormControl>
         ))}
       </Stack>

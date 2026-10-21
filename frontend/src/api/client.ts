@@ -50,6 +50,8 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
 
 export function describeError(err: unknown): string {
   if (err instanceof ApiError) {
+    // 503: Suche für die gewählten Typen deaktiviert – das Backend liefert eine passende Meldung mit.
+    if (err.status === 503 && err.message) return err.message
     if (err.status === 502) return 'Ein externer Dienst ist gerade nicht erreichbar. Bitte später erneut versuchen.'
     if (err.status === 404) return 'Nicht gefunden.'
     if (err.status === 401 || err.status === 403) return 'Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.'

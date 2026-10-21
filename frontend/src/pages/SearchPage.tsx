@@ -1,9 +1,16 @@
 import { PlusIcon, SearchIcon } from '@primer/octicons-react'
-import { Button, Pagination, Stack } from '@primer/react'
+import { Banner, Button, Pagination, Stack } from '@primer/react'
 import { Blankslate } from '@primer/react/experimental'
 import { useState, type MouseEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
-import { MEDIA_TYPES, searchPath, type MediaSearchResult, type MediaType } from '../api/media'
+import {
+  AVAILABLE_TYPES_PATH,
+  MEDIA_TYPE_LABELS,
+  MEDIA_TYPES,
+  searchPath,
+  type MediaSearchResult,
+  type MediaType,
+} from '../api/media'
 import ErrorBanner from '../components/ErrorBanner'
 import listStyles from '../components/ItemList.module.css'
 import Loading from '../components/Loading'
@@ -32,6 +39,8 @@ function SearchPage() {
   const { data: results, error, isLoading, reload } = useApi<MediaSearchResult[]>(
     query ? searchPath(query, types) : null,
   )
+  const { data: availableTypes } = useApi<MediaType[]>(AVAILABLE_TYPES_PATH)
+  const unavailable = availableTypes ? MEDIA_TYPES.filter((t) => !availableTypes.includes(t)) : []
 
   const pageCount = results ? Math.max(1, Math.ceil(results.length / PAGE_SIZE)) : 1
   const page = Number.isInteger(requestedPage) ? Math.min(Math.max(requestedPage, 1), pageCount) : 1
@@ -69,7 +78,15 @@ function SearchPage() {
       />
 
       <SearchForm key={query} initialQuery={query} showButton onSearch={(q) => updateParams(q, types)} />
-      <MediaTypeFilter selected={types} onChange={(next) => updateParams(query, next)} />
+      <MediaTypeFilter selected={types} onChange={(next) => updateParams(query, next)} unavailable={unavailable} />
+      {unavailable.length > 0 && (
+        <Banner
+          variant="warning"
+          title="Eingeschränkte Suche"
+          hideTitle
+          description={`Nicht durchsuchbar: ${unavailable.map((t) => MEDIA_TYPE_LABELS[t]).join(', ')} – dafür ist auf diesem Server kein API-Key konfiguriert.`}
+        />
+      )}
 
       {!query && (
         <Blankslate border>
