@@ -73,6 +73,8 @@ function AccountPage() {
         <dl className={styles.details}>
           <dt>Benutzername</dt>
           <dd>{user?.username}</dd>
+          <dt>E-Mail</dt>
+          <dd>{user?.email}</dd>
           {user?.isAdmin && (
             <>
               <dt>Rolle</dt>

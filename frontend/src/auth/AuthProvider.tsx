@@ -1,50 +1,43 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { login as loginRequest, logout as logoutRequest } from '../api/auth'
 import { setUnauthorizedHandler } from '../api/client'
+import { getCurrentUser, type MeResponse } from '../api/users'
 import { AuthContext, type AuthUser } from './authContext'
 
-const STORAGE_KEY = 'mediasystem.user'
-
-function readStoredUser(): AuthUser | null {
-  try {
-    const raw = sessionStorage.getItem(STORAGE_KEY)
-    return raw ? (JSON.parse(raw) as AuthUser) : null
-  } catch {
-    return null
-  }
-}
-
-function storeUser(user: AuthUser | null) {
-  try {
-    if (user) sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user))
-    else sessionStorage.removeItem(STORAGE_KEY)
-  } catch {
-    // Speichern ist nur Komfort (überlebt Reload) – ohne Storage funktioniert die App trotzdem.
-  }
+function toAuthUser(me: MeResponse): AuthUser {
+  return { username: me.username, email: me.email, isAdmin: me.admin }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(readStoredUser)
+  const [user, setUser] = useState<AuthUser | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const updateUser = useCallback((next: AuthUser | null) => {
-    storeUser(next)
-    setUser(next)
+  // Beim Start den Server fragen, ob das Session-Cookie noch gültig ist (überlebt Reload und neue Tabs).
+  useEffect(() => {
+    let ignore = false
+    getCurrentUser()
+      .then((me) => {
+        if (!ignore) setUser(toAuthUser(me))
+      })
+      .catch(() => {
+        if (!ignore) setUser(null)
+      })
+      .finally(() => {
+        if (!ignore) setIsLoading(false)
+      })
+    return () => {
+      ignore = true
+    }
   }, [])
 
   useEffect(() => {
-    setUnauthorizedHandler(() => updateUser(null))
-  }, [updateUser])
+    setUnauthorizedHandler(() => setUser(null))
+  }, [])
 
-  const login = useCallback(
-    async (identifier: string, password: string) => {
-      const response = await loginRequest({ identifier, password })
-      updateUser({
-        username: response.name,
-        isAdmin: response.authorities.some((a) => a.authority === 'ROLE_ADMIN'),
-      })
-    },
-    [updateUser],
-  )
+  const login = useCallback(async (identifier: string, password: string) => {
+    await loginRequest({ identifier, password })
+    setUser(toAuthUser(await getCurrentUser()))
+  }, [])
 
   const logout = useCallback(async () => {
     try {
@@ -52,10 +45,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // Session wird serverseitig trotzdem beendet; lokal immer abmelden.
     }
-    updateUser(null)
-  }, [updateUser])
+    setUser(null)
+  }, [])
 
-  const value = useMemo(() => ({ user, login, logout }), [user, login, logout])
+  const value = useMemo(() => ({ user, isLoading, login, logout }), [user, isLoading, login, logout])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
