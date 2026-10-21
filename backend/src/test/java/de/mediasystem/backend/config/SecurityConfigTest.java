@@ -39,6 +39,12 @@ class SecurityConfigTest {
     }
 
     @Test
+    void usersMeIsBlockedWithoutLogin() throws Exception {
+        mockMvc.perform(get("/users/me"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void adminPathIsBlockedWithoutLogin() throws Exception {
         mockMvc.perform(put("/admin/codeword").with(csrf()).contentType("application/json").content("{}"))
                 .andExpect(status().isForbidden());
