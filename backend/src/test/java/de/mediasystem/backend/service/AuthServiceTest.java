@@ -6,8 +6,8 @@ import de.mediasystem.backend.api.dto.RegisterResponse;
 import de.mediasystem.backend.db.AppSettingRepository;
 import de.mediasystem.backend.db.UserRepository;
 import de.mediasystem.backend.model.AppSetting;
+import de.mediasystem.backend.model.roles.Admin;
 import de.mediasystem.backend.model.roles.User;
-import de.mediasystem.backend.service.exception.CodewordNotConfiguredException;
 import de.mediasystem.backend.service.exception.EmailAlreadyExistsException;
 import de.mediasystem.backend.service.exception.InvalidCodewordException;
 import de.mediasystem.backend.service.exception.UsernameAlreadyExistsException;
@@ -117,15 +117,41 @@ class AuthServiceTest {
     }
 
     @Test
-    void registerAtCapWithNoCodewordConfiguredThrowsAndDoesNotSave() {
+    void registerAtCapWithNoCodewordConfiguredIsOpenAndCreatesUser() {
         when(userRepository.count()).thenReturn(10L);
         when(appSettingRepository.findById(CODEWORD_SETTING_KEY)).thenReturn(Optional.empty());
+        when(passwordEncoder.encode(any())).thenReturn("hashed-password");
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", "geheim");
+        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
 
-        assertThatExceptionOfType(CodewordNotConfiguredException.class)
-                .isThrownBy(() -> authService.register(request));
-        verify(userRepository, never()).save(any());
+        RegisterResponse result = authService.register(request);
+
+        assertThat(result.username()).isEqualTo("newuser");
+    }
+
+    @Test
+    void registerFirstUserBecomesAdmin() {
+        when(userRepository.count()).thenReturn(0L);
+        when(passwordEncoder.encode(any())).thenReturn("hashed-password");
+        ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
+        when(userRepository.save(savedUser.capture())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        authService.register(new RegisterRequest("betreiber", "admin@test.de", "rawPassword", null));
+
+        assertThat(savedUser.getValue()).isInstanceOf(Admin.class);
+    }
+
+    @Test
+    void registerLaterUserIsNoAdmin() {
+        when(userRepository.count()).thenReturn(1L);
+        when(passwordEncoder.encode(any())).thenReturn("hashed-password");
+        ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
+        when(userRepository.save(savedUser.capture())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        authService.register(new RegisterRequest("zweiter", "user@test.de", "rawPassword", null));
+
+        assertThat(savedUser.getValue()).isNotInstanceOf(Admin.class);
     }
 
     @Test

@@ -49,4 +49,28 @@ class AdminServiceTest {
         verify(appSettingRepository).save(captor.capture());
         assertThat(captor.getValue().getValue()).isEqualTo("neuesGeheimnis");
     }
+
+    @Test
+    void getCodewordReturnsStoredValue() {
+        AppSetting existing = new AppSetting();
+        existing.setKey("signup_codeword");
+        existing.setValue("geheim");
+        when(appSettingRepository.findById("signup_codeword")).thenReturn(Optional.of(existing));
+
+        assertThat(adminService.getCodeword()).isEqualTo("geheim");
+    }
+
+    @Test
+    void getCodewordWithoutSettingReturnsNull() {
+        when(appSettingRepository.findById("signup_codeword")).thenReturn(Optional.empty());
+
+        assertThat(adminService.getCodeword()).isNull();
+    }
+
+    @Test
+    void deleteCodewordRemovesSetting() {
+        adminService.deleteCodeword();
+
+        verify(appSettingRepository).deleteById("signup_codeword");
+    }
 }

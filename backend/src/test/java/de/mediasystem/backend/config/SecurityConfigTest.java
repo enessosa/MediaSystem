@@ -9,6 +9,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,6 +46,18 @@ class SecurityConfigTest {
     }
 
     @Test
+    void changePasswordIsBlockedWithoutLogin() throws Exception {
+        mockMvc.perform(put("/users/me/password").with(csrf()).contentType("application/json").content("{}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deleteAccountIsBlockedWithoutLogin() throws Exception {
+        mockMvc.perform(delete("/users/me").with(csrf()).contentType("application/json").content("{}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void adminPathIsBlockedWithoutLogin() throws Exception {
         mockMvc.perform(put("/admin/codeword").with(csrf()).contentType("application/json").content("{}"))
                 .andExpect(status().isForbidden());
@@ -54,6 +67,20 @@ class SecurityConfigTest {
     @WithMockUser(roles = "USER")
     void adminPathIsBlockedForPlainUser() throws Exception {
         mockMvc.perform(put("/admin/codeword").with(csrf()).contentType("application/json").content("{}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void readingCodewordIsBlockedForPlainUser() throws Exception {
+        mockMvc.perform(get("/admin/codeword"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void deletingCodewordIsBlockedForPlainUser() throws Exception {
+        mockMvc.perform(delete("/admin/codeword").with(csrf()))
                 .andExpect(status().isForbidden());
     }
 

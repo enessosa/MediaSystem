@@ -1,11 +1,12 @@
 package de.mediasystem.backend.api.advisor;
 
-import de.mediasystem.backend.service.exception.CodewordNotConfiguredException;
+import de.mediasystem.backend.service.exception.LastAdminException;
 import de.mediasystem.backend.service.exception.EmailAlreadyExistsException;
 import de.mediasystem.backend.service.exception.InvalidCodewordException;
 import de.mediasystem.backend.service.exception.MediaTypeUnavailableException;
 import de.mediasystem.backend.service.exception.UserEntryNotFoundException;
 import de.mediasystem.backend.service.exception.UsernameAlreadyExistsException;
+import de.mediasystem.backend.service.exception.WrongPasswordException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,10 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void handleCodewordNotConfiguredReturns500() {
-        ResponseEntity<?> response = advice.handleCodewordNotConfigured(new CodewordNotConfiguredException());
+    void handleLastAdminReturns409() {
+        ResponseEntity<?> response = advice.handleLastAdmin(new LastAdminException());
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     }
 
     @Test
@@ -79,5 +80,13 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
         assertThat(response.getBody()).asString().contains("deaktiviert");
+    }
+
+    @Test
+    void handleWrongPasswordReturns400WithMessage() {
+        ResponseEntity<?> response = advice.handleWrongPassword(new WrongPasswordException());
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isEqualTo("Das aktuelle Passwort ist falsch.");
     }
 }
