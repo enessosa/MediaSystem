@@ -1,10 +1,13 @@
 package de.mediasystem.backend.api;
 
+import de.mediasystem.backend.api.dto.CodewordResponse;
 import de.mediasystem.backend.api.dto.UpdateCodewordRequest;
 import de.mediasystem.backend.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +30,25 @@ public class AdminController {
     @PutMapping("/admin/codeword")
     public ResponseEntity<@NonNull Void> updateCodeword(@RequestBody @Valid UpdateCodewordRequest request) {
         adminService.updateCodeword(request.codeword());
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Liefert das aktuelle Signup-Codewort (null, wenn keins gesetzt ist).
+     * @return das Codewort
+     */
+    @GetMapping("/admin/codeword")
+    public ResponseEntity<@NonNull CodewordResponse> getCodeword() {
+        return ResponseEntity.ok(new CodewordResponse(adminService.getCodeword()));
+    }
+
+    /**
+     * Entfernt das Signup-Codewort, die Registrierung ist danach offen.
+     * @return 204, kein Body nötig
+     */
+    @DeleteMapping("/admin/codeword")
+    public ResponseEntity<@NonNull Void> deleteCodeword() {
+        adminService.deleteCodeword();
         return ResponseEntity.noContent().build();
     }
 }

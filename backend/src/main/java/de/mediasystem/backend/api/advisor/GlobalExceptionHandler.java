@@ -36,11 +36,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(400).body(e.getMessage());
     }
 
-    @ExceptionHandler(CodewordNotConfiguredException.class)
-    public ResponseEntity<@NonNull String> handleCodewordNotConfigured(CodewordNotConfiguredException e) {
-        return ResponseEntity.status(500).body(e.getMessage());
-    }
-
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<@NonNull String> handleEmailAlreadyExists(EmailAlreadyExistsException e) {
         return ResponseEntity.status(409).body(e.getMessage());
@@ -75,6 +70,27 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MediaTypeUnavailableException.class)
     public ResponseEntity<@NonNull String> handleMediaTypeUnavailable(MediaTypeUnavailableException e) {
         return ResponseEntity.status(503).body(e.getMessage());
+    }
+
+    /**
+     * Falsches Passwort bei Passwort ändern / Account löschen. Bewusst 400 statt 401: der Nutzer ist
+     * eingeloggt, nur seine Eingabe ist falsch (das Frontend wertet 401/403 als abgelaufene Sitzung).
+     * @param e die Exception
+     * @return 400 mit Meldung
+     */
+    @ExceptionHandler(WrongPasswordException.class)
+    public ResponseEntity<@NonNull String> handleWrongPassword(WrongPasswordException e) {
+        return ResponseEntity.status(400).body(e.getMessage());
+    }
+
+    /**
+     * Der letzte Admin will seinen Account löschen - danach gäbe es niemanden mehr, der das Codewort verwaltet.
+     * @param e die Exception
+     * @return 409 mit Meldung
+     */
+    @ExceptionHandler(LastAdminException.class)
+    public ResponseEntity<@NonNull String> handleLastAdmin(LastAdminException e) {
+        return ResponseEntity.status(409).body(e.getMessage());
     }
 
     @ExceptionHandler(MediaNotFoundException.class)
