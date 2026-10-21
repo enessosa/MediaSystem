@@ -2,3 +2,4 @@
 /PROGRESS.md
 .DS_Store
 /Documentation/Design
+.env
