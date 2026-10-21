@@ -10,12 +10,13 @@ This is primarily a **learning project**. The goal isn't just to ship a feature-
 - designing an architecture (layered, provider/repository interfaces, ADRs for the decisions that matter)
 - building it properly (Java/Spring Boot backend, React/TypeScript frontend, Postgres, tested)
 - running it in CI
-- running and operating it myself (Docker, reverse proxy, HTTPS)
+- running and operating it myself (Docker, reverse proxy, HTTPS) – *in progress, see [Roadmap](#roadmap)*
 
 It is meant to be run locally or privately for yourself and a few friends – there is no public instance.
 
-![Search](Documentation/Screenshots/search.png)
-![My list](Documentation/Screenshots/my-list.png)
+| Search | My list |
+|---|---|
+| ![Search](Documentation/Screenshots/search.png) | ![My list](Documentation/Screenshots/my-list.png) |
 
 ## Features
 
@@ -98,11 +99,18 @@ cd backend && ./mvnw verify          # tests
 cd frontend && npm run lint && npm run build
 ```
 
-## Architecture
+## Project Structure
 
 ```
-React frontend → REST controllers → service layer → provider/repository interfaces → external API / database
+backend/         Spring Boot API (controllers, services, providers, JPA entities, Flyway migrations)
+frontend/        React + TypeScript single-page app (pages, components, API client)
+Documentation/   ADRs, UML/ER diagrams, screenshots
+learn-progress/  short write-ups of concepts I learned along the way
 ```
+
+## Architecture
+
+![Architecture](Documentation/Diagrams/UML-Component-Diagram/UML-Component-Diagram.jpg)
 
 External API integrations sit behind a `Provider` interface, so the service layer never depends on a specific provider and adding or removing an API only touches the implementation layer – see [ADR-002](Documentation/ADRs/ADR-002.md).
 
@@ -120,6 +128,8 @@ Architecture decisions are recorded as ADRs in [`Documentation/ADRs`](Documentat
 ## Planning & Design
 
 Before writing any code, I deliberately spent time designing the system: modeling the domain, mapping out workflows, and thinking through the architecture and deployment up front rather than figuring it out along the way. That planning is captured in the following diagrams (in [`Documentation/Diagrams`](Documentation/Diagrams)):
+
+> These diagrams reflect the planning phase. Some details have changed since (e.g. the admin role, games via RAWG, account management), so the code is the source of truth where they differ.
 
 - [Use Case Diagram](Documentation/Diagrams/UML-UseCase-Diagram/UML-UseCase-Diagram.jpg)
 - [Component Diagram](Documentation/Diagrams/UML-Component-Diagram/UML-Component-Diagram.jpg)
