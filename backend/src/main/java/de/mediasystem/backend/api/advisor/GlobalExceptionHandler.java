@@ -66,6 +66,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(e.getMessage());
     }
 
+    /**
+     * Gesucht wurde nur nach Medientypen, deren Provider nicht konfiguriert sind (z.B. Spiele ohne RAWG-Key).
+     * 503, weil der Dienst dafür auf diesem Server nicht verfügbar ist - kein Fehler des Clients.
+     * @param e die Exception
+     * @return 503 mit Hinweis, dass die Suche deaktiviert ist
+     */
+    @ExceptionHandler(MediaTypeUnavailableException.class)
+    public ResponseEntity<@NonNull String> handleMediaTypeUnavailable(MediaTypeUnavailableException e) {
+        return ResponseEntity.status(503).body(e.getMessage());
+    }
+
     @ExceptionHandler(MediaNotFoundException.class)
     public ResponseEntity<@NonNull String> handleMediaNotFound(MediaNotFoundException e) {
         return ResponseEntity.status(404).body(e.getMessage());
