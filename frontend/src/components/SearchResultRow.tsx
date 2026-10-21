@@ -6,7 +6,7 @@ import styles from './ItemList.module.css'
 import MediaCover from './MediaCover'
 import { externalDetailUrl, mediaMeta, plainText } from './mediaMeta'
 
-function SearchResultRow({ item }: { item: MediaSearchResult }) {
+function SearchResultRow({ item, entryId }: { item: MediaSearchResult; entryId?: number }) {
   const detailUrl = externalDetailUrl(item)
 
   return (
@@ -26,7 +26,7 @@ function SearchResultRow({ item }: { item: MediaSearchResult }) {
         {item.description && <p className={styles.description}>{plainText(item.description)}</p>}
       </div>
       <div className={styles.actions}>
-        <AddToListButton item={item} size="small" />
+        <AddToListButton item={item} entryId={entryId} size="small" />
       </div>
     </li>
   )

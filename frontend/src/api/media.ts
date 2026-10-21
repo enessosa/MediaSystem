@@ -47,6 +47,14 @@ export interface UserEntryResponse {
   mediaType: MediaType
   creator: string | null
   coverUrl: string | null
+  sourceType: SourceType
+  /** null bei selbst angelegten Einträgen (MANUAL). */
+  externalId: string | null
+}
+
+/** Natürlicher Schlüssel eines Mediums über alle Systeme hinweg – verbindet Suchergebnisse mit Listeneinträgen. */
+export function mediaKey(sourceType: SourceType, externalId: string): string {
+  return `${sourceType}:${externalId}`
 }
 
 export type AddToListRequest = MediaSearchResult

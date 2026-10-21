@@ -5,6 +5,7 @@ import { useState, type MouseEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import {
   AVAILABLE_TYPES_PATH,
+  mediaKey,
   MEDIA_TYPE_LABELS,
   MEDIA_TYPES,
   searchPath,
@@ -20,6 +21,7 @@ import PageTitle from '../components/PageTitle'
 import SearchForm from '../components/SearchForm'
 import SearchResultRow from '../components/SearchResultRow'
 import { useApi } from '../hooks/useApi'
+import { useListedEntries } from '../hooks/useListedEntries'
 
 const PAGE_SIZE = 20
 
@@ -40,6 +42,7 @@ function SearchPage() {
     query ? searchPath(query, types) : null,
   )
   const { data: availableTypes } = useApi<MediaType[]>(AVAILABLE_TYPES_PATH)
+  const listed = useListedEntries()
   const unavailable = availableTypes ? MEDIA_TYPES.filter((t) => !availableTypes.includes(t)) : []
 
   const pageCount = results ? Math.max(1, Math.ceil(results.length / PAGE_SIZE)) : 1
@@ -113,7 +116,11 @@ function SearchPage() {
         <>
           <ul className={listStyles.list} aria-label="Suchergebnisse">
             {pageResults.map((item, index) => (
-              <SearchResultRow key={`${item.sourceType}-${item.externalId ?? index}`} item={item} />
+              <SearchResultRow
+                key={`${item.sourceType}-${item.externalId ?? index}`}
+                item={item}
+                entryId={item.externalId ? listed.get(mediaKey(item.sourceType, item.externalId)) : undefined}
+              />
             ))}
           </ul>
           {pageCount > 1 && (

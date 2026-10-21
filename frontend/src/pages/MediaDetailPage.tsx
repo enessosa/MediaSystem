@@ -6,6 +6,7 @@ import {
   deleteEntry,
   ENTRIES_PATH,
   mediaDetailPath,
+  mediaKey,
   type MediaSearchResult,
   type SourceType,
   type UserEntryResponse,
@@ -18,6 +19,7 @@ import MediaCover from '../components/MediaCover'
 import { mediaMeta, plainText } from '../components/mediaMeta'
 import StatusLabel from '../components/StatusLabel'
 import { useApi } from '../hooks/useApi'
+import { useListedEntries } from '../hooks/useListedEntries'
 import NotFoundPage from './NotFoundPage'
 import styles from './MediaDetailPage.module.css'
 
@@ -70,6 +72,7 @@ function DetailView({ title, meta, coverUrl, description, source, children }: De
 
 function ExternalMediaDetail({ sourceType, externalId }: { sourceType: string; externalId: string }) {
   const { data: item, error, isLoading, reload } = useApi<MediaSearchResult>(mediaDetailPath(sourceType, externalId))
+  const listed = useListedEntries()
 
   if (isLoading) return <Loading />
   if (error !== null) return <ErrorBanner error={error} onRetry={reload} />
@@ -84,7 +87,7 @@ function ExternalMediaDetail({ sourceType, externalId }: { sourceType: string; e
       source={item.sourceType}
     >
       <div>
-        <AddToListButton item={item} />
+        <AddToListButton item={item} entryId={listed.get(mediaKey(item.sourceType, externalId))} />
       </div>
     </DetailView>
   )
@@ -121,7 +124,13 @@ function EntryDetail({ entryId }: { entryId: number }) {
   }
 
   return (
-    <DetailView title={entry.title} meta={mediaMeta(entry)} coverUrl={entry.coverUrl} description={entry.description}>
+    <DetailView
+      title={entry.title}
+      meta={mediaMeta(entry)}
+      coverUrl={entry.coverUrl}
+      description={entry.description}
+      source={entry.sourceType}
+    >
       {actionError !== null && <ErrorBanner error={actionError} />}
       <div className={styles.entryBox}>
         <Stack gap="condensed">
