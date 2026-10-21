@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class MediaController {
@@ -107,6 +108,15 @@ public class MediaController {
         return ResponseEntity.noContent().build();
     }
 
+
+    /**
+     * Welche Medientypen gerade durchsuchbar sind (Provider ohne API-Key fallen raus).
+     * @return die durchsuchbaren MediaTypes
+     */
+    @GetMapping("/media/available-types")
+    public ResponseEntity<@NonNull Set<MediaType>> getAvailableMediaTypes() {
+        return ResponseEntity.ok(mediaService.getAvailableMediaTypes());
+    }
 
     @GetMapping("/media/items")
     public ResponseEntity<@NonNull MediaSearchResult> getMediaDetail(@RequestParam SourceType sourceType,

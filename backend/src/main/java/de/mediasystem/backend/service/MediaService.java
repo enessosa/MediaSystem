@@ -13,17 +13,24 @@ import de.mediasystem.backend.model.roles.User;
 import de.mediasystem.backend.provider.Provider;
 import de.mediasystem.backend.service.exception.AlreadyInListException;
 import de.mediasystem.backend.service.exception.MediaNotFoundException;
+import de.mediasystem.backend.service.exception.MediaTypeUnavailableException;
 import de.mediasystem.backend.service.exception.UserEntryNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class MediaService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MediaService.class);
 
     private final List<Provider> providers;
     private final MediaItemRepository mediaItemRepository;
@@ -42,6 +49,28 @@ public class MediaService {
         this.sourceRepository = sourceRepository;
         this.userEntryRepository = userEntryRepository;
         this.userRepository = userRepository;
+
+        for (Provider provider : providers) {
+            if (!provider.isAvailable()) {
+                LOG.warn("Provider {} ist nicht verfügbar (kein API-Key konfiguriert) und wird übersprungen.",
+                        provider.supportedSourceType());
+            }
+        }
+    }
+
+    /**
+     * Welche MediaTypes gerade durchsuchbar sind, also von mindestens einem verfügbaren Provider abgedeckt werden.
+     * Das Frontend graut damit z.B. "Spiele" aus, wenn kein RAWG-Key konfiguriert ist.
+     * @return die durchsuchbaren MediaTypes
+     */
+    public Set<MediaType> getAvailableMediaTypes() {
+        Set<MediaType> available = EnumSet.noneOf(MediaType.class);
+        for (Provider provider : providers) {
+            if (provider.isAvailable()) {
+                available.addAll(provider.supportedMediaTypes());
+            }
+        }
+        return available;
     }
 
     /**
@@ -51,13 +80,22 @@ public class MediaService {
      *                    und aus deren Ergebnissen nur Treffer mit genau diesen Typen behalten (ein Provider
      *                    kann intern mehrere Typen liefern, z.B. AniList Anime *und* Manga in einer Antwort).
      *                    null oder leer heißt: alle Provider anfragen, kein Nachfiltern (bisheriges Verhalten).
+     *                    Nicht verfügbare Provider (kein API-Key) werden immer übersprungen.
      * @return the converted Record class wrapped  in a list.
+     * @throws MediaTypeUnavailableException wenn nur nach Typen gefiltert wird, die gerade niemand liefern kann -
+     *                    sonst bekäme der Nutzer "keine Treffer" statt des Hinweises, dass die Suche deaktiviert ist
      */
     public List<MediaSearchResult> searchMedia(String query, List<MediaType> mediaTypes) {
         boolean hasFilter = mediaTypes != null && !mediaTypes.isEmpty();
+        if (hasFilter && Collections.disjoint(getAvailableMediaTypes(), mediaTypes)) {
+            throw new MediaTypeUnavailableException();
+        }
 
         List<MediaItem> results = new ArrayList<>();
         for (Provider provider : providers) {
+            if (!provider.isAvailable()) {
+                continue;
+            }
             if (hasFilter && Collections.disjoint(provider.supportedMediaTypes(), mediaTypes)) {
                 continue;
             }
@@ -226,7 +264,7 @@ public class MediaService {
         }
 
         for (Provider provider : providers) {
-            if (provider.supportedSourceType() == sourceType) {
+            if (provider.isAvailable() && provider.supportedSourceType() == sourceType) {
                 MediaItem item = provider.fetchById(externalId);
                 if (item == null) {
                     throw new MediaNotFoundException();
