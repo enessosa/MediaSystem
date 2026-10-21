@@ -6,6 +6,7 @@ import de.mediasystem.backend.model.Source;
 import de.mediasystem.backend.model.SourceType;
 import de.mediasystem.backend.provider.Provider;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
@@ -18,9 +19,23 @@ import java.util.Set;
 public class TmdbProvider implements Provider {
 
     private final RestClient restClient;
+    private final String apiKey;
 
-    public TmdbProvider(@Qualifier("tmdbRestClient") RestClient restClient) {
+    /**
+     * Der Key steckt bereits als Header im RestClient (ProviderConfig), wird hier aber zusätzlich
+     * gebraucht, um zu wissen, ob der Provider überhaupt verfügbar ist.
+     * @param restClient der vorkonfigurierte TMDB-Client
+     * @param apiKey der API-Key aus den Env-Variablen, leer wenn nicht gesetzt
+     */
+    public TmdbProvider(@Qualifier("tmdbRestClient") RestClient restClient,
+                        @Value("${tmdb.api-key}") String apiKey) {
         this.restClient = restClient;
+        this.apiKey = apiKey;
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return !apiKey.isBlank();
     }
 
     @Override

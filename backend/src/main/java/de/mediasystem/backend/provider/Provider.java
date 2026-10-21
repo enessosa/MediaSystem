@@ -26,4 +26,13 @@ public interface Provider {
      * @return sourcetype
      */
     SourceType supportedSourceType();
+
+    /**
+     * Ob der Provider einsatzbereit ist, z.B. weil sein API-Key konfiguriert ist. Nicht verfügbare
+     * Provider überspringt MediaService, statt sie anzufragen und mit 401 die ganze Suche scheitern zu lassen.
+     * @return true, wenn der Provider angefragt werden kann
+     */
+    default boolean isAvailable() {
+        return true;
+    }
 }

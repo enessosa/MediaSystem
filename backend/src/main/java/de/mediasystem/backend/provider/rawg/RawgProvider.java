@@ -28,6 +28,11 @@ public class RawgProvider implements Provider {
     }
 
     @Override
+    public boolean isAvailable() {
+        return !apiKey.isBlank();
+    }
+
+    @Override
     public List<MediaItem> searchMedia(String search) {
         RawgSearchResult response = restClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/games")
