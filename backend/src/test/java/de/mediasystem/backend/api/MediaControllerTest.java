@@ -76,7 +76,8 @@ class MediaControllerTest {
         UserEntryResponse entryResponse = new UserEntryResponse(
                 1L, Status.PLANNED, null, null, Instant.now(),
                 2L, "Naruto", "Ein Manga über einen Ninja.", 1999, MediaType.MANGA,
-                "Masashi Kishimoto", "https://example.org/cover.jpg");
+                "Masashi Kishimoto", "https://example.org/cover.jpg", SourceType.ANILIST,
+                "external");
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("testuser");
@@ -96,7 +97,8 @@ class MediaControllerTest {
         UserEntryResponse entryResponse = new UserEntryResponse(
                 1L, Status.PLANNED, null, null, Instant.now(),
                 2L, "Naruto", "Ein Manga über einen Ninja.", 1999, MediaType.MANGA,
-                "Masashi Kishimoto", "https://example.org/cover.jpg");
+                "Masashi Kishimoto", "https://example.org/cover.jpg", SourceType.ANILIST,
+                "external");
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("testuser");
@@ -129,7 +131,8 @@ class MediaControllerTest {
         UserEntryResponse entryResponse = new UserEntryResponse(
                 7L, Status.WATCHING, 8, "Sehr gut bisher.", Instant.now(),
                 2L, "Naruto", "Ein Manga über einen Ninja.", 1999, MediaType.MANGA,
-                "Masashi Kishimoto", "https://example.org/cover.jpg");
+                "Masashi Kishimoto", "https://example.org/cover.jpg", SourceType.ANILIST,
+                "external");
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("testuser");

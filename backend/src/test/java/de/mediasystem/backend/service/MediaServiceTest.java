@@ -302,6 +302,12 @@ class MediaServiceTest {
         item.setCreator("Masashi Kishimoto");
         item.setCoverUrl("https://example.org/cover.jpg");
 
+        Source source = new Source();
+        source.setSourceType(SourceType.ANILIST);
+        source.setExternalId("30011");
+        source.setMediaItem(item);
+        item.getSources().add(source);
+
         UserEntry entry = new UserEntry();
         entry.setId(7L);
         entry.setMediaItem(item);
@@ -324,6 +330,8 @@ class MediaServiceTest {
         assertThat(response.mediaType()).isEqualTo(MediaType.MANGA);
         assertThat(response.creator()).isEqualTo("Masashi Kishimoto");
         assertThat(response.coverUrl()).isEqualTo("https://example.org/cover.jpg");
+        assertThat(response.sourceType()).isEqualTo(SourceType.ANILIST);
+        assertThat(response.externalId()).isEqualTo("30011");
     }
 
     @Test
@@ -346,6 +354,12 @@ class MediaServiceTest {
         item.setId(42L);
         item.setTitle("Naruto");
         item.setMediaType(MediaType.MANGA);
+
+        Source source = new Source();
+        source.setSourceType(SourceType.ANILIST);
+        source.setExternalId("30011");
+        source.setMediaItem(item);
+        item.getSources().add(source);
 
         UserEntry entry = new UserEntry();
         entry.setId(7L);
