@@ -152,3 +152,7 @@ Before writing any code, I deliberately spent time designing the system: modelin
 ## Use of AI
 
 How AI tools were used in this project is documented in [Documented Use of AI](<Documentation/Documented Use of AI.md>).
+
+## License
+
+[MIT](LICENSE) © 2026 Enes Sadi
