@@ -30,4 +30,22 @@ public class AdminService {
         setting.setValue(codeword);
         appSettingRepository.save(setting);
     }
+
+    /**
+     * Liefert das aktuelle Signup-Codewort, damit der Admin es einsehen und weitergeben kann. Es ist ein
+     * gemeinsamer Einladungscode, kein persönliches Passwort - deshalb im Klartext gespeichert.
+     * @return das Codewort oder null, wenn keins gesetzt ist (Registrierung dann offen)
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    public String getCodeword() {
+        return appSettingRepository.findById(CODEWORD_KEY).map(AppSetting::getValue).orElse(null);
+    }
+
+    /**
+     * Entfernt das Codewort - ab dann ist die Registrierung auch ab dem 11. Nutzer offen.
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteCodeword() {
+        appSettingRepository.deleteById(CODEWORD_KEY);
+    }
 }

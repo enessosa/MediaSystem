@@ -6,6 +6,7 @@ import de.mediasystem.backend.api.dto.RegisterResponse;
 import de.mediasystem.backend.db.AppSettingRepository;
 import de.mediasystem.backend.db.UserRepository;
 import de.mediasystem.backend.model.AppSetting;
+import de.mediasystem.backend.model.roles.Admin;
 import de.mediasystem.backend.model.roles.User;
 import de.mediasystem.backend.service.exception.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -36,16 +38,17 @@ public class AuthService {
 
     /**
      * Registriert einen neuen Nutzer, inkl. Signup-Cap/Codewort-Prüfung und Duplikat-Prüfung.
+     * Ab dem 11. Nutzer ist das Codewort Pflicht - aber nur, wenn ein Admin eins gesetzt hat. Ohne Codewort
+     * ist die Registrierung offen (bewusst, für privates Hosting; der Admin kann es jederzeit wieder setzen).
+     * Der allererste Nutzer wird automatisch Admin, damit jede neue Instanz einen Betreiber hat.
      * @param request die Registrierungsdaten
      * @return der neu angelegte Nutzer, ohne Passwort-Hash
      */
     public RegisterResponse register(RegisterRequest request) {
-        if (userRepository.count() >= 10) {
-            AppSetting appSetting = appSettingRepository.findById("signup_codeword")
-                    // Intellij meinte ich soll das mit :: machen anstatt lambda.
-                    .orElseThrow(CodewordNotConfiguredException::new);
-            if (!Objects.equals(request.codeword(),
-                    appSetting.getValue())) {
+        long userCount = userRepository.count();
+        if (userCount >= 10) {
+            Optional<AppSetting> codeword = appSettingRepository.findById("signup_codeword");
+            if (codeword.isPresent() && !Objects.equals(request.codeword(), codeword.get().getValue())) {
                 throw new InvalidCodewordException();
             }
         }
@@ -55,7 +58,7 @@ public class AuthService {
             throw new UsernameAlreadyExistsException("Username is already registered");
         }
 
-        User user = new User();
+        User user = userCount == 0 ? new Admin() : new User();
         user.setUsername(request.username());
         user.setEmail(request.email());
         user.setPasswordHash(passwordEncoder.encode(request.password()));
