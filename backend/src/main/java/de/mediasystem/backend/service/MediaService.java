@@ -179,6 +179,7 @@ public class MediaService {
 
     private UserEntryResponse mapUserEntrytoResponse(UserEntry userEntry) {
         MediaItem item = userEntry.getMediaItem();
+        Source source = item.getSources().iterator().next();
         return new UserEntryResponse(
                 userEntry.getId(),
                 userEntry.getStatus(),
@@ -191,7 +192,9 @@ public class MediaService {
                 item.getReleaseYear(),
                 item.getMediaType(),
                 item.getCreator(),
-                item.getCoverUrl()
+                item.getCoverUrl(),
+                source.getSourceType(),
+                source.getExternalId()
         );
     }
 

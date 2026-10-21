@@ -1,6 +1,7 @@
 package de.mediasystem.backend.api.dto;
 
 import de.mediasystem.backend.model.MediaType;
+import de.mediasystem.backend.model.SourceType;
 import de.mediasystem.backend.model.Status;
 
 import java.time.Instant;
@@ -18,5 +19,7 @@ public record UserEntryResponse(
         Integer releaseYear,
         MediaType mediaType,
         String creator,
-        String coverUrl
+        String coverUrl,
+        SourceType sourceType,
+        String externalId
 ) { }
