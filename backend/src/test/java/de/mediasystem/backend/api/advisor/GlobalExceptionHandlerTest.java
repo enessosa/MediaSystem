@@ -3,6 +3,7 @@ package de.mediasystem.backend.api.advisor;
 import de.mediasystem.backend.service.exception.CodewordNotConfiguredException;
 import de.mediasystem.backend.service.exception.EmailAlreadyExistsException;
 import de.mediasystem.backend.service.exception.InvalidCodewordException;
+import de.mediasystem.backend.service.exception.MediaTypeUnavailableException;
 import de.mediasystem.backend.service.exception.UserEntryNotFoundException;
 import de.mediasystem.backend.service.exception.UsernameAlreadyExistsException;
 import org.junit.jupiter.api.Test;
@@ -70,5 +71,13 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
         assertThat(response.getBody()).isNotEqualTo(providerException.getMessage());
         assertThat(response.getBody()).asString().doesNotContain("Connection refused");
+    }
+
+    @Test
+    void handleMediaTypeUnavailableReturns503WithMessage() {
+        ResponseEntity<?> response = advice.handleMediaTypeUnavailable(new MediaTypeUnavailableException());
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+        assertThat(response.getBody()).asString().contains("deaktiviert");
     }
 }

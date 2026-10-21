@@ -96,4 +96,15 @@ class RawgProviderTest {
 
         assertThat(item).isNull();
     }
+
+    @Test
+    void isAvailableWithApiKeyReturnsTrue() {
+        assertThat(rawgProvider.isAvailable()).isTrue();
+    }
+
+    @Test
+    void isAvailableWithoutApiKeyReturnsFalse() {
+        assertThat(new RawgProvider(mock(RestClient.class), "").isAvailable()).isFalse();
+        assertThat(new RawgProvider(mock(RestClient.class), "   ").isAvailable()).isFalse();
+    }
 }

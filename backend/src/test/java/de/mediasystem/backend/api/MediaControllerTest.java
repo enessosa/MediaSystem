@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -154,5 +155,15 @@ class MediaControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         assertThat(response.getBody()).isNull();
         verify(mediaService).deleteUserEntry(7L, 1L);
+    }
+
+    @Test
+    void getAvailableMediaTypesReturnsOkWithServiceResult() {
+        when(mediaService.getAvailableMediaTypes()).thenReturn(Set.of(MediaType.ANIME, MediaType.MANGA));
+
+        ResponseEntity<@NonNull Set<MediaType>> response = mediaController.getAvailableMediaTypes();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).containsExactlyInAnyOrder(MediaType.ANIME, MediaType.MANGA);
     }
 }

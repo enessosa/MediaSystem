@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 
 class TmdbProviderTest {
 
-    private final TmdbProvider tmdbProvider = new TmdbProvider(mock(RestClient.class));
+    private final TmdbProvider tmdbProvider = new TmdbProvider(mock(RestClient.class), "test-key");
 
     @Test
     void mapToMediaItemsMapsMovie() {
@@ -130,5 +130,16 @@ class TmdbProviderTest {
 
         assertThat(item.getCoverUrl()).isNull();
         assertThat(item.getReleaseYear()).isNull();
+    }
+
+    @Test
+    void isAvailableWithApiKeyReturnsTrue() {
+        assertThat(tmdbProvider.isAvailable()).isTrue();
+    }
+
+    @Test
+    void isAvailableWithoutApiKeyReturnsFalse() {
+        assertThat(new TmdbProvider(mock(RestClient.class), "").isAvailable()).isFalse();
+        assertThat(new TmdbProvider(mock(RestClient.class), "   ").isAvailable()).isFalse();
     }
 }

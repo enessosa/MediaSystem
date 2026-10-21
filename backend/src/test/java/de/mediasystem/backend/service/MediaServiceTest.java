@@ -17,6 +17,7 @@ import de.mediasystem.backend.model.UserEntry;
 import de.mediasystem.backend.model.roles.User;
 import de.mediasystem.backend.provider.Provider;
 import de.mediasystem.backend.service.exception.MediaNotFoundException;
+import de.mediasystem.backend.service.exception.MediaTypeUnavailableException;
 import de.mediasystem.backend.service.exception.UserEntryNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -59,6 +61,9 @@ class MediaServiceTest {
 
     @BeforeEach
     void setUp() {
+        // Mocks führen default-Methoden nicht aus - isAvailable() wäre sonst false.
+        // lenient, weil nicht jeder Test sucht.
+        lenient().when(provider.isAvailable()).thenReturn(true);
         mediaService = new MediaService(List.of(provider), mediaItemRepository, sourceRepository,
                 userEntryRepository, userRepository);
     }
@@ -107,7 +112,9 @@ class MediaServiceTest {
     @Test
     void searchMediaWithMediaTypeFilterOnlyQueriesMatchingProviders() {
         Provider animeProvider = mock(Provider.class);
+        when(animeProvider.isAvailable()).thenReturn(true);
         Provider gameProvider = mock(Provider.class);
+        when(gameProvider.isAvailable()).thenReturn(true);
         when(animeProvider.supportedMediaTypes()).thenReturn(Set.of(MediaType.ANIME, MediaType.MANGA));
         when(gameProvider.supportedMediaTypes()).thenReturn(Set.of(MediaType.GAME));
         when(gameProvider.searchMedia("Zelda")).thenReturn(List.of());
@@ -125,6 +132,7 @@ class MediaServiceTest {
         // AniList liefert Anime UND Manga in einer Antwort (bewusste Design-Entscheidung, siehe AniListProvider) -
         // der Filter muss trotzdem nur den angeforderten Typ durchlassen.
         Provider aniListProvider = mock(Provider.class);
+        when(aniListProvider.isAvailable()).thenReturn(true);
         when(aniListProvider.supportedMediaTypes()).thenReturn(Set.of(MediaType.ANIME, MediaType.MANGA));
 
         MediaItem anime = new MediaItem();
@@ -160,6 +168,7 @@ class MediaServiceTest {
         // Gleiches Prinzip wie bei AniList, aber mit einem anderen Mehrfach-Typ-Provider (TMDB: MOVIE+SERIES),
         // um zu belegen, dass der Filter generisch für jeden Provider gilt, nicht AniList-spezifisch ist.
         Provider tmdbProvider = mock(Provider.class);
+        when(tmdbProvider.isAvailable()).thenReturn(true);
         when(tmdbProvider.supportedMediaTypes()).thenReturn(Set.of(MediaType.MOVIE, MediaType.SERIES));
 
         MediaItem movie = new MediaItem();
@@ -193,7 +202,9 @@ class MediaServiceTest {
     @Test
     void searchMediaEmptyMediaTypeFilterQueriesAllProviders() {
         Provider animeProvider = mock(Provider.class);
+        when(animeProvider.isAvailable()).thenReturn(true);
         Provider gameProvider = mock(Provider.class);
+        when(gameProvider.isAvailable()).thenReturn(true);
         when(animeProvider.searchMedia("Zelda")).thenReturn(List.of());
         when(gameProvider.searchMedia("Zelda")).thenReturn(List.of());
         MediaService service = new MediaService(List.of(animeProvider, gameProvider), mediaItemRepository,
@@ -427,6 +438,7 @@ class MediaServiceTest {
     @Test
     void fetchMediaDetailMatchingProviderReturnsItemMapsToMediaSearchResult() {
         Provider rawgProvider = mock(Provider.class);
+        when(rawgProvider.isAvailable()).thenReturn(true);
         when(rawgProvider.supportedSourceType()).thenReturn(SourceType.RAWG);
 
         MediaItem game = new MediaItem();
@@ -452,6 +464,7 @@ class MediaServiceTest {
     @Test
     void fetchMediaDetailNoProviderForSourceTypeThrowsMediaNotFoundException() {
         Provider rawgProvider = mock(Provider.class);
+        when(rawgProvider.isAvailable()).thenReturn(true);
         when(rawgProvider.supportedSourceType()).thenReturn(SourceType.RAWG);
         MediaService service = new MediaService(List.of(rawgProvider), mediaItemRepository,
                 sourceRepository, userEntryRepository, userRepository);
@@ -463,6 +476,7 @@ class MediaServiceTest {
     @Test
     void fetchMediaDetailProviderDoesNotKnowExternalIdThrowsMediaNotFoundException() {
         Provider rawgProvider = mock(Provider.class);
+        when(rawgProvider.isAvailable()).thenReturn(true);
         when(rawgProvider.supportedSourceType()).thenReturn(SourceType.RAWG);
         when(rawgProvider.fetchById("999")).thenReturn(null);
         MediaService service = new MediaService(List.of(rawgProvider), mediaItemRepository,
@@ -476,5 +490,79 @@ class MediaServiceTest {
     void fetchMediaDetailNullSourceTypeThrowsMediaNotFoundException() {
         assertThatThrownBy(() -> mediaService.fetchMediaDetail(null, "123"))
                 .isInstanceOf(MediaNotFoundException.class);
+    }
+
+    @Test
+    void searchMediaSkipsUnavailableProvider() {
+        Provider animeProvider = mock(Provider.class);
+        Provider gameProvider = mock(Provider.class);
+        when(animeProvider.isAvailable()).thenReturn(true);
+        when(gameProvider.isAvailable()).thenReturn(false);
+        when(animeProvider.searchMedia("Zelda")).thenReturn(List.of());
+        MediaService service = new MediaService(List.of(animeProvider, gameProvider), mediaItemRepository,
+                sourceRepository, userEntryRepository, userRepository);
+
+        service.searchMedia("Zelda", null);
+
+        verify(animeProvider).searchMedia("Zelda");
+        verify(gameProvider, never()).searchMedia(any());
+    }
+
+    @Test
+    void searchMediaFilterOnlyForUnavailableTypesThrowsMediaTypeUnavailableException() {
+        Provider animeProvider = mock(Provider.class);
+        Provider gameProvider = mock(Provider.class);
+        when(animeProvider.isAvailable()).thenReturn(true);
+        when(animeProvider.supportedMediaTypes()).thenReturn(Set.of(MediaType.ANIME, MediaType.MANGA));
+        when(gameProvider.isAvailable()).thenReturn(false);
+        MediaService service = new MediaService(List.of(animeProvider, gameProvider), mediaItemRepository,
+                sourceRepository, userEntryRepository, userRepository);
+
+        assertThatThrownBy(() -> service.searchMedia("Zelda", List.of(MediaType.GAME)))
+                .isInstanceOf(MediaTypeUnavailableException.class);
+        verify(gameProvider, never()).searchMedia(any());
+        verify(animeProvider, never()).searchMedia(any());
+    }
+
+    @Test
+    void searchMediaFilterWithAvailableAndUnavailableTypeSearchesOnlyAvailableProvider() {
+        Provider animeProvider = mock(Provider.class);
+        Provider gameProvider = mock(Provider.class);
+        when(animeProvider.isAvailable()).thenReturn(true);
+        when(animeProvider.supportedMediaTypes()).thenReturn(Set.of(MediaType.ANIME, MediaType.MANGA));
+        when(animeProvider.searchMedia("Zelda")).thenReturn(List.of());
+        when(gameProvider.isAvailable()).thenReturn(false);
+        MediaService service = new MediaService(List.of(animeProvider, gameProvider), mediaItemRepository,
+                sourceRepository, userEntryRepository, userRepository);
+
+        service.searchMedia("Zelda", List.of(MediaType.ANIME, MediaType.GAME));
+
+        verify(animeProvider).searchMedia("Zelda");
+        verify(gameProvider, never()).searchMedia(any());
+    }
+
+    @Test
+    void getAvailableMediaTypesContainsOnlyTypesOfAvailableProviders() {
+        Provider animeProvider = mock(Provider.class);
+        Provider gameProvider = mock(Provider.class);
+        when(animeProvider.isAvailable()).thenReturn(true);
+        when(animeProvider.supportedMediaTypes()).thenReturn(Set.of(MediaType.ANIME, MediaType.MANGA));
+        when(gameProvider.isAvailable()).thenReturn(false);
+        MediaService service = new MediaService(List.of(animeProvider, gameProvider), mediaItemRepository,
+                sourceRepository, userEntryRepository, userRepository);
+
+        assertThat(service.getAvailableMediaTypes()).containsExactlyInAnyOrder(MediaType.ANIME, MediaType.MANGA);
+    }
+
+    @Test
+    void fetchMediaDetailUnavailableProviderThrowsMediaNotFoundException() {
+        Provider rawgProvider = mock(Provider.class);
+        when(rawgProvider.isAvailable()).thenReturn(false);
+        MediaService service = new MediaService(List.of(rawgProvider), mediaItemRepository,
+                sourceRepository, userEntryRepository, userRepository);
+
+        assertThatThrownBy(() -> service.fetchMediaDetail(SourceType.RAWG, "3498"))
+                .isInstanceOf(MediaNotFoundException.class);
+        verify(rawgProvider, never()).fetchById(any());
     }
 }
