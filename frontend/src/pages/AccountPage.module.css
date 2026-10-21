@@ -1,0 +1,24 @@
+.box {
+  padding: var(--base-size-16);
+  border: var(--borderWidth-default) solid var(--borderColor-default);
+  border-radius: var(--borderRadius-medium);
+}
+
+.boxTitle {
+  margin-bottom: var(--base-size-16);
+}
+
+.details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--base-size-8) var(--base-size-24);
+  margin: 0 0 var(--base-size-16);
+}
+
+.details dt {
+  color: var(--fgColor-muted);
+}
+
+.details dd {
+  margin: 0;
+}

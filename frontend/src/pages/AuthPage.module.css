@@ -1,0 +1,25 @@
+.page {
+  max-width: 340px;
+  margin: 0 auto;
+  padding: var(--base-size-48) var(--base-size-16);
+}
+
+.title {
+  text-align: center;
+  margin-bottom: var(--base-size-16);
+}
+
+.box {
+  padding: var(--base-size-16);
+  background-color: var(--bgColor-muted);
+  border: var(--borderWidth-default) solid var(--borderColor-default);
+  border-radius: var(--borderRadius-medium);
+}
+
+.footer {
+  margin-top: var(--base-size-16);
+  padding: var(--base-size-16);
+  text-align: center;
+  border: var(--borderWidth-default) solid var(--borderColor-default);
+  border-radius: var(--borderRadius-medium);
+}

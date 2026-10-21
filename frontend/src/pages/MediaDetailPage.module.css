@@ -1,0 +1,36 @@
+.layout {
+  display: flex;
+  gap: var(--base-size-24);
+  align-items: flex-start;
+}
+
+@media (max-width: 543px) {
+  .layout {
+    flex-direction: column;
+  }
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.meta {
+  color: var(--fgColor-muted);
+}
+
+.description {
+  white-space: pre-line;
+  line-height: 1.6;
+}
+
+.entryBox {
+  padding: var(--base-size-16);
+  border: var(--borderWidth-default) solid var(--borderColor-default);
+  border-radius: var(--borderRadius-medium);
+}
+
+.note {
+  margin: 0;
+  white-space: pre-line;
+}

@@ -1,0 +1,11 @@
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--base-size-32) var(--base-size-16);
+  line-height: 1.6;
+}
+
+.page h2 {
+  margin-top: var(--base-size-24);
+  font-size: var(--text-title-size-small);
+}

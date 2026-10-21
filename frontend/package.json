@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@primer/octicons-react": "^19.40.0",
+    "@primer/primitives": "^11.10.0",
+    "@primer/react": "^38.42.0",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-router": "^8.5.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

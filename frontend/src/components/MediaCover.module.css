@@ -1,0 +1,15 @@
+.cover {
+  flex-shrink: 0;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--borderRadius-medium);
+  border: var(--borderWidth-default) solid var(--borderColor-muted);
+  background-color: var(--bgColor-muted);
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fgColor-muted);
+}

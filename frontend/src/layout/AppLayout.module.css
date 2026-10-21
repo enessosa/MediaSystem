@@ -1,0 +1,12 @@
+.header {
+  padding: var(--base-size-16) var(--base-size-24) 0;
+  background-color: var(--bgColor-inset);
+  border-bottom: var(--borderWidth-default) solid var(--borderColor-default);
+}
+
+.brand {
+  font-size: var(--text-title-size-medium);
+  font-weight: var(--base-text-weight-semibold);
+  color: var(--fgColor-default);
+  text-decoration: none;
+}
