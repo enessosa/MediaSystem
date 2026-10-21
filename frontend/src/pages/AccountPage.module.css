@@ -22,3 +22,21 @@
 .details dd {
   margin: 0;
 }
+
+.dangerBox {
+  border-color: var(--borderColor-danger-emphasis);
+}
+
+.dangerText {
+  margin: 0;
+  color: var(--fgColor-muted);
+}
+
+.hint {
+  margin: 0;
+  color: var(--fgColor-muted);
+}
+
+.missing {
+  color: var(--fgColor-danger);
+}
