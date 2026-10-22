@@ -156,6 +156,27 @@ Before writing any code, I deliberately spent time designing the system: modelin
 
 Click a diagram to open it in full size.
 
+## What I Learned
+
+### Technical
+
+- **Spring Security beyond the defaults:** server-side sessions, how a session cookie turns back into an `Authentication` on every request, cookie-based CSRF protection for a single-page app, CORS with credentials, and role-based authorization with a second layer (`@PreAuthorize`) as defense in depth.
+- **JPA/Hibernate pitfalls:** lazy loading and `LazyInitializationException`, why service methods need `@Transactional`, single-table inheritance (`Admin extends User`), and why entities should never be returned directly (DTOs instead of leaking `passwordHash`).
+- **Designing for change:** the provider pattern behind an interface made adding a fourth external API (RAWG) a matter of one new class, without touching the service layer.
+- **Working with external APIs:** four different auth styles (Bearer header, query key, GraphQL, none), mapping inconsistent responses onto one domain model, and handling failures like a missing key or a provider that is down.
+- **Schema migrations** with Flyway instead of letting Hibernate generate the database.
+- **React and TypeScript from zero:** components, state, hooks, context, routing, and connecting a frontend to a real backend.
+- **Testing:** unit tests with Mockito (including surprises like mocks not running an interface's `default` methods), security tests with MockMvc, and a CI pipeline that runs them on every push.
+
+### Beyond the code
+
+- **A project is iterative, no matter how much you plan.** I planned a lot up front (use cases, diagrams, ADRs) and it was worth it, but the result still looks different from the plan. Requirements changed, a first frontend was thrown away, and decisions like the signup rule were revised once I actually used the app.
+- **Writing decisions down pays off.** ADRs force you to name the alternatives and the trade-offs. When a decision is revisited later, you know why it was made in the first place.
+- **Every decision has a price, and sometimes you only see it later.** I chose to let the whole search fail if one provider fails, so the user never gets an incomplete result. When AniList went down, the cost of that became very concrete.
+- **Building something and running it are two different things.** Hosting publicly would have meant an imprint, GDPR obligations for other people's data, backups and updates. Deciding against it was a real decision, not giving up.
+- **Scope is something you have to manage actively.** There is always one more feature or edge case; knowing what is good enough for now is part of the work.
+- **AI is a tool, not a replacement for understanding.** I used Claude to explain concepts and to write parts of the code. It made me faster, but only where I understood what it produced. The parts I wrote myself are the parts I learned the most from.
+
 ## Roadmap
 
 - [x] Backend core: providers, list management, auth with server-side sessions
