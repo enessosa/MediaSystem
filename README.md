@@ -131,16 +131,30 @@ Before writing any code, I deliberately spent time designing the system: modelin
 
 > These diagrams reflect the planning phase. Some details have changed since (e.g. the admin role, games via RAWG, account management), so the code is the source of truth where they differ.
 
-- [Use Case Diagram](Documentation/Diagrams/UML-UseCase-Diagram/UML-UseCase-Diagram.jpg)
-- [Component Diagram](Documentation/Diagrams/UML-Component-Diagram/UML-Component-Diagram.jpg)
-- [Class Diagram](Documentation/Diagrams/UML-Class-Diagram/Class-Diagram.jpg)
-- [Package Diagram](Documentation/Diagrams/UML-Package-Diagram/Package-Diagram.jpg)
-- [Sequence Diagram](Documentation/Diagrams/UML-Sequence-Diagram/UML-Sequence-Diagram.jpg)
-- [Deployment Diagram](Documentation/Diagrams/UML-Deployment-Diagram/UML-Deployment-Diagram.jpg)
-- [ER Diagram](Documentation/Diagrams/ER-Diagram/ER-Diagram.jpg)
-- [Activity Diagram – Registration](Documentation/Diagrams/UML-Activity-Diagram/Activity-Diagram-Registration.jpg)
-- [Activity Diagram – Search Media](<Documentation/Diagrams/UML-Activity-Diagram/Activity Diagram - Search Media.jpg>)
-- [Activity Diagram – Add Media](<Documentation/Diagrams/UML-Activity-Diagram/Activity Diagram - Add Media.jpg>)
+<table>
+  <tr>
+    <td align="center"><a href="Documentation/Diagrams/UML-UseCase-Diagram/UML-UseCase-Diagram.jpg"><img src="Documentation/Diagrams/UML-UseCase-Diagram/UML-UseCase-Diagram.jpg" width="240" alt="Use Case diagram"></a><br>Use Case</td>
+    <td align="center"><a href="Documentation/Diagrams/UML-Component-Diagram/UML-Component-Diagram.jpg"><img src="Documentation/Diagrams/UML-Component-Diagram/UML-Component-Diagram.jpg" width="240" alt="Component diagram"></a><br>Component</td>
+    <td align="center"><a href="Documentation/Diagrams/UML-Class-Diagram/Class-Diagram.jpg"><img src="Documentation/Diagrams/UML-Class-Diagram/Class-Diagram.jpg" width="240" alt="Class diagram"></a><br>Class</td>
+  </tr>
+  <tr>
+    <td align="center"><a href="Documentation/Diagrams/UML-Package-Diagram/Package-Diagram.jpg"><img src="Documentation/Diagrams/UML-Package-Diagram/Package-Diagram.jpg" width="240" alt="Package diagram"></a><br>Package</td>
+    <td align="center"><a href="Documentation/Diagrams/UML-Sequence-Diagram/UML-Sequence-Diagram.jpg"><img src="Documentation/Diagrams/UML-Sequence-Diagram/UML-Sequence-Diagram.jpg" width="240" alt="Sequence diagram"></a><br>Sequence</td>
+    <td align="center"><a href="Documentation/Diagrams/UML-Deployment-Diagram/UML-Deployment-Diagram.jpg"><img src="Documentation/Diagrams/UML-Deployment-Diagram/UML-Deployment-Diagram.jpg" width="240" alt="Deployment diagram"></a><br>Deployment</td>
+  </tr>
+  <tr>
+    <td align="center"><a href="Documentation/Diagrams/ER-Diagram/ER-Diagram.jpg"><img src="Documentation/Diagrams/ER-Diagram/ER-Diagram.jpg" width="240" alt="ER diagram"></a><br>ER</td>
+    <td align="center"><a href="Documentation/Diagrams/UML-Activity-Diagram/Activity-Diagram-Registration.jpg"><img src="Documentation/Diagrams/UML-Activity-Diagram/Activity-Diagram-Registration.jpg" width="240" alt="Activity – Registration diagram"></a><br>Activity – Registration</td>
+    <td align="center"><a href="Documentation/Diagrams/UML-Activity-Diagram/Activity%20Diagram%20-%20Search%20Media.jpg"><img src="Documentation/Diagrams/UML-Activity-Diagram/Activity%20Diagram%20-%20Search%20Media.jpg" width="240" alt="Activity – Search Media diagram"></a><br>Activity – Search Media</td>
+  </tr>
+  <tr>
+    <td align="center"><a href="Documentation/Diagrams/UML-Activity-Diagram/Activity%20Diagram%20-%20Add%20Media.jpg"><img src="Documentation/Diagrams/UML-Activity-Diagram/Activity%20Diagram%20-%20Add%20Media.jpg" width="240" alt="Activity – Add Media diagram"></a><br>Activity – Add Media</td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+
+Click a diagram to open it in full size.
 
 ## Roadmap
 
