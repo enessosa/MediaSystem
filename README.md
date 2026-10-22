@@ -172,7 +172,7 @@ Click a diagram to open it in full size.
 
 - **A project is iterative, no matter how much you plan.** I planned a lot up front (use cases, diagrams, ADRs) and it was worth it, but the result still looks different from the plan. Requirements changed, a first frontend was thrown away, and decisions like the signup rule were revised once I actually used the app.
 - **Writing decisions down pays off.** ADRs force you to name the alternatives and the trade-offs. When a decision is revisited later, you know why it was made in the first place.
-- **Every decision has a price, and sometimes you only see it later.** I chose to let the whole search fail if one provider fails, so the user never gets an incomplete result. When AniList went down, the cost of that became very concrete.
+- **Every decision has a price, and sometimes you only see it later.** I chose to let the whole search fail if one provider fails, so the user never gets an incomplete result. When AniList went down because of the php exploit, the cost of that became very concrete.
 - **Building something and running it are two different things.** Hosting publicly would have meant an imprint, GDPR obligations for other people's data, backups and updates. Deciding against it was a real decision, not giving up.
 - **Scope is something you have to manage actively.** There is always one more feature or edge case; knowing what is good enough for now is part of the work.
 - **AI is a tool, not a replacement for understanding.** I used Claude to explain concepts and to write parts of the code. It made me faster, but only where I understood what it produced. The parts I wrote myself are the parts I learned the most from.
