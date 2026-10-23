@@ -1,0 +1,50 @@
+# Runs MediaSystem from the prebuilt images on ghcr.io (ADR-010), e.g. on a NAS.
+# Needs only this file and a .env next to it:
+#
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# For local builds from source, use docker-compose.yml instead.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: mediasystem-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mediasystem}
+      POSTGRES_USER: ${POSTGRES_USER:-mediasystem}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mediasystem}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mediasystem} -d ${POSTGRES_DB:-mediasystem}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: ghcr.io/enessosa/mediasystem-backend:${MEDIASYSTEM_VERSION:-latest}
+    container_name: mediasystem-backend
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-mediasystem}
+      DB_USERNAME: ${POSTGRES_USER:-mediasystem}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-mediasystem}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    image: ghcr.io/enessosa/mediasystem-frontend:${MEDIASYSTEM_VERSION:-latest}
+    container_name: mediasystem-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${APP_PORT:-8580}:80"
+
+volumes:
+  postgres_data:
