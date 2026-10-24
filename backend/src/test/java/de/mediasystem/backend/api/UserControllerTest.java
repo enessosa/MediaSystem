@@ -35,7 +35,7 @@ class UserControllerTest {
     void getCurrentUserReturnsOkWithDataOfLoggedInUser() {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("enes");
-        MeResponse me = new MeResponse(7L, "enes", "enes@example.org", false);
+        MeResponse me = new MeResponse(7L, "enes", false);
         when(userService.getCurrentUser("enes")).thenReturn(me);
 
         ResponseEntity<@NonNull MeResponse> response = userController.getCurrentUser(authentication);

@@ -40,10 +40,10 @@ class AuthControllerTest {
 
     @Test
     void registerValidRequestReturnsCreatedAndCallsService() {
-        RegisterResponse registerResponse = new RegisterResponse(1L, "newuser", "new@test.de", Instant.now());
+        RegisterResponse registerResponse = new RegisterResponse(1L, "newuser", Instant.now());
         when(authService.register(any(RegisterRequest.class))).thenReturn(registerResponse);
 
-        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
+        RegisterRequest request = new RegisterRequest("newuser", "rawPassword", null);
 
         ResponseEntity<?> response = authController.register(request);
 

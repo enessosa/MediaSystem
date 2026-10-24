@@ -12,7 +12,6 @@ export interface LoginResponse {
 
 export interface RegisterRequest {
   username: string
-  email: string
   password: string
   codeword: string | null
 }
@@ -20,7 +19,6 @@ export interface RegisterRequest {
 export interface RegisterResponse {
   id: number
   username: string
-  email: string
   createdAt: string
 }
 

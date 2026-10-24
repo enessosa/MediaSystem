@@ -11,10 +11,7 @@ public interface UserRepository extends JpaRepository<@NonNull User, @NonNull Lo
 
     Optional<User> findByUsername(String username);
 
-    Optional<User> findByEmail(String email);
-
     boolean existsByUsername(String username);
-    boolean existsByEmail(String email);
 
     /**
      * Anzahl Admins. Admin hat kein eigenes Feld, sondern ist eine eigene Entity-Klasse (Single-Table-Inheritance),

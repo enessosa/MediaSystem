@@ -8,7 +8,6 @@ import de.mediasystem.backend.db.UserRepository;
 import de.mediasystem.backend.model.AppSetting;
 import de.mediasystem.backend.model.roles.Admin;
 import de.mediasystem.backend.model.roles.User;
-import de.mediasystem.backend.service.exception.EmailAlreadyExistsException;
 import de.mediasystem.backend.service.exception.InvalidCodewordException;
 import de.mediasystem.backend.service.exception.UsernameAlreadyExistsException;
 import org.junit.jupiter.api.Test;
@@ -59,12 +58,11 @@ class AuthServiceTest {
         ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
         when(userRepository.save(savedUser.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
+        RegisterRequest request = new RegisterRequest("newuser", "rawPassword", null);
 
         RegisterResponse result = authService.register(request);
 
         assertThat(result.username()).isEqualTo("newuser");
-        assertThat(result.email()).isEqualTo("new@test.de");
         assertThat(savedUser.getValue().getPasswordHash()).isEqualTo("hashed-password");
         verify(appSettingRepository, never()).findById(any());
     }
@@ -79,7 +77,7 @@ class AuthServiceTest {
         when(passwordEncoder.encode(any())).thenReturn("hashed-password");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", "geheim");
+        RegisterRequest request = new RegisterRequest("newuser", "rawPassword", "geheim");
 
         RegisterResponse result = authService.register(request);
 
@@ -94,7 +92,7 @@ class AuthServiceTest {
         codewordSetting.setValue("geheim");
         when(appSettingRepository.findById(CODEWORD_SETTING_KEY)).thenReturn(Optional.of(codewordSetting));
 
-        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", "falsch");
+        RegisterRequest request = new RegisterRequest("newuser", "rawPassword", "falsch");
 
         assertThatExceptionOfType(InvalidCodewordException.class)
                 .isThrownBy(() -> authService.register(request));
@@ -109,7 +107,7 @@ class AuthServiceTest {
         codewordSetting.setValue("geheim");
         when(appSettingRepository.findById(CODEWORD_SETTING_KEY)).thenReturn(Optional.of(codewordSetting));
 
-        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
+        RegisterRequest request = new RegisterRequest("newuser", "rawPassword", null);
 
         assertThatExceptionOfType(InvalidCodewordException.class)
                 .isThrownBy(() -> authService.register(request));
@@ -123,7 +121,7 @@ class AuthServiceTest {
         when(passwordEncoder.encode(any())).thenReturn("hashed-password");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
+        RegisterRequest request = new RegisterRequest("newuser", "rawPassword", null);
 
         RegisterResponse result = authService.register(request);
 
@@ -137,7 +135,7 @@ class AuthServiceTest {
         ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
         when(userRepository.save(savedUser.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        authService.register(new RegisterRequest("betreiber", "admin@test.de", "rawPassword", null));
+        authService.register(new RegisterRequest("betreiber", "rawPassword", null));
 
         assertThat(savedUser.getValue()).isInstanceOf(Admin.class);
     }
@@ -149,7 +147,7 @@ class AuthServiceTest {
         ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
         when(userRepository.save(savedUser.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        authService.register(new RegisterRequest("zweiter", "user@test.de", "rawPassword", null));
+        authService.register(new RegisterRequest("zweiter", "rawPassword", null));
 
         assertThat(savedUser.getValue()).isNotInstanceOf(Admin.class);
     }
@@ -159,21 +157,9 @@ class AuthServiceTest {
         when(userRepository.count()).thenReturn(0L);
         when(userRepository.existsByUsername("newuser")).thenReturn(true);
 
-        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
+        RegisterRequest request = new RegisterRequest("newuser", "rawPassword", null);
 
         assertThatExceptionOfType(UsernameAlreadyExistsException.class)
-                .isThrownBy(() -> authService.register(request));
-        verify(userRepository, never()).save(any());
-    }
-
-    @Test
-    void registerEmailAlreadyTakenThrowsAndDoesNotSave() {
-        when(userRepository.count()).thenReturn(0L);
-        when(userRepository.existsByEmail("new@test.de")).thenReturn(true);
-
-        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
-
-        assertThatExceptionOfType(EmailAlreadyExistsException.class)
                 .isThrownBy(() -> authService.register(request));
         verify(userRepository, never()).save(any());
     }
@@ -185,7 +171,7 @@ class AuthServiceTest {
         ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
         when(userRepository.save(savedUser.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        RegisterRequest request = new RegisterRequest("newuser", "new@test.de", "rawPassword", null);
+        RegisterRequest request = new RegisterRequest("newuser", "rawPassword", null);
 
         authService.register(request);
 

@@ -41,12 +41,11 @@ class UserServiceTest {
         User user = new User();
         user.setId(7L);
         user.setUsername("enes");
-        user.setEmail("enes@example.org");
         when(userRepository.findByUsername("enes")).thenReturn(Optional.of(user));
 
         MeResponse response = userService.getCurrentUser("enes");
 
-        assertThat(response).isEqualTo(new MeResponse(7L, "enes", "enes@example.org", false));
+        assertThat(response).isEqualTo(new MeResponse(7L, "enes", false));
     }
 
     @Test
@@ -55,7 +54,6 @@ class UserServiceTest {
         Admin admin = new Admin();
         admin.setId(1L);
         admin.setUsername("chef");
-        admin.setEmail("chef@example.org");
         when(userRepository.findByUsername("chef")).thenReturn(Optional.of(admin));
 
         MeResponse response = userService.getCurrentUser("chef");

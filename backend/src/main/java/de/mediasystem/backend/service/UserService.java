@@ -40,7 +40,7 @@ public class UserService {
     public MeResponse getCurrentUser(String username) {
         User user  = userRepository.findByUsername(username).orElseThrow();
         boolean isAdmin = user instanceof Admin;
-        return new MeResponse(user.getId(), user.getUsername(), user.getEmail(), isAdmin);
+        return new MeResponse(user.getId(), user.getUsername(), isAdmin);
     }
 
     /**

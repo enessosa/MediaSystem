@@ -1,7 +1,6 @@
 package de.mediasystem.backend.api.advisor;
 
 import de.mediasystem.backend.service.exception.LastAdminException;
-import de.mediasystem.backend.service.exception.EmailAlreadyExistsException;
 import de.mediasystem.backend.service.exception.InvalidCodewordException;
 import de.mediasystem.backend.service.exception.MediaTypeUnavailableException;
 import de.mediasystem.backend.service.exception.UserEntryNotFoundException;
@@ -37,14 +36,6 @@ class GlobalExceptionHandlerTest {
     void handleUsernameAlreadyExistsReturns409() {
         ResponseEntity<?> response = advice.handleUsernameAlreadyExists(
                 new UsernameAlreadyExistsException("Username is already registered"));
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-    }
-
-    @Test
-    void handleEmailAlreadyExistsReturns409() {
-        ResponseEntity<?> response =
-                advice.handleEmailAlreadyExists(new EmailAlreadyExistsException("E-Mail is already Registered"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     }

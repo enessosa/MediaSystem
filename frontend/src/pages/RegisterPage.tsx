@@ -18,7 +18,6 @@ function errorMessageFor(err: unknown, t: Translations): string {
 
 function RegisterPage() {
   const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [codeword, setCodeword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -33,7 +32,7 @@ function RegisterPage() {
     setError(null)
 
     try {
-      await register({ username, email, password, codeword: codeword.trim() || null })
+      await register({ username, password, codeword: codeword.trim() || null })
       await login(username, password)
       navigate('/', { replace: true })
     } catch (err) {
@@ -69,16 +68,6 @@ function RegisterPage() {
               onChange={(event) => setUsername(event.target.value)}
             />
             <FormControl.Caption>{t.register.usernameCaption}</FormControl.Caption>
-          </FormControl>
-          <FormControl required>
-            <FormControl.Label>{t.register.email}</FormControl.Label>
-            <TextInput
-              block
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
           </FormControl>
           <FormControl required>
             <FormControl.Label>{t.register.password}</FormControl.Label>

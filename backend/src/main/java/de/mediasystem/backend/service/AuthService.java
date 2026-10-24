@@ -52,23 +52,20 @@ public class AuthService {
                 throw new InvalidCodewordException();
             }
         }
-        if (userRepository.existsByEmail(request.email())) {
-            throw new EmailAlreadyExistsException("E-Mail is already Registered");
-        } else if (userRepository.existsByUsername(request.username())) {
+        if (userRepository.existsByUsername(request.username())) {
             throw new UsernameAlreadyExistsException("Username is already registered");
         }
 
         User user = userCount == 0 ? new Admin() : new User();
         user.setUsername(request.username());
-        user.setEmail(request.email());
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         userRepository.save(user);
 
-        return new RegisterResponse(user.getId(), user.getUsername(), user.getEmail(), user.getCreatedAt());
+        return new RegisterResponse(user.getId(), user.getUsername(), user.getCreatedAt());
     }
 
     /**
-     * Authentifiziert einen Nutzer per Username oder Email und Passwort.
+     * Authentifiziert einen Nutzer per Username und Passwort.
      * @param request Login-Credentials
      * @return das Authentication-Objekt des eingeloggten Nutzers
      */

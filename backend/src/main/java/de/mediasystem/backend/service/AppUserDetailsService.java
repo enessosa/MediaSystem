@@ -37,7 +37,6 @@ public class AppUserDetailsService implements UserDetailsService {
     @Override
     public @NonNull UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
-                .or(() -> userRepository.findByEmail(username))
                 .orElseThrow(() -> new UsernameNotFoundException(username));
         // Hibernate liefert dank @Inheritance(SINGLE_TABLE) je nach "role"-Discriminator-Spalte
         // tatsächlich eine Admin- oder eine User-Instanz zurück - instanceof funktioniert also echt.

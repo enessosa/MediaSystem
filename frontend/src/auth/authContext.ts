@@ -2,7 +2,6 @@ import { createContext } from 'react'
 
 export interface AuthUser {
   username: string
-  email: string
   isAdmin: boolean
 }
 

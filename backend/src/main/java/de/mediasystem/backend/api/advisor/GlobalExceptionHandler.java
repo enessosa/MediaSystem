@@ -36,11 +36,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(400).body(e.getMessage());
     }
 
-    @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<@NonNull String> handleEmailAlreadyExists(EmailAlreadyExistsException e) {
-        return ResponseEntity.status(409).body(e.getMessage());
-    }
-
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     public ResponseEntity<@NonNull String> handleUsernameAlreadyExists(UsernameAlreadyExistsException e) {
         return ResponseEntity.status(409).body(e.getMessage());

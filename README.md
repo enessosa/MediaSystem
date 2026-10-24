@@ -181,6 +181,7 @@ Architecture decisions are recorded as ADRs in [`Documentation/ADRs`](Documentat
 - [ADR-008](Documentation/ADRs/ADR-008.md) – open registration without codeword, first user becomes admin
 - [ADR-009](Documentation/ADRs/ADR-009.md) – nginx as reverse proxy, frontend and API on one origin
 - [ADR-010](Documentation/ADRs/ADR-010.md) – prebuilt images via GitHub Container Registry
+- [ADR-011](Documentation/ADRs/ADR-011.md) – accounts without email address
 
 ## Planning & Design
 

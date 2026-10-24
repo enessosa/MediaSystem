@@ -5,7 +5,7 @@ import { getCurrentUser, type MeResponse } from '../api/users'
 import { AuthContext, type AuthUser } from './authContext'
 
 function toAuthUser(me: MeResponse): AuthUser {
-  return { username: me.username, email: me.email, isAdmin: me.admin }
+  return { username: me.username, isAdmin: me.admin }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
