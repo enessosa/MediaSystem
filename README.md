@@ -10,7 +10,7 @@ This is primarily a **learning project**. The goal isn't just to ship a feature-
 - designing an architecture (layered, provider/repository interfaces, ADRs for the decisions that matter)
 - building it properly (Java/Spring Boot backend, React/TypeScript frontend, Postgres, tested)
 - running it in CI
-- running and operating it myself (Docker, reverse proxy, HTTPS) – *in progress, see [Roadmap](#roadmap)*
+- running and operating it myself (Docker, nginx as reverse proxy; HTTPS still open, see [Roadmap](#roadmap))
 
 It is meant to be run locally or privately for yourself and a few friends – there is no public instance.
 
@@ -37,22 +37,19 @@ It is meant to be run locally or privately for yourself and a few friends – th
 | Auth | Spring Security, server-side sessions with CSRF protection (JWT planned) |
 | External APIs | AniList, TMDB, RAWG, OpenLibrary |
 | CI | GitHub Actions (backend: build + tests, frontend: lint + build) |
+| Deployment | Docker, Docker Compose, nginx as reverse proxy |
 
 ## Getting Started
 
-### Prerequisites
+### Quick start with Docker
 
-- Java 25
-- Node.js 22+
-- Docker (for Postgres)
+Clone the repository and build everything locally. The only prerequisite is [Docker](https://www.docker.com/) (Docker Desktop on macOS/Windows). To run it on a server or NAS without the source code, see [Deploy on a server or NAS](#deploy-on-a-server-or-nas).
 
-### 1. API keys
-
-AniList and OpenLibrary work without a key. For the other two, create free accounts:
+**1. API keys.** AniList and OpenLibrary work without a key. For the other two, create free accounts:
 
 | Provider | Media | Where to get the key |
 |---|---|---|
-| TMDB | series, movies | [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api) – use the **API Read Access Token**, not the short API key |
+| TMDB | series, movies | [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api): use the **API Read Access Token**, not the short API key |
 | RAWG | games | [rawg.io/apidocs](https://rawg.io/apidocs) |
 
 ```bash
@@ -62,40 +59,98 @@ cp .env.example .env
 
 A missing key is fine: that provider is skipped and its media types show up as disabled in the search.
 
-### 2. Database
+**2. Start everything.**
 
 ```bash
-docker compose up -d postgres
+docker compose up -d --build
 ```
 
-### 3. Backend
+This builds the backend and frontend images and starts three containers: Postgres, the Spring Boot backend and nginx, which serves the frontend and forwards `/api/` to the backend ([ADR-009](Documentation/ADRs/ADR-009.md)). Open `http://localhost:8580`. The first build takes a few minutes; Flyway creates the database schema on first start.
+
+**3. First login.** Register right after the first start: **the first account becomes admin.** Everyone after that is a regular user. As admin you can set an invite codeword under *Account*; it is only asked for from the 11th user on, and as long as no codeword is set, registration stays open.
+
+Useful commands:
 
 ```bash
+docker compose logs -f backend   # follow the backend logs
+docker compose up -d             # apply changes to .env
+docker compose down              # stop everything (data stays in the postgres_data volume)
+```
+
+The port can be changed with `APP_PORT` in `.env` (default `8580`); `POSTGRES_PORT` does the same for the database, which is only reachable from your own machine.
+
+### Deploy on a server or NAS
+
+For running MediaSystem permanently, e.g. on a NAS, you don't need the source code. Every release is published as prebuilt images on the GitHub Container Registry ([ADR-010](Documentation/ADRs/ADR-010.md)), so the machine only needs two files. Prerequisites: Docker with Docker Compose 2.24 or newer (`docker compose version`); the images are built for `amd64` (Intel/AMD).
+
+**1. Get the files.** Connect via SSH and create a folder, e.g. in the shared folder your NAS uses for Docker:
+
+```bash
+mkdir -p /volume1/docker/mediasystem && cd /volume1/docker/mediasystem
+curl -L -o docker-compose.prod.yml https://raw.githubusercontent.com/enessosa/MediaSystem/main/docker-compose.prod.yml
+curl -L -o .env https://raw.githubusercontent.com/enessosa/MediaSystem/main/.env.example
+```
+
+On many NAS systems, Docker commands need `sudo`.
+
+**2. Edit `.env`** (e.g. with `nano .env`): add your API keys and set your own database password:
+
+```
+POSTGRES_PASSWORD=a-long-random-password
+```
+
+Do this **before the first start**. Postgres only reads the password once, when it creates the database; changing it later locks the backend out.
+
+**3. Start.**
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Docker downloads the images, nothing is built. Open `http://<server-ip>:8580` and register right away, since the first account becomes admin.
+
+**Updates.** After a new release:
+
+```bash
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+```
+
+The containers use the `latest` images by default, so a NAS UI that shows containers as "updatable" picks up new releases as well; always update backend and frontend together. Database migrations run automatically on start. To stay on a specific release, set `MEDIASYSTEM_VERSION=0.2.0` in `.env`.
+
+**Backups.** All data lives in the `postgres_data` volume. To create a dump:
+
+```bash
+docker compose -f docker-compose.prod.yml exec postgres pg_dump -U mediasystem mediasystem > backup.sql
+```
+
+**Access from outside your home network:** use a VPN (e.g. Tailscale or the VPN of your router/NAS). Don't forward the port in your router: the app runs without HTTPS and is not meant to be public ([ADR-007](Documentation/ADRs/ADR-007.md)).
+
+### Development setup
+
+For working on the code, run backend and frontend directly, with hot reload. Prerequisites: Java 25, Node.js 22+ and Docker (for Postgres). Create the `.env` as described above.
+
+```bash
+# 1. Database (only reachable from your own machine)
+docker compose up -d postgres
+
+# 2. Backend on http://localhost:8080
 cd backend
 set -a && source ../.env && set +a   # load the API keys into the environment
 ./mvnw spring-boot:run
-```
 
-The API runs on `http://localhost:8080`. Flyway creates the schema on first start.
-
-### 4. Frontend
-
-```bash
+# 3. Frontend on http://localhost:5173 (in a second terminal)
 cd frontend
 npm ci
 npm run dev
 ```
 
-Open `http://localhost:5173`. The backend only accepts requests from this origin (CORS), so keep the default port.
-
-### 5. First login
-
-**Register right after the first start – the first account becomes admin.** Everyone after that is a regular user. As admin you can set an invite codeword under *Account*; it is only asked for from the 11th user on, and as long as no codeword is set, registration stays open.
+Open `http://localhost:5173`. In this setup the frontend talks to the backend directly, and the backend only accepts requests from this origin (CORS), so keep the default port.
 
 ### Running the checks
 
 ```bash
-cd backend && ./mvnw verify          # tests
+cd backend && ./mvnw verify          # tests (need the Postgres container)
 cd frontend && npm run lint && npm run build
 ```
 
@@ -124,6 +179,8 @@ Architecture decisions are recorded as ADRs in [`Documentation/ADRs`](Documentat
 - [ADR-006](Documentation/ADRs/ADR-006.md) – Primer React as UI component library
 - [ADR-007](Documentation/ADRs/ADR-007.md) – no public hosting, local/private deployment only
 - [ADR-008](Documentation/ADRs/ADR-008.md) – open registration without codeword, first user becomes admin
+- [ADR-009](Documentation/ADRs/ADR-009.md) – nginx as reverse proxy, frontend and API on one origin
+- [ADR-010](Documentation/ADRs/ADR-010.md) – prebuilt images via GitHub Container Registry
 
 ## Planning & Design
 
@@ -182,7 +239,8 @@ Click a diagram to open it in full size.
 - [x] Backend core: providers, list management, auth with server-side sessions
 - [x] Frontend
 - [ ] Rebuild auth on JWT (refresh tokens, revocation) – [ADR-005](Documentation/ADRs/ADR-005.md)
-- [ ] Docker images for backend and frontend, reverse proxy + HTTPS for private hosting
+- [x] Docker images for backend and frontend, nginx as reverse proxy, one `docker compose up` for everything
+- [ ] HTTPS for running it on a private server
 
 ## Use of AI
 
