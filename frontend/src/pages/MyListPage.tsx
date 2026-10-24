@@ -6,9 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router'
 import {
   deleteEntry,
   ENTRIES_PATH,
-  MEDIA_TYPE_LABELS,
   MEDIA_TYPES,
-  STATUS_LABELS,
   STATUSES,
   type MediaType,
   type Status,
@@ -22,15 +20,19 @@ import Loading from '../components/Loading'
 import ManualAddDialog from '../components/ManualAddDialog'
 import PageTitle from '../components/PageTitle'
 import { useApi } from '../hooks/useApi'
+import type { Translations } from '../i18n/translations'
+import { useI18n } from '../i18n/useI18n'
 
 const STATUS_FILTERS: (Status | null)[] = [null, ...STATUSES]
 
 type SortOrder = 'newest' | 'rating-desc' | 'rating-asc'
 
-const SORT_LABELS: Record<SortOrder, string> = {
-  newest: 'Zuletzt hinzugefügt',
-  'rating-desc': 'Beste Bewertung zuerst',
-  'rating-asc': 'Schlechteste Bewertung zuerst',
+const SORT_ORDERS: SortOrder[] = ['newest', 'rating-desc', 'rating-asc']
+
+function sortLabel(order: SortOrder, t: Translations): string {
+  if (order === 'rating-desc') return t.myList.sortRatingDesc
+  if (order === 'rating-asc') return t.myList.sortRatingAsc
+  return t.myList.sortNewest
 }
 
 function compareEntries(order: SortOrder) {
@@ -54,10 +56,11 @@ function MyListPage() {
   const [actionError, setActionError] = useState<unknown>(null)
   const confirm = useConfirm()
   const navigate = useNavigate()
+  const { t } = useI18n()
 
   const statusFilter = STATUSES.find((s) => s === searchParams.get('status')) ?? null
   const typeFilter = MEDIA_TYPES.find((t) => t === searchParams.get('type')) ?? null
-  const sortOrder = (Object.keys(SORT_LABELS) as SortOrder[]).find((o) => o === searchParams.get('sort')) ?? 'newest'
+  const sortOrder = SORT_ORDERS.find((o) => o === searchParams.get('sort')) ?? 'newest'
 
   function setFilter(name: 'status' | 'type' | 'sort', value: string | null) {
     const next = new URLSearchParams(searchParams)
@@ -68,11 +71,11 @@ function MyListPage() {
 
   async function handleDelete(entry: UserEntryResponse) {
     const confirmed = await confirm({
-      title: 'Eintrag entfernen?',
-      content: `„${entry.title}“ wird aus deiner Liste entfernt. Status, Bewertung und Notiz gehen verloren.`,
-      confirmButtonContent: 'Entfernen',
+      title: t.media.removeTitle,
+      content: t.media.removeContent(entry.title),
+      confirmButtonContent: t.common.remove,
       confirmButtonType: 'danger',
-      cancelButtonContent: 'Abbrechen',
+      cancelButtonContent: t.common.cancel,
     })
     if (!confirmed) return
     setActionError(null)
@@ -92,10 +95,10 @@ function MyListPage() {
   return (
     <Stack gap="normal">
       <PageTitle
-        title="Meine Liste"
+        title={t.myList.title}
         actions={
           <Button leadingVisual={PlusIcon} onClick={() => setIsManualOpen(true)}>
-            Selbst anlegen
+            {t.search.addManually}
           </Button>
         }
       />
@@ -106,9 +109,9 @@ function MyListPage() {
 
       {entries && entries.length === 0 && (
         <Blankslate border spacious>
-          <Blankslate.Heading>Deine Liste ist noch leer</Blankslate.Heading>
-          <Blankslate.Description>Über die Suche findest du Anime, Serien, Filme, Bücher und Spiele.</Blankslate.Description>
-          <Blankslate.PrimaryAction onClick={() => navigate('/search')}>Zur Suche</Blankslate.PrimaryAction>
+          <Blankslate.Heading>{t.dashboard.emptyHeading}</Blankslate.Heading>
+          <Blankslate.Description>{t.myList.emptyDescription}</Blankslate.Description>
+          <Blankslate.PrimaryAction onClick={() => navigate('/search')}>{t.myList.toSearch}</Blankslate.PrimaryAction>
         </Blankslate>
       )}
 
@@ -116,36 +119,36 @@ function MyListPage() {
         <>
           <Stack direction={{ narrow: 'vertical', regular: 'horizontal' }} justify="space-between" gap="normal">
             <SegmentedControl
-              aria-label="Nach Status filtern"
+              aria-label={t.myList.filterByStatus}
               onChange={(index) => setFilter('status', STATUS_FILTERS[index])}
             >
               {STATUS_FILTERS.map((status) => (
                 <SegmentedControl.Button key={status ?? 'all'} selected={status === statusFilter}>
-                  {`${status ? STATUS_LABELS[status] : 'Alle'} (${byType.filter((e) => status === null || e.status === status).length})`}
+                  {`${status ? t.statuses[status] : t.myList.all} (${byType.filter((e) => status === null || e.status === status).length})`}
                 </SegmentedControl.Button>
               ))}
             </SegmentedControl>
             <Stack direction="horizontal" gap="condensed" wrap="wrap">
               <FormControl>
-                <FormControl.Label visuallyHidden>Medientyp</FormControl.Label>
+                <FormControl.Label visuallyHidden>{t.search.mediaType}</FormControl.Label>
                 <Select value={typeFilter ?? ''} onChange={(event) => setFilter('type', event.target.value || null)}>
-                  <Select.Option value="">Alle Medientypen</Select.Option>
+                  <Select.Option value="">{t.myList.allMediaTypes}</Select.Option>
                   {MEDIA_TYPES.map((type: MediaType) => (
                     <Select.Option key={type} value={type}>
-                      {MEDIA_TYPE_LABELS[type]}
+                      {t.mediaTypes[type]}
                     </Select.Option>
                   ))}
                 </Select>
               </FormControl>
               <FormControl>
-                <FormControl.Label visuallyHidden>Sortierung</FormControl.Label>
+                <FormControl.Label visuallyHidden>{t.myList.sorting}</FormControl.Label>
                 <Select
                   value={sortOrder}
                   onChange={(event) => setFilter('sort', event.target.value === 'newest' ? null : event.target.value)}
                 >
-                  {(Object.keys(SORT_LABELS) as SortOrder[]).map((order) => (
+                  {SORT_ORDERS.map((order) => (
                     <Select.Option key={order} value={order}>
-                      {SORT_LABELS[order]}
+                      {sortLabel(order, t)}
                     </Select.Option>
                   ))}
                 </Select>
@@ -155,10 +158,10 @@ function MyListPage() {
 
           {visible.length === 0 ? (
             <Blankslate border>
-              <Blankslate.Heading>Keine Einträge für diesen Filter</Blankslate.Heading>
+              <Blankslate.Heading>{t.myList.noMatches}</Blankslate.Heading>
             </Blankslate>
           ) : (
-            <ul className={listStyles.list} aria-label="Einträge">
+            <ul className={listStyles.list} aria-label={t.myList.entries}>
               {visible.map((entry) => (
                 <EntryRow key={entry.id} entry={entry} onEdit={setEditing} onDelete={handleDelete} />
               ))}

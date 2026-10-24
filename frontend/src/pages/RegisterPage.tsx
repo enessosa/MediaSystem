@@ -4,14 +4,16 @@ import { Navigate, Link as RouterLink, useNavigate } from 'react-router'
 import { register } from '../api/auth'
 import { ApiError } from '../api/client'
 import { useAuth } from '../auth/useAuth'
+import type { Translations } from '../i18n/translations'
+import { useI18n } from '../i18n/useI18n'
 import styles from './AuthPage.module.css'
 
-function errorMessageFor(err: unknown): string {
+function errorMessageFor(err: unknown, t: Translations): string {
   if (err instanceof ApiError) {
-    if (err.status === 409) return 'Benutzername oder E-Mail ist bereits vergeben.'
-    if (err.status === 400) return 'Das Codewort ist falsch oder fehlt.'
+    if (err.status === 409) return t.register.taken
+    if (err.status === 400) return t.register.wrongCodeword
   }
-  return 'Registrierung gerade nicht möglich. Bitte später erneut versuchen.'
+  return t.register.unavailable
 }
 
 function RegisterPage() {
@@ -23,6 +25,7 @@ function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
   const { user, login } = useAuth()
+  const { t } = useI18n()
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -34,7 +37,7 @@ function RegisterPage() {
       await login(username, password)
       navigate('/', { replace: true })
     } catch (err) {
-      setError(errorMessageFor(err))
+      setError(errorMessageFor(err, t))
     } finally {
       setIsSubmitting(false)
     }
@@ -47,16 +50,16 @@ function RegisterPage() {
   return (
     <div className={styles.page}>
       <Heading as="h1" className={styles.title}>
-        Konto erstellen
+        {t.register.heading}
       </Heading>
 
       <form className={styles.box} onSubmit={handleSubmit}>
         <Stack gap="normal">
           {error && (
-            <Banner variant="critical" layout="compact" title="Registrierung fehlgeschlagen" description={error} />
+            <Banner variant="critical" layout="compact" title={t.register.failed} description={error} />
           )}
           <FormControl required>
-            <FormControl.Label>Benutzername</FormControl.Label>
+            <FormControl.Label>{t.register.username}</FormControl.Label>
             <TextInput
               block
               autoComplete="username"
@@ -65,10 +68,10 @@ function RegisterPage() {
               value={username}
               onChange={(event) => setUsername(event.target.value)}
             />
-            <FormControl.Caption>4 bis 15 Zeichen</FormControl.Caption>
+            <FormControl.Caption>{t.register.usernameCaption}</FormControl.Caption>
           </FormControl>
           <FormControl required>
-            <FormControl.Label>E-Mail</FormControl.Label>
+            <FormControl.Label>{t.register.email}</FormControl.Label>
             <TextInput
               block
               type="email"
@@ -78,7 +81,7 @@ function RegisterPage() {
             />
           </FormControl>
           <FormControl required>
-            <FormControl.Label>Passwort</FormControl.Label>
+            <FormControl.Label>{t.register.password}</FormControl.Label>
             <TextInput
               block
               type="password"
@@ -88,24 +91,24 @@ function RegisterPage() {
             />
           </FormControl>
           <FormControl>
-            <FormControl.Label>Codewort</FormControl.Label>
+            <FormControl.Label>{t.register.codeword}</FormControl.Label>
             <TextInput
               block
               value={codeword}
               onChange={(event) => setCodeword(event.target.value)}
             />
-            <FormControl.Caption>Nur nötig, wenn du ein Codewort vom Admin bekommen hast.</FormControl.Caption>
+            <FormControl.Caption>{t.register.codewordCaption}</FormControl.Caption>
           </FormControl>
           <Button type="submit" variant="primary" block loading={isSubmitting}>
-            Konto erstellen
+            {t.register.submit}
           </Button>
         </Stack>
       </form>
 
       <p className={styles.footer}>
-        Schon ein Konto?{' '}
+        {t.register.haveAccount}{' '}
         <Link as={RouterLink} to="/login">
-          Anmelden
+          {t.register.signIn}
         </Link>
       </p>
     </div>

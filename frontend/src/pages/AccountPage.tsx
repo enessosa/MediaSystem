@@ -10,6 +10,7 @@ import ErrorBanner from '../components/ErrorBanner'
 import Loading from '../components/Loading'
 import PageTitle from '../components/PageTitle'
 import { useApi } from '../hooks/useApi'
+import { useI18n } from '../i18n/useI18n'
 import styles from './AccountPage.module.css'
 
 function CodewordSettings() {
@@ -18,6 +19,7 @@ function CodewordSettings() {
   const [isSaving, setIsSaving] = useState(false)
   const [result, setResult] = useState<{ ok: true; message: string } | { ok: false; error: unknown } | null>(null)
   const confirm = useConfirm()
+  const { t } = useI18n()
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -26,7 +28,7 @@ function CodewordSettings() {
     try {
       await updateCodeword(codeword.trim())
       setCodeword('')
-      setResult({ ok: true, message: 'Das neue Codewort gilt ab sofort.' })
+      setResult({ ok: true, message: t.account.codewordSaved })
       reload()
     } catch (error) {
       setResult({ ok: false, error })
@@ -37,17 +39,17 @@ function CodewordSettings() {
 
   async function handleRemove() {
     const confirmed = await confirm({
-      title: 'Codewort entfernen?',
-      content: 'Danach kann sich jeder registrieren, auch über 10 Nutzer hinaus.',
-      confirmButtonContent: 'Entfernen',
+      title: t.account.codewordRemoveTitle,
+      content: t.account.codewordRemoveContent,
+      confirmButtonContent: t.common.remove,
       confirmButtonType: 'danger',
-      cancelButtonContent: 'Abbrechen',
+      cancelButtonContent: t.common.cancel,
     })
     if (!confirmed) return
     setResult(null)
     try {
       await deleteCodeword()
-      setResult({ ok: true, message: 'Das Codewort wurde entfernt, die Registrierung ist jetzt offen.' })
+      setResult({ ok: true, message: t.account.codewordRemoved })
       reload()
     } catch (error) {
       setResult({ ok: false, error })
@@ -61,30 +63,28 @@ function CodewordSettings() {
 
   return (
     <Stack gap="normal">
-      {result?.ok === true && <Banner variant="success" layout="compact" title="Gespeichert" description={result.message} />}
+      {result?.ok === true && <Banner variant="success" layout="compact" title={t.common.saved} description={result.message} />}
       {result?.ok === false && (
-        <Banner variant="critical" layout="compact" title="Fehler" hideTitle description={describeError(result.error)} />
+        <Banner variant="critical" layout="compact" title={t.common.error} hideTitle description={describeError(result.error, t)} />
       )}
-      <p className={styles.hint}>
-        Die ersten 10 Nutzer können sich frei registrieren. Danach ist das Codewort Pflicht.
-      </p>
+      <p className={styles.hint}>{t.account.codewordHint}</p>
       <dl className={styles.details}>
-        <dt>Aktuelles Codewort</dt>
-        <dd>{current !== null ? <code>{current}</code> : <span className={styles.missing}>Kein Codewort festgelegt</span>}</dd>
+        <dt>{t.account.currentCodeword}</dt>
+        <dd>{current !== null ? <code>{current}</code> : <span className={styles.missing}>{t.account.noCodeword}</span>}</dd>
       </dl>
       <form onSubmit={handleSubmit}>
         <Stack gap="normal">
           <FormControl required>
-            <FormControl.Label>{current !== null ? 'Neues Codewort' : 'Codewort festlegen'}</FormControl.Label>
+            <FormControl.Label>{current !== null ? t.account.newCodeword : t.account.setCodeword}</FormControl.Label>
             <TextInput value={codeword} onChange={(event) => setCodeword(event.target.value)} />
           </FormControl>
           <Stack direction="horizontal" gap="condensed" wrap="wrap">
             <Button type="submit" variant="primary" loading={isSaving} disabled={codeword.trim() === ''}>
-              Codewort speichern
+              {t.account.saveCodeword}
             </Button>
             {current !== null && (
               <Button variant="danger" onClick={handleRemove}>
-                Codewort entfernen
+                {t.account.removeCodeword}
               </Button>
             )}
           </Stack>
@@ -100,11 +100,12 @@ function PasswordForm() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [result, setResult] = useState<{ ok: true } | { ok: false; message: string } | null>(null)
+  const { t } = useI18n()
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (newPassword !== confirmPassword) {
-      setResult({ ok: false, message: 'Die beiden neuen Passwörter stimmen nicht überein.' })
+      setResult({ ok: false, message: t.account.passwordsMismatch })
       return
     }
     setIsSaving(true)
@@ -117,7 +118,7 @@ function PasswordForm() {
       setResult({ ok: true })
     } catch (error) {
       const message =
-        error instanceof ApiError && error.status === 400 ? 'Das aktuelle Passwort ist falsch.' : describeError(error)
+        error instanceof ApiError && error.status === 400 ? t.account.wrongCurrentPassword : describeError(error, t)
       setResult({ ok: false, message })
     } finally {
       setIsSaving(false)
@@ -128,13 +129,13 @@ function PasswordForm() {
     <form onSubmit={handleSubmit}>
       <Stack gap="normal">
         {result?.ok === true && (
-          <Banner variant="success" layout="compact" title="Gespeichert" description="Dein Passwort wurde geändert." />
+          <Banner variant="success" layout="compact" title={t.common.saved} description={t.account.passwordChanged} />
         )}
         {result?.ok === false && (
-          <Banner variant="critical" layout="compact" title="Fehler" hideTitle description={result.message} />
+          <Banner variant="critical" layout="compact" title={t.common.error} hideTitle description={result.message} />
         )}
         <FormControl required>
-          <FormControl.Label>Aktuelles Passwort</FormControl.Label>
+          <FormControl.Label>{t.account.currentPassword}</FormControl.Label>
           <TextInput
             type="password"
             autoComplete="current-password"
@@ -143,7 +144,7 @@ function PasswordForm() {
           />
         </FormControl>
         <FormControl required>
-          <FormControl.Label>Neues Passwort</FormControl.Label>
+          <FormControl.Label>{t.account.newPassword}</FormControl.Label>
           <TextInput
             type="password"
             autoComplete="new-password"
@@ -152,7 +153,7 @@ function PasswordForm() {
           />
         </FormControl>
         <FormControl required>
-          <FormControl.Label>Neues Passwort wiederholen</FormControl.Label>
+          <FormControl.Label>{t.account.repeatPassword}</FormControl.Label>
           <TextInput
             type="password"
             autoComplete="new-password"
@@ -167,7 +168,7 @@ function PasswordForm() {
             loading={isSaving}
             disabled={currentPassword === '' || newPassword === '' || confirmPassword === ''}
           >
-            Passwort ändern
+            {t.account.changePassword}
           </Button>
         </div>
       </Stack>
@@ -179,6 +180,7 @@ function AccountPage() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const { t } = useI18n()
 
   async function handleLogout() {
     await logout()
@@ -193,32 +195,32 @@ function AccountPage() {
 
   return (
     <Stack gap="spacious">
-      <PageTitle title="Account" />
+      <PageTitle title={t.account.title} />
 
       <section className={styles.box} aria-labelledby="account-profile">
         <Heading as="h2" variant="small" id="account-profile" className={styles.boxTitle}>
-          Profil
+          {t.account.profile}
         </Heading>
         <dl className={styles.details}>
-          <dt>Benutzername</dt>
+          <dt>{t.account.username}</dt>
           <dd>{user?.username}</dd>
-          <dt>E-Mail</dt>
+          <dt>{t.account.email}</dt>
           <dd>{user?.email}</dd>
           {user?.isAdmin && (
             <>
-              <dt>Rolle</dt>
+              <dt>{t.account.role}</dt>
               <dd>
-                <Label variant="accent">Admin</Label>
+                <Label variant="accent">{t.account.admin}</Label>
               </dd>
             </>
           )}
         </dl>
-        <Button onClick={handleLogout}>Abmelden</Button>
+        <Button onClick={handleLogout}>{t.account.logout}</Button>
       </section>
 
       <section className={styles.box} aria-labelledby="account-password">
         <Heading as="h2" variant="small" id="account-password" className={styles.boxTitle}>
-          Passwort ändern
+          {t.account.passwordSection}
         </Heading>
         <PasswordForm />
       </section>
@@ -226,7 +228,7 @@ function AccountPage() {
       {user?.isAdmin && (
         <section className={styles.box} aria-labelledby="account-admin">
           <Heading as="h2" variant="small" id="account-admin" className={styles.boxTitle}>
-            Admin: Signup-Codewort
+            {t.account.codewordSection}
           </Heading>
           <CodewordSettings />
         </section>
@@ -234,15 +236,13 @@ function AccountPage() {
 
       <section className={`${styles.box} ${styles.dangerBox}`} aria-labelledby="account-delete">
         <Heading as="h2" variant="small" id="account-delete" className={styles.boxTitle}>
-          Account löschen
+          {t.account.deleteSection}
         </Heading>
         <Stack gap="normal">
-          <p className={styles.dangerText}>
-            Löscht deinen Account und deine komplette Liste dauerhaft. Das lässt sich nicht rückgängig machen.
-          </p>
+          <p className={styles.dangerText}>{t.account.deleteText}</p>
           <div>
             <Button variant="danger" onClick={() => setIsDeleteOpen(true)}>
-              Account löschen
+              {t.account.deleteButton}
             </Button>
           </div>
         </Stack>

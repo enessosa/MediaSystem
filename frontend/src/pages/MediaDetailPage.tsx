@@ -20,16 +20,9 @@ import { mediaMeta, plainText } from '../components/mediaMeta'
 import StatusLabel from '../components/StatusLabel'
 import { useApi } from '../hooks/useApi'
 import { useListedEntries } from '../hooks/useListedEntries'
+import { useI18n } from '../i18n/useI18n'
 import NotFoundPage from './NotFoundPage'
 import styles from './MediaDetailPage.module.css'
-
-const SOURCE_LABELS: Record<SourceType, string> = {
-  ANILIST: 'AniList',
-  TMDB: 'TMDB',
-  RAWG: 'RAWG',
-  OPENLIBRARY: 'OpenLibrary',
-  MANUAL: 'Selbst angelegt',
-}
 
 interface DetailViewProps {
   title: string
@@ -42,12 +35,13 @@ interface DetailViewProps {
 
 function DetailView({ title, meta, coverUrl, description, source, children }: DetailViewProps) {
   const navigate = useNavigate()
+  const { t } = useI18n()
 
   return (
     <Stack gap="normal">
       <div>
         <Button variant="invisible" leadingVisual={ArrowLeftIcon} onClick={() => navigate(-1)}>
-          Zurück
+          {t.common.back}
         </Button>
       </div>
       <div className={styles.layout}>
@@ -58,7 +52,7 @@ function DetailView({ title, meta, coverUrl, description, source, children }: De
               <Heading as="h1">{title}</Heading>
               <Stack direction="horizontal" align="center" gap="condensed">
                 <span className={styles.meta}>{meta}</span>
-                {source && <Label>{SOURCE_LABELS[source]}</Label>}
+                {source && <Label>{t.sources[source]}</Label>}
               </Stack>
             </div>
             {children}
@@ -73,6 +67,7 @@ function DetailView({ title, meta, coverUrl, description, source, children }: De
 function ExternalMediaDetail({ sourceType, externalId }: { sourceType: string; externalId: string }) {
   const { data: item, error, isLoading, reload } = useApi<MediaSearchResult>(mediaDetailPath(sourceType, externalId))
   const listed = useListedEntries()
+  const { t } = useI18n()
 
   if (isLoading) return <Loading />
   if (error !== null) return <ErrorBanner error={error} onRetry={reload} />
@@ -81,7 +76,7 @@ function ExternalMediaDetail({ sourceType, externalId }: { sourceType: string; e
   return (
     <DetailView
       title={item.title}
-      meta={mediaMeta(item)}
+      meta={mediaMeta(item, t)}
       coverUrl={item.coverUrl}
       description={item.description}
       source={item.sourceType}
@@ -99,6 +94,7 @@ function EntryDetail({ entryId }: { entryId: number }) {
   const [actionError, setActionError] = useState<unknown>(null)
   const confirm = useConfirm()
   const navigate = useNavigate()
+  const { t } = useI18n()
 
   if (isLoading) return <Loading />
   if (error !== null) return <ErrorBanner error={error} onRetry={reload} />
@@ -108,11 +104,11 @@ function EntryDetail({ entryId }: { entryId: number }) {
 
   async function handleDelete(target: UserEntryResponse) {
     const confirmed = await confirm({
-      title: 'Eintrag entfernen?',
-      content: `„${target.title}“ wird aus deiner Liste entfernt.`,
-      confirmButtonContent: 'Entfernen',
+      title: t.media.removeTitle,
+      content: t.media.removeContent(target.title),
+      confirmButtonContent: t.common.remove,
       confirmButtonType: 'danger',
-      cancelButtonContent: 'Abbrechen',
+      cancelButtonContent: t.common.cancel,
     })
     if (!confirmed) return
     try {
@@ -126,7 +122,7 @@ function EntryDetail({ entryId }: { entryId: number }) {
   return (
     <DetailView
       title={entry.title}
-      meta={mediaMeta(entry)}
+      meta={mediaMeta(entry, t)}
       coverUrl={entry.coverUrl}
       description={entry.description}
       source={entry.sourceType}
@@ -143,15 +139,15 @@ function EntryDetail({ entryId }: { entryId: number }) {
                 </span>
               )}
               <span className={styles.meta}>
-                Hinzugefügt am {new Date(entry.addedAt).toLocaleDateString('de-DE')}
+                {t.media.addedOn(new Date(entry.addedAt).toLocaleDateString(t.locale))}
               </span>
             </Stack>
             <Stack direction="horizontal" gap="condensed">
               <Button size="small" leadingVisual={PencilIcon} onClick={() => setIsEditing(true)}>
-                Bearbeiten
+                {t.common.edit}
               </Button>
               <Button size="small" variant="danger" leadingVisual={TrashIcon} onClick={() => handleDelete(entry)}>
-                Entfernen
+                {t.common.remove}
               </Button>
             </Stack>
           </Stack>

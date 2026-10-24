@@ -1,5 +1,6 @@
 import { Label, type LabelProps } from '@primer/react'
-import { STATUS_LABELS, type Status } from '../api/media'
+import type { Status } from '../api/media'
+import { useI18n } from '../i18n/useI18n'
 
 const VARIANTS: Record<Status, LabelProps['variant']> = {
   WATCHING: 'accent',
@@ -9,7 +10,8 @@ const VARIANTS: Record<Status, LabelProps['variant']> = {
 }
 
 function StatusLabel({ status }: { status: Status }) {
-  return <Label variant={VARIANTS[status]}>{STATUS_LABELS[status]}</Label>
+  const { t } = useI18n()
+  return <Label variant={VARIANTS[status]}>{t.statuses[status]}</Label>
 }
 
 export default StatusLabel

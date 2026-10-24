@@ -3,11 +3,13 @@ import { Button, Dialog, VisuallyHidden } from '@primer/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import SearchForm from '../components/SearchForm'
+import { useI18n } from '../i18n/useI18n'
 import styles from './HeaderSearch.module.css'
 
 function HeaderSearch() {
   const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)
+  const { t } = useI18n()
 
   function handleSearch(query: string) {
     setIsOpen(false)
@@ -22,7 +24,7 @@ function HeaderSearch() {
         alignContent="start"
         onClick={() => setIsOpen(true)}
       >
-        Medien suchen...
+        {t.search.headerTrigger}
       </Button>
 
       {isOpen && (
@@ -31,7 +33,7 @@ function HeaderSearch() {
           width="xlarge"
           onClose={() => setIsOpen(false)}
           renderHeader={({ dialogLabelId }) => (
-            <VisuallyHidden id={dialogLabelId}>Medien suchen</VisuallyHidden>
+            <VisuallyHidden id={dialogLabelId}>{t.search.label}</VisuallyHidden>
           )}
         >
           <SearchForm onSearch={handleSearch} />

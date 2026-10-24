@@ -1,6 +1,7 @@
 import { SearchIcon } from '@primer/octicons-react'
 import { Button, Stack, TextInput } from '@primer/react'
 import { useState, type FormEvent } from 'react'
+import { useI18n } from '../i18n/useI18n'
 
 interface SearchFormProps {
   initialQuery?: string
@@ -10,6 +11,7 @@ interface SearchFormProps {
 
 function SearchForm({ initialQuery = '', onSearch, showButton = false }: SearchFormProps) {
   const [query, setQuery] = useState(initialQuery)
+  const { t } = useI18n()
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -22,8 +24,8 @@ function SearchForm({ initialQuery = '', onSearch, showButton = false }: SearchF
       <Stack direction="horizontal" gap="condensed">
         <Stack.Item grow>
           <TextInput
-            aria-label="Medien suchen"
-            placeholder="Anime, Serien, Filme, Bücher, Spiele..."
+            aria-label={t.search.label}
+            placeholder={t.search.placeholder}
             leadingVisual={SearchIcon}
             size="large"
             block
@@ -33,7 +35,7 @@ function SearchForm({ initialQuery = '', onSearch, showButton = false }: SearchF
         </Stack.Item>
         {showButton && (
           <Button type="submit" variant="primary" size="large">
-            Suchen
+            {t.search.submit}
           </Button>
         )}
       </Stack>

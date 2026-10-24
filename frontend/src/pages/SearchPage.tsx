@@ -6,7 +6,6 @@ import { useNavigate, useSearchParams } from 'react-router'
 import {
   AVAILABLE_TYPES_PATH,
   mediaKey,
-  MEDIA_TYPE_LABELS,
   MEDIA_TYPES,
   searchPath,
   type MediaSearchResult,
@@ -22,6 +21,7 @@ import SearchForm from '../components/SearchForm'
 import SearchResultRow from '../components/SearchResultRow'
 import { useApi } from '../hooks/useApi'
 import { useListedEntries } from '../hooks/useListedEntries'
+import { useI18n } from '../i18n/useI18n'
 
 const PAGE_SIZE = 20
 
@@ -34,6 +34,7 @@ function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
   const [isManualOpen, setIsManualOpen] = useState(false)
+  const { t } = useI18n()
 
   const query = searchParams.get('q') ?? ''
   const types = parseTypes(searchParams.get('types'))
@@ -72,10 +73,10 @@ function SearchPage() {
   return (
     <Stack gap="normal">
       <PageTitle
-        title="Suche"
+        title={t.search.title}
         actions={
           <Button leadingVisual={PlusIcon} onClick={() => setIsManualOpen(true)}>
-            Selbst anlegen
+            {t.search.addManually}
           </Button>
         }
       />
@@ -85,9 +86,9 @@ function SearchPage() {
       {unavailable.length > 0 && (
         <Banner
           variant="warning"
-          title="Eingeschränkte Suche"
+          title={t.search.restricted}
           hideTitle
-          description={`Nicht durchsuchbar: ${unavailable.map((t) => MEDIA_TYPE_LABELS[t]).join(', ')} – dafür ist auf diesem Server kein API-Key konfiguriert.`}
+          description={t.search.unavailableTypes(unavailable.map((type) => t.mediaTypes[type]).join(', '))}
         />
       )}
 
@@ -96,25 +97,22 @@ function SearchPage() {
           <Blankslate.Visual>
             <SearchIcon size="medium" />
           </Blankslate.Visual>
-          <Blankslate.Heading>Wonach suchst du?</Blankslate.Heading>
-          <Blankslate.Description>
-            Durchsucht AniList, TMDB, RAWG und OpenLibrary gleichzeitig. Mit den Häkchen kannst du die Suche
-            auf bestimmte Medientypen einschränken.
-          </Blankslate.Description>
+          <Blankslate.Heading>{t.search.emptyHeading}</Blankslate.Heading>
+          <Blankslate.Description>{t.search.emptyDescription}</Blankslate.Description>
         </Blankslate>
       )}
-      {isLoading && <Loading label="Suche läuft..." />}
+      {isLoading && <Loading label={t.search.searching} />}
       {error !== null && <ErrorBanner error={error} onRetry={reload} />}
       {results && results.length === 0 && (
         <Blankslate border>
-          <Blankslate.Heading>Keine Treffer für „{query}“</Blankslate.Heading>
-          <Blankslate.Description>Versuch einen anderen Begriff oder leg das Medium selbst an.</Blankslate.Description>
-          <Blankslate.PrimaryAction onClick={() => setIsManualOpen(true)}>Selbst anlegen</Blankslate.PrimaryAction>
+          <Blankslate.Heading>{t.search.noResults(query)}</Blankslate.Heading>
+          <Blankslate.Description>{t.search.noResultsDescription}</Blankslate.Description>
+          <Blankslate.PrimaryAction onClick={() => setIsManualOpen(true)}>{t.search.addManually}</Blankslate.PrimaryAction>
         </Blankslate>
       )}
       {results && results.length > 0 && (
         <>
-          <ul className={listStyles.list} aria-label="Suchergebnisse">
+          <ul className={listStyles.list} aria-label={t.search.results}>
             {pageResults.map((item, index) => (
               <SearchResultRow
                 key={`${item.sourceType}-${item.externalId ?? index}`}

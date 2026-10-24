@@ -1,9 +1,11 @@
 import { Spinner, Stack } from '@primer/react'
+import { useI18n } from '../i18n/useI18n'
 
-function Loading({ label = 'Wird geladen...' }: { label?: string }) {
+function Loading({ label }: { label?: string }) {
+  const { t } = useI18n()
   return (
     <Stack align="center" padding="spacious">
-      <Spinner srText={label} />
+      <Spinner srText={label ?? t.common.loading} />
     </Stack>
   )
 }

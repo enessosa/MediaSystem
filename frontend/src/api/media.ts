@@ -7,22 +7,6 @@ export type SourceType = 'ANILIST' | 'TMDB' | 'OPENLIBRARY' | 'RAWG' | 'MANUAL'
 export const MEDIA_TYPES: MediaType[] = ['ANIME', 'MANGA', 'SERIES', 'MOVIE', 'BOOK', 'GAME']
 export const STATUSES: Status[] = ['WATCHING', 'PLANNED', 'COMPLETED', 'DROPPED']
 
-export const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
-  ANIME: 'Anime',
-  MANGA: 'Manga',
-  SERIES: 'Serie',
-  MOVIE: 'Film',
-  BOOK: 'Buch',
-  GAME: 'Spiel',
-}
-
-export const STATUS_LABELS: Record<Status, string> = {
-  WATCHING: 'Dabei',
-  PLANNED: 'Geplant',
-  COMPLETED: 'Abgeschlossen',
-  DROPPED: 'Abgebrochen',
-}
-
 export interface MediaSearchResult {
   title: string
   description: string | null

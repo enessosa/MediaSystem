@@ -1,3 +1,5 @@
+import type { Translations } from '../i18n/translations'
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
 
 export class ApiError extends Error {
@@ -48,13 +50,13 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   return (await response.json()) as T
 }
 
-export function describeError(err: unknown): string {
+export function describeError(err: unknown, t: Translations): string {
   if (err instanceof ApiError) {
     // 503: Suche für die gewählten Typen deaktiviert – das Backend liefert eine passende Meldung mit.
     if (err.status === 503 && err.message) return err.message
-    if (err.status === 502) return 'Ein externer Dienst ist gerade nicht erreichbar. Bitte später erneut versuchen.'
-    if (err.status === 404) return 'Nicht gefunden.'
-    if (err.status === 401 || err.status === 403) return 'Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.'
+    if (err.status === 502) return t.errors.serviceUnavailable
+    if (err.status === 404) return t.errors.notFound
+    if (err.status === 401 || err.status === 403) return t.errors.sessionExpired
   }
-  return 'Etwas ist schiefgelaufen. Bitte später erneut versuchen.'
+  return t.errors.generic
 }

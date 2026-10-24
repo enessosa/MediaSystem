@@ -2,8 +2,10 @@ import { BaseStyles } from '@primer/react'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { AuthProvider } from './auth/AuthProvider'
 import RequireAuth from './auth/RequireAuth'
+import { LanguageProvider } from './i18n/LanguageProvider'
 import AppLayout from './layout/AppLayout'
 import PublicLayout from './layout/PublicLayout'
+import AboutPage from './pages/AboutPage'
 import AccountPage from './pages/AccountPage'
 import DashboardPage from './pages/DashboardPage'
 import LoginPage from './pages/LoginPage'
@@ -16,27 +18,30 @@ import SearchPage from './pages/SearchPage'
 function App() {
   return (
     <BaseStyles>
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<RequireAuth />}>
-              <Route element={<AppLayout />}>
-                <Route path="/" element={<DashboardPage />} />
-                <Route path="/search" element={<SearchPage />} />
-                <Route path="/list" element={<MyListPage />} />
-                <Route path="/entries/:entryId" element={<MediaDetailPage />} />
-                <Route path="/media/:sourceType/:externalId" element={<MediaDetailPage />} />
-                <Route path="/account" element={<AccountPage />} />
+      <LanguageProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route element={<RequireAuth />}>
+                <Route element={<AppLayout />}>
+                  <Route path="/" element={<DashboardPage />} />
+                  <Route path="/search" element={<SearchPage />} />
+                  <Route path="/list" element={<MyListPage />} />
+                  <Route path="/entries/:entryId" element={<MediaDetailPage />} />
+                  <Route path="/media/:sourceType/:externalId" element={<MediaDetailPage />} />
+                  <Route path="/account" element={<AccountPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                </Route>
               </Route>
-            </Route>
-            <Route element={<PublicLayout />}>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+              <Route element={<PublicLayout />}>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </LanguageProvider>
     </BaseStyles>
   )
 }

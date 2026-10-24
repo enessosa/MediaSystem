@@ -2,6 +2,7 @@ import { KebabHorizontalIcon, PencilIcon, StarFillIcon, TrashIcon } from '@prime
 import { ActionList, ActionMenu, IconButton, Link, Stack } from '@primer/react'
 import { Link as RouterLink } from 'react-router'
 import type { UserEntryResponse } from '../api/media'
+import { useI18n } from '../i18n/useI18n'
 import styles from './ItemList.module.css'
 import MediaCover from './MediaCover'
 import { mediaMeta } from './mediaMeta'
@@ -15,6 +16,8 @@ interface EntryRowProps {
 }
 
 function EntryRow({ entry, compact = false, onEdit, onDelete }: EntryRowProps) {
+  const { t } = useI18n()
+
   return (
     <li className={styles.row}>
       <MediaCover url={entry.coverUrl} title={entry.title} width={compact ? 40 : 64} />
@@ -30,14 +33,14 @@ function EntryRow({ entry, compact = false, onEdit, onDelete }: EntryRowProps) {
             </span>
           )}
         </Stack>
-        <div className={styles.meta}>{mediaMeta(entry)}</div>
+        <div className={styles.meta}>{mediaMeta(entry, t)}</div>
         {!compact && entry.note && <p className={styles.description}>{entry.note}</p>}
       </div>
       {(onEdit || onDelete) && (
         <div className={styles.actions}>
           <ActionMenu>
             <ActionMenu.Anchor>
-              <IconButton icon={KebabHorizontalIcon} variant="invisible" aria-label={`Aktionen für ${entry.title}`} />
+              <IconButton icon={KebabHorizontalIcon} variant="invisible" aria-label={t.media.actionsFor(entry.title)} />
             </ActionMenu.Anchor>
             <ActionMenu.Overlay align="end">
               <ActionList>
@@ -46,7 +49,7 @@ function EntryRow({ entry, compact = false, onEdit, onDelete }: EntryRowProps) {
                     <ActionList.LeadingVisual>
                       <PencilIcon />
                     </ActionList.LeadingVisual>
-                    Bearbeiten
+                    {t.common.edit}
                   </ActionList.Item>
                 )}
                 {onDelete && (
@@ -54,7 +57,7 @@ function EntryRow({ entry, compact = false, onEdit, onDelete }: EntryRowProps) {
                     <ActionList.LeadingVisual>
                       <TrashIcon />
                     </ActionList.LeadingVisual>
-                    Entfernen
+                    {t.common.remove}
                   </ActionList.Item>
                 )}
               </ActionList>

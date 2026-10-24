@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { ApiError } from '../api/client'
 import { addToList, type MediaSearchResult } from '../api/media'
+import { useI18n } from '../i18n/useI18n'
 
 type AddState = 'idle' | 'saving' | 'exists' | 'error'
 
@@ -18,6 +19,7 @@ function AddToListButton({ item, entryId, size }: AddToListButtonProps) {
   const [state, setState] = useState<AddState>('idle')
   const [addedId, setAddedId] = useState<number | null>(null)
   const navigate = useNavigate()
+  const { t } = useI18n()
 
   async function add() {
     setState('saving')
@@ -33,7 +35,7 @@ function AddToListButton({ item, entryId, size }: AddToListButtonProps) {
   if (listedId !== undefined) {
     return (
       <Button size={size} leadingVisual={CheckIcon} onClick={() => navigate(`/entries/${listedId}`)}>
-        In deiner Liste
+        {t.media.inYourList}
       </Button>
     )
   }
@@ -41,14 +43,14 @@ function AddToListButton({ item, entryId, size }: AddToListButtonProps) {
   if (state === 'exists') {
     return (
       <Button size={size} leadingVisual={CheckIcon} disabled>
-        Schon in deiner Liste
+        {t.media.alreadyInList}
       </Button>
     )
   }
 
   return (
     <Button size={size} leadingVisual={PlusIcon} loading={state === 'saving'} onClick={add}>
-      {state === 'error' ? 'Fehler – erneut versuchen' : 'Zur Liste'}
+      {state === 'error' ? t.media.addFailed : t.media.addToList}
     </Button>
   )
 }

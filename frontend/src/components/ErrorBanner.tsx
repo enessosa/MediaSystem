@@ -1,5 +1,6 @@
 import { Banner } from '@primer/react'
 import { describeError } from '../api/client'
+import { useI18n } from '../i18n/useI18n'
 
 interface ErrorBannerProps {
   error: unknown
@@ -7,13 +8,14 @@ interface ErrorBannerProps {
 }
 
 function ErrorBanner({ error, onRetry }: ErrorBannerProps) {
+  const { t } = useI18n()
   return (
     <Banner
       variant="critical"
-      title="Fehler"
+      title={t.common.error}
       hideTitle
-      description={describeError(error)}
-      primaryAction={onRetry && <Banner.PrimaryAction onClick={onRetry}>Erneut versuchen</Banner.PrimaryAction>}
+      description={describeError(error, t)}
+      primaryAction={onRetry && <Banner.PrimaryAction onClick={onRetry}>{t.common.retry}</Banner.PrimaryAction>}
     />
   )
 }

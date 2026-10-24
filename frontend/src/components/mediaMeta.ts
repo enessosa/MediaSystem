@@ -1,4 +1,5 @@
-import { MEDIA_TYPE_LABELS, type MediaSearchResult, type MediaType } from '../api/media'
+import type { MediaSearchResult, MediaType } from '../api/media'
+import type { Translations } from '../i18n/translations'
 
 interface MetaSource {
   mediaType: MediaType
@@ -6,8 +7,8 @@ interface MetaSource {
   creator: string | null
 }
 
-export function mediaMeta({ mediaType, releaseYear, creator }: MetaSource): string {
-  return [MEDIA_TYPE_LABELS[mediaType], releaseYear, creator].filter(Boolean).join(' · ')
+export function mediaMeta({ mediaType, releaseYear, creator }: MetaSource, t: Translations): string {
+  return [t.mediaTypes[mediaType], releaseYear, creator].filter(Boolean).join(' · ')
 }
 
 export function externalDetailUrl(item: MediaSearchResult): string | null {

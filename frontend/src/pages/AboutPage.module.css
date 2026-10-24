@@ -1,0 +1,39 @@
+.box {
+  padding: var(--base-size-16);
+  border: var(--borderWidth-default) solid var(--borderColor-default);
+  border-radius: var(--borderRadius-medium);
+}
+
+.boxTitle {
+  margin-bottom: var(--base-size-16);
+}
+
+.text {
+  margin: 0;
+  color: var(--fgColor-muted);
+}
+
+.source {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: var(--base-size-16);
+  align-items: center;
+}
+
+.sourceName {
+  font-weight: var(--base-text-weight-semibold);
+}
+
+/* Bewusst klein: TMDB verlangt, dass ihr Logo weniger auffällig ist als der App-Name. */
+.tmdbLogo {
+  display: block;
+  height: 12px;
+  width: auto;
+}
+
+@media (max-width: 543px) {
+  .source {
+    grid-template-columns: 1fr;
+    gap: var(--base-size-4);
+  }
+}

@@ -10,3 +10,30 @@
   color: var(--fgColor-default);
   text-decoration: none;
 }
+
+.footer {
+  margin: 0;
+  font-size: var(--text-body-size-small);
+  color: var(--fgColor-muted);
+}
+
+.footerLink {
+  color: var(--fgColor-muted);
+  text-decoration: underline;
+}
+
+/* Sticky Footer: Seite mindestens so hoch wie das Fenster, Inhalt wächst, Fußzeile bleibt unten. */
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main {
+  flex: 1;
+}
+
+.footerBar {
+  padding: var(--base-size-16) var(--base-size-24);
+  border-top: var(--borderWidth-default) solid var(--borderColor-default);
+}
